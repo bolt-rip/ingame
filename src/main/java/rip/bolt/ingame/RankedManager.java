@@ -2,6 +2,7 @@ package rip.bolt.ingame;
 
 import java.time.Duration;
 import java.util.concurrent.ExecutionException;
+import java.util.stream.Collectors;
 
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
@@ -19,6 +20,8 @@ import rip.bolt.ingame.format.TournamentRoundOptions;
 import rip.bolt.ingame.format.rounds.single.SingleRound;
 import rip.bolt.ingame.format.rounds.single.SingleRoundOptions;
 import rip.bolt.ingame.format.winner.BestOfCalculation;
+import rip.bolt.ingame.ranked.PlayerWatcher;
+import rip.bolt.ingame.team.TournamentPlayer;
 import tc.oc.pgm.api.PGM;
 import tc.oc.pgm.api.match.event.MatchFinishEvent;
 import tc.oc.pgm.api.match.event.MatchLoadEvent;
@@ -31,10 +34,15 @@ public class RankedManager implements Listener {
     private TournamentFormat format;
     private BoltMatch match;
 
+    private PlayerWatcher playerWatcher;
+
     private Runnable pollTask;
     private int pollTaskId = -1;
 
     public RankedManager() {
+
+        playerWatcher = new PlayerWatcher();
+
         pollTask = new Runnable() {
             
             @Override
@@ -87,6 +95,8 @@ public class RankedManager implements Listener {
         for (Team team : match.getTeams())
             Tournament.get().getTeamManager().addTeam(team);
 
+        playerWatcher.addPlayers(match.getTeams().stream().flatMap(team -> team.getPlayers().stream()).map(TournamentPlayer::getUUID).collect(Collectors.toList()));
+
         format = new TournamentFormatImpl(Tournament.get().getTeamManager(), new TournamentRoundOptions(false, false, true, Duration.ofMinutes(30), Duration.ofSeconds(30), Duration.ofSeconds(40), new BestOfCalculation<>(1)), new RoundReferenceHolder());
         SingleRound ranked = new SingleRound(format, new SingleRoundOptions("ranked", Duration.ofSeconds(5), Duration.ofSeconds(300), match.getMap(), 1, true, true));
         format.addRound(ranked);
@@ -132,4 +142,7 @@ public class RankedManager implements Listener {
         pollTask.run();
     }
 
+    public PlayerWatcher getPlayerWatcher() {
+        return playerWatcher;
+    }
 }

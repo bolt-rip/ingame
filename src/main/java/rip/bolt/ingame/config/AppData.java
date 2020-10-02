@@ -22,6 +22,10 @@ public class AppData {
             return Tournament.get().getConfig().getString("api.getMatch").replace("{server}", getServerName());            
         }
 
+        public static String getPlayerAbandonPath() {
+            return Tournament.get().getConfig().getString("api.playerAbandon");
+        }
+
         public static String getMatchResultsPath() {
             return Tournament.get().getConfig().getString("api.matchResults").replace("{server}", getServerName());
         }
@@ -34,6 +38,10 @@ public class AppData {
 
     public static boolean observersMustReady() {
         return Tournament.get().getConfig().getBoolean("observers-must-ready");
+    }
+
+    public static long absentSecondsLimit() {
+        return Tournament.get().getConfig().getLong("absence-time-seconds", 120);
     }
 
 }

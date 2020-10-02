@@ -10,6 +10,9 @@ import javax.ws.rs.core.MediaType;
 import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
 
 import rip.bolt.ingame.api.definitions.BoltMatch;
+import rip.bolt.ingame.api.definitions.Participant;
+
+import java.util.UUID;
 
 /**
  * Manager class which uses the JAX-RS Client API to automatically create the Bolt objects (e.g. Match, Teams, etc.)
@@ -29,11 +32,16 @@ public class APIManager {
     /** URI path for the resources to POST (e.g. "/match/Ranked1/finish"). */
     private String POSTPath;
 
+    /** URI path to POST player abandons to (e.g. "users/1234-535....324-2342/invalidate"). */
+    private String POSTAbandonPath;
+
     /** Remember to register JacksonFeature! */
     private Client client = ClientBuilder.newClient().register(JacksonJsonProvider.class).register(AuthorisationHeaderFilter.class);;
 
+
     /** APIManager Constructor: constructed from the API base URL and resource URI paths. */
-    public APIManager(String apiBaseURL, String GETPath, String POSTPath) {
+    public APIManager(String apiBaseURL, String GETPath, String POSTPath, String POSTAbandonPath) {
+
         // Format base URL to remove trailing forward-slash
         if (apiBaseURL.toString().endsWith("/"))
             apiBaseURL = apiBaseURL.toString().substring(0, apiBaseURL.length() - 1);
@@ -41,6 +49,7 @@ public class APIManager {
         this.baseURL = apiBaseURL;
         this.GETPath = GETPath;
         this.POSTPath = POSTPath;
+        this.POSTAbandonPath = POSTAbandonPath;
 
         // Format URI paths to begin with a forward-slash
         if (!GETPath.toString().startsWith("/"))
@@ -56,6 +65,10 @@ public class APIManager {
 
     public String getGETPath() {
         return GETPath;
+    }
+
+    public String getPOSTAbandonPath() {
+        return POSTAbandonPath;
     }
 
     public String getPOSTPath() {
@@ -83,6 +96,21 @@ public class APIManager {
     }
 
     /**
+     * Posts an abandoned player UUID to the Bolt API.
+     *
+     * @param uuid of player to ban
+     */
+    public void postMatchPlayerAbandon(UUID uuid) {
+        try {
+            client.target(getBaseURL()).path(getPOSTAbandonPath().replace("{uuid}", uuid.toString())).request().post(Entity.json(uuid));
+        } catch (WebApplicationException e) {
+            e.printStackTrace();
+        } catch (ProcessingException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
      * Posts match data to the Bolt API.
      * To single out fields to be only POSTed with JAX-RS, use the @JsonProperties(access = ACCESS.WRITE_ONLY) annotation.
      * And to single out fields to be only fetched from the API, use the @JsonProperties(access = ACCESS.READ_ONLY) annotation.
@@ -98,5 +126,4 @@ public class APIManager {
             e.printStackTrace();
         }
     }
-
 }

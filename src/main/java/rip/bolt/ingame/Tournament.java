@@ -12,6 +12,7 @@ import rip.bolt.ingame.config.AppData;
 import rip.bolt.ingame.format.TournamentFormat;
 import rip.bolt.ingame.listeners.MatchLoadListener;
 import rip.bolt.ingame.listeners.PlayerJoinListen;
+import rip.bolt.ingame.ranked.PlayerWatcher;
 import rip.bolt.ingame.ready.ReadyCommands;
 import rip.bolt.ingame.ready.ReadyListener;
 import rip.bolt.ingame.ready.ReadyParties;
@@ -48,9 +49,14 @@ public class Tournament extends JavaPlugin {
         tournamentManager = new TournamentManager();
 
         if (AppData.API.isEnabled()) {
-            apiManager = new APIManager(AppData.API.getURL(), AppData.API.getGetMatchPath(), AppData.API.getMatchResultsPath());
+            apiManager = new APIManager(AppData.API.getURL(),
+                    AppData.API.getGetMatchPath(),
+                    AppData.API.getMatchResultsPath(),
+                    AppData.API.getPlayerAbandonPath());
             rankedManager = new RankedManager();
+
             Bukkit.getPluginManager().registerEvents(rankedManager, this);
+            Bukkit.getPluginManager().registerEvents(rankedManager.getPlayerWatcher(), this);
         } else {
             ConfigTeamParser.getInstance(); // load teams now
         }
