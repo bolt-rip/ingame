@@ -116,7 +116,7 @@ public class RankedManager implements Listener {
         }
     }
 
-    @EventHandler(priority = EventPriority.MONITOR)
+    @EventHandler
     public void onMatchFinish(MatchFinishEvent event) {
         for (Competitor winner : event.getWinners())
             match.getWinners().add(winner.getNameLegacy());

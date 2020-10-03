@@ -93,7 +93,7 @@ public class PlayerWatcher implements Listener {
         this.playerLeftAt.put(player.getId(), getDurationNow());
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.LOW)
     public void onMatchEnd(MatchFinishEvent event) {
         if (event.getMatch().getDuration().compareTo(ABSENT_MAX) > 0) {
             this.absentLengths.forEach((key, value) -> updateAbsenceLengths(key));
