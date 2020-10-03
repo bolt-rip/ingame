@@ -41,7 +41,7 @@ public class RankedManager implements Listener {
 
     public RankedManager() {
 
-        playerWatcher = new PlayerWatcher();
+        playerWatcher = new PlayerWatcher(this);
 
         pollTask = new Runnable() {
             
@@ -104,6 +104,10 @@ public class RankedManager implements Listener {
         return true;
     }
 
+    public BoltMatch getMatch() {
+        return match;
+    }
+
     @EventHandler(priority = EventPriority.LOWEST)
     public void onMatchLoad(MatchLoadEvent event) {
         if (!cycledToRightMap && format != null) {
@@ -112,7 +116,7 @@ public class RankedManager implements Listener {
         }
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.MONITOR)
     public void onMatchFinish(MatchFinishEvent event) {
         for (Competitor winner : event.getWinners())
             match.getWinners().add(winner.getNameLegacy());

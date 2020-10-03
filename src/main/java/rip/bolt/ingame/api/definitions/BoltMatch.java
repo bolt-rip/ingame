@@ -30,6 +30,9 @@ public class BoltMatch {
     @JsonProperty(access = Access.READ_ONLY) // we need to submit (POST) this
     private List<String> winners = new ArrayList<String>();
 
+    @JsonProperty(access = Access.READ_ONLY)
+    private boolean invalidate = false;
+
     public BoltMatch() {
 
     }
@@ -52,6 +55,10 @@ public class BoltMatch {
 
     public List<String> getWinners() {
         return winners;
+    }
+
+    public void invalidate() {
+        this.invalidate = true;
     }
 
     @Override

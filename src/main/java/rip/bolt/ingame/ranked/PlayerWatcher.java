@@ -4,6 +4,7 @@ import net.md_5.bungee.api.ChatColor;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import rip.bolt.ingame.RankedManager;
 import rip.bolt.ingame.Tournament;
 import rip.bolt.ingame.config.AppData;
 import rip.bolt.ingame.ready.ReadyManager;
@@ -26,12 +27,17 @@ import java.util.stream.Collectors;
 
 public class PlayerWatcher implements Listener {
 
+    private final RankedManager rankedManager;
     private ReadyManager readyManager;
 
     private static final Duration ABSENT_MAX = Duration.ofSeconds(AppData.absentSecondsLimit());
 
     final Map<UUID, Duration> absentLengths = new HashMap<>();
     final Map<UUID, Duration> playerLeftAt = new HashMap<>();
+
+    public PlayerWatcher(RankedManager rankedManager) {
+        this.rankedManager = rankedManager;
+    }
 
     public void setManager(ReadyManager readyManager) {
         this.readyManager = readyManager;
@@ -87,7 +93,7 @@ public class PlayerWatcher implements Listener {
         this.playerLeftAt.put(player.getId(), getDurationNow());
     }
 
-    @EventHandler(priority = EventPriority.MONITOR)
+    @EventHandler
     public void onMatchEnd(MatchFinishEvent event) {
         if (event.getMatch().getDuration().compareTo(ABSENT_MAX) > 0) {
             this.absentLengths.forEach((key, value) -> updateAbsenceLengths(key));
@@ -100,6 +106,7 @@ public class PlayerWatcher implements Listener {
             absentPlayers.forEach(absence -> playerAbandoned(absence.getKey()));
 
             if (absentPlayers.size() > 0) {
+                rankedManager.getMatch().invalidate();
                 event.getMatch().sendMessage(ChatColor.GRAY + "A player was a temporarily banned due to lack of participation. "
                         + "As the match was unbalanced it will take less of an effect on player scores.");
             }
