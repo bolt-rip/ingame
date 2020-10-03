@@ -172,9 +172,6 @@ public class TournamentFormatImpl implements TournamentFormat {
     }
 
     public void onEnd(Match match, Optional<TournamentTeam> winner) {
-        // System.out.println(winner);
-        winner.ifPresent(x -> Bukkit.broadcastMessage(x.getName()));
-
         if (tournamentRoundOptions.shouldAnnounceWinner()) {
             if (winner.isPresent()) {
                 // new GlobalAudience().sendMessage("tournament.announcement.winner", winner.get().teamName());
