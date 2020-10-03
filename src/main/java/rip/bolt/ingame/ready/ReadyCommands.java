@@ -1,28 +1,23 @@
 package rip.bolt.ingame.ready;
 
-import java.time.Duration;
-
-import org.bukkit.Bukkit;
-import org.bukkit.command.CommandSender;
-
 import net.md_5.bungee.api.ChatColor;
+import org.bukkit.command.CommandSender;
 import rip.bolt.ingame.config.AppData;
 import tc.oc.pgm.api.match.Match;
-import tc.oc.pgm.api.party.Party;
 import tc.oc.pgm.api.player.MatchPlayer;
 import tc.oc.pgm.lib.app.ashcon.intake.Command;
 import tc.oc.pgm.match.ObservingParty;
-import tc.oc.pgm.start.StartCountdown;
-import tc.oc.pgm.start.StartMatchModule;
 
 public class ReadyCommands {
 
+    private final ReadyManager readyManger;
     private final ReadyParties readyParties;
     private final ReadySystem readySystem;
 
-    public ReadyCommands(ReadySystem readySystem, ReadyParties readyParties) {
-        this.readyParties = readyParties;
-        this.readySystem = readySystem;
+    public ReadyCommands(ReadyManager readyManager) {
+        this.readyManger = readyManager;
+        this.readyParties = readyManager.getReadyParties();
+        this.readySystem = readyManager.getReadySystem();
     }
 
     @Command(aliases = "ready", desc = "Ready up")
@@ -40,12 +35,12 @@ public class ReadyCommands {
             return;
         }
 
-        Party party = player.getParty();
-        Bukkit.broadcastMessage(party.getColor() + player.getParty().getNameLegacy() + ChatColor.RESET + " is now ready.");
-        readyParties.ready(party);
+        if (!readyManger.playerTeamFull(player.getParty())) {
+            sender.sendMessage(ChatColor.RED + "You can not ready until your team is full!");
+            return;
+        }
 
-        if (readyParties.allReady(match))
-            match.needModule(StartMatchModule.class).forceStartCountdown(Duration.ofSeconds(20), Duration.ZERO);
+        readyManger.readyTeam(player.getParty());
     }
 
     @Command(aliases = "unready", desc = "Mark your team as no longer being ready")
@@ -63,18 +58,7 @@ public class ReadyCommands {
             return;
         }
 
-        Party party = player.getParty();
-        Bukkit.broadcastMessage(party.getColor() + player.getParty().getNameLegacy() + ChatColor.RESET + " is now unready.");
-
-        if (readyParties.allReady(match)) {
-            readyParties.unReady(party);
-            if (readySystem.unreadyShouldCancel()) {
-                // check if unready should cancel
-                match.getCountdown().cancelAll(StartCountdown.class);
-            }
-        } else {
-            readyParties.unReady(party);
-        }
+        readyManger.unreadyTeam(player.getParty());
     }
 
     private boolean preConditions(Match match) {

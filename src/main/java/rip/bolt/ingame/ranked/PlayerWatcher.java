@@ -6,11 +6,14 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import rip.bolt.ingame.Tournament;
 import rip.bolt.ingame.config.AppData;
+import rip.bolt.ingame.ready.ReadyManager;
+import tc.oc.pgm.api.match.MatchPhase;
 import tc.oc.pgm.api.match.event.MatchFinishEvent;
 import tc.oc.pgm.api.match.event.MatchStartEvent;
 import tc.oc.pgm.api.player.MatchPlayer;
 import tc.oc.pgm.events.PlayerJoinMatchEvent;
 import tc.oc.pgm.events.PlayerLeaveMatchEvent;
+import tc.oc.pgm.events.PlayerPartyChangeEvent;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -23,16 +26,35 @@ import java.util.stream.Collectors;
 
 public class PlayerWatcher implements Listener {
 
+    private ReadyManager readyManager;
+
     private static final Duration ABSENT_MAX = Duration.ofSeconds(AppData.absentSecondsLimit());
 
     final Map<UUID, Duration> absentLengths = new HashMap<>();
     final Map<UUID, Duration> playerLeftAt = new HashMap<>();
+
+    public void setManager(ReadyManager readyManager) {
+        this.readyManager = readyManager;
+    }
 
     public void addPlayers(List<UUID> uuids) {
         absentLengths.clear();
         playerLeftAt.clear();
 
         uuids.forEach(uuid -> this.absentLengths.put(uuid, Duration.ZERO));
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void onPartyChange(PlayerPartyChangeEvent event) {
+        MatchPlayer player = event.getPlayer();
+
+        // Add hint to ready up once all players joined
+        if (this.isPlaying(player) && !event.getMatch().isRunning()) {
+            if (readyManager.playerTeamFull(player.getParty())) {
+                event.getPlayer().getParty().sendMessage(ChatColor.GREEN + "You can start the match quicker using " +
+                        ChatColor.YELLOW +  "/ready" + ChatColor.GREEN + ".");
+            }
+        }
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
@@ -48,7 +70,17 @@ public class PlayerWatcher implements Listener {
     @EventHandler(priority = EventPriority.MONITOR)
     public void onLeave(PlayerLeaveMatchEvent event) {
         MatchPlayer player = event.getPlayer();
-        if (!event.getMatch().isRunning() && !this.isPlaying(player)) {
+
+        if (!this.isPlaying(player)) {
+            return;
+        }
+
+        if (event.getMatch().getPhase() == MatchPhase.STARTING &&
+                readyManager.getReadyParties().isReady(event.getParty())) {
+            readyManager.unreadyTeam(player.getParty());
+        }
+
+        if (!event.getMatch().isRunning()) {
             return;
         }
 

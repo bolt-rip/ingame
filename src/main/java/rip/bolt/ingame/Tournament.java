@@ -15,6 +15,7 @@ import rip.bolt.ingame.listeners.PlayerJoinListen;
 import rip.bolt.ingame.ranked.PlayerWatcher;
 import rip.bolt.ingame.ready.ReadyCommands;
 import rip.bolt.ingame.ready.ReadyListener;
+import rip.bolt.ingame.ready.ReadyManager;
 import rip.bolt.ingame.ready.ReadyParties;
 import rip.bolt.ingame.ready.ReadySystem;
 import rip.bolt.ingame.team.ConfigTeamParser;
@@ -48,23 +49,26 @@ public class Tournament extends JavaPlugin {
         teamManager = DefaultTeamManager.manager();
         tournamentManager = new TournamentManager();
 
+        ReadySystem system = new ReadySystem();
+        ReadyParties parties = new ReadyParties();
+        ReadyManager readyManager = new ReadyManager(system, parties);
+        ReadyListener readyListener = new ReadyListener(system, parties);
+        ReadyCommands readyCommands = new ReadyCommands(readyManager);
+
         if (AppData.API.isEnabled()) {
             apiManager = new APIManager(AppData.API.getURL(),
                     AppData.API.getGetMatchPath(),
                     AppData.API.getMatchResultsPath(),
                     AppData.API.getPlayerAbandonPath());
+
             rankedManager = new RankedManager();
+            rankedManager.getPlayerWatcher().setManager(readyManager);
 
             Bukkit.getPluginManager().registerEvents(rankedManager, this);
             Bukkit.getPluginManager().registerEvents(rankedManager.getPlayerWatcher(), this);
         } else {
             ConfigTeamParser.getInstance(); // load teams now
         }
-
-        ReadySystem system = new ReadySystem();
-        ReadyParties parties = new ReadyParties();
-        ReadyListener readyListener = new ReadyListener(system, parties);
-        ReadyCommands readyCommands = new ReadyCommands(system, parties);
 
         BasicBukkitCommandGraph g = new BasicBukkitCommandGraph(new CommandModule(tournamentManager, teamManager));
         DispatcherNode node = g.getRootDispatcherNode();

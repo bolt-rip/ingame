@@ -7,6 +7,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import rip.bolt.ingame.config.AppData;
+import tc.oc.pgm.api.player.MatchPlayer;
 
 public class ReadyParties {
 
@@ -39,5 +40,4 @@ public class ReadyParties {
         int extraParties = AppData.observersMustReady() ? 1 : 2;
         return currentReadyParties.size() == match.getParties().size() - extraParties;
     }
-
 }
