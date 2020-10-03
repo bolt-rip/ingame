@@ -10,4 +10,4 @@ api:
   key: authorisation-key
   getMatch: /match/{server}
   matchResults: /match/{server}/finish
-  playerAbandon: users/{uuid}/invalidate
+  playerAbandon: /users/{uuid}/invalidate
