@@ -102,7 +102,7 @@ public class APIManager {
      */
     public void postMatchPlayerAbandon(UUID uuid) {
         try {
-            client.target(getBaseURL()).path(getPOSTAbandonPath().replace("{uuid}", uuid.toString())).request().post(Entity.json(uuid));
+            client.target(getBaseURL()).path(getPOSTAbandonPath().replace("{uuid}", uuid.toString())).request().post(null);
         } catch (WebApplicationException e) {
             e.printStackTrace();
         } catch (ProcessingException e) {
