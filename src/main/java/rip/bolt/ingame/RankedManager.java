@@ -118,8 +118,9 @@ public class RankedManager implements Listener {
 
     @EventHandler
     public void onMatchFinish(MatchFinishEvent event) {
-        for (Competitor winner : event.getWinners())
-            match.getWinners().add(winner.getNameLegacy());
+        if (event.getWinner() != null) {
+            match.getWinners().add(event.getWinner().getDefaultName());
+        }
 
         // run async to stop server lag
         Bukkit.getScheduler().runTaskAsynchronously(Tournament.get(), new Runnable() {
