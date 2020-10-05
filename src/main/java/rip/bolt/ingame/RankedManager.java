@@ -38,6 +38,8 @@ public class RankedManager implements Listener {
 
     private Runnable pollTask;
     private int pollTaskId = -1;
+    
+    private Duration cycleTime = Duration.ofSeconds(0);
 
     public RankedManager() {
 
@@ -98,7 +100,8 @@ public class RankedManager implements Listener {
         playerWatcher.addPlayers(match.getTeams().stream().flatMap(team -> team.getPlayers().stream()).map(TournamentPlayer::getUUID).collect(Collectors.toList()));
 
         format = new TournamentFormatImpl(Tournament.get().getTeamManager(), new TournamentRoundOptions(false, false, true, Duration.ofMinutes(30), Duration.ofSeconds(30), Duration.ofSeconds(40), new BestOfCalculation<>(1)), new RoundReferenceHolder());
-        SingleRound ranked = new SingleRound(format, new SingleRoundOptions("ranked", Duration.ofSeconds(5), Duration.ofSeconds(300), match.getMap(), 1, true, true));
+        SingleRound ranked = new SingleRound(format, new SingleRoundOptions("ranked", cycleTime, Duration.ofSeconds(300), match.getMap(), 1, true, true));
+        cycleTime = Duration.ofSeconds(5);
         format.addRound(ranked);
 
         return true;
