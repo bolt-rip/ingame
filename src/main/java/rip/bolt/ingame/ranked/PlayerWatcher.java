@@ -103,7 +103,9 @@ public class PlayerWatcher implements Listener {
                     .filter(absence -> absence.getValue().compareTo(ABSENT_MAX) > 0)
                     .collect(Collectors.toList());
 
-            absentPlayers.forEach(absence -> playerAbandoned(absence.getKey()));
+            if (absentPlayers.size() <= 5) {
+                absentPlayers.forEach(absence -> playerAbandoned(absence.getKey()));
+            }
 
             if (absentPlayers.size() > 0) {
                 rankedManager.getMatch().invalidate();
