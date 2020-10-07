@@ -10,8 +10,10 @@ import javax.ws.rs.core.MediaType;
 import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
 
 import rip.bolt.ingame.api.definitions.BoltMatch;
-import rip.bolt.ingame.api.definitions.Participant;
 
+import java.time.Duration;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -99,10 +101,15 @@ public class APIManager {
      * Posts an abandoned player UUID to the Bolt API.
      *
      * @param uuid of player to ban
+     * @param duration length of time player was gone for
      */
-    public void postMatchPlayerAbandon(UUID uuid) {
+    public void postMatchPlayerAbandon(UUID uuid, Duration duration) {
         try {
-            client.target(getBaseURL()).path(getPOSTAbandonPath().replace("{uuid}", uuid.toString())).request().post(null);
+            Map<String, Object> data = new HashMap<>();
+            data.put("duration", duration.getSeconds());
+            client.target(getBaseURL()).path(getPOSTAbandonPath().replace("{uuid}", uuid.toString()))
+                    .request()
+                    .post(Entity.json(data));
         } catch (WebApplicationException e) {
             e.printStackTrace();
         } catch (ProcessingException e) {

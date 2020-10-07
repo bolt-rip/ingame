@@ -104,7 +104,7 @@ public class PlayerWatcher implements Listener {
                     .collect(Collectors.toList());
 
             if (absentPlayers.size() <= 5) {
-                absentPlayers.forEach(absence -> playerAbandoned(absence.getKey()));
+                absentPlayers.forEach(absence -> playerAbandoned(absence.getKey(), absence.getValue()));
             }
 
             if (absentPlayers.size() > 0) {
@@ -121,7 +121,7 @@ public class PlayerWatcher implements Listener {
                 stream().
                 filter(absence -> event.getMatch().getPlayer(absence) == null).collect(Collectors.toList());
 
-        absentPlayers.forEach(this::playerAbandoned);
+        absentPlayers.forEach(player -> playerAbandoned(player, this.absentLengths.get(player)));
 
         if (absentPlayers.size() > 0) {
             event.getMatch().finish();
@@ -142,8 +142,8 @@ public class PlayerWatcher implements Listener {
         }
     }
 
-    private void playerAbandoned(UUID player) {
-        Tournament.get().getApiManager().postMatchPlayerAbandon(player);
+    private void playerAbandoned(UUID player, Duration duration) {
+        Tournament.get().getApiManager().postMatchPlayerAbandon(player, duration);
     }
 
     private boolean isPlaying(MatchPlayer player) {
