@@ -4,6 +4,7 @@ import net.md_5.bungee.api.ChatColor;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerLoginEvent;
 import rip.bolt.ingame.RankedManager;
 import rip.bolt.ingame.Tournament;
 import rip.bolt.ingame.config.AppData;
@@ -59,6 +60,17 @@ public class PlayerWatcher implements Listener {
             if (readyManager.playerTeamFull(player.getParty())) {
                 event.getPlayer().getParty().sendMessage(ChatColor.GREEN + "You can start the match quicker using " +
                         ChatColor.YELLOW +  "/ready" + ChatColor.GREEN + ".");
+            }
+        }
+    }
+
+    @EventHandler(priority = EventPriority.HIGH)
+    public void onPlayerLogin(final PlayerLoginEvent event) {
+        if (event.getResult() == PlayerLoginEvent.Result.KICK_FULL
+                || event.getResult() == PlayerLoginEvent.Result.KICK_WHITELIST) {
+            // allow if player is on a team
+            if (this.absentLengths.containsKey(event.getPlayer().getUniqueId())) {
+                event.allow();
             }
         }
     }
