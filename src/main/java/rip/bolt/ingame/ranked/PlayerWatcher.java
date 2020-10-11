@@ -19,7 +19,6 @@ import tc.oc.pgm.events.PlayerPartyChangeEvent;
 
 import java.time.Duration;
 import java.time.Instant;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -110,14 +109,13 @@ public class PlayerWatcher implements Listener {
         if (event.getMatch().getDuration().compareTo(ABSENT_MAX) > 0) {
             this.absentLengths.forEach((key, value) -> updateAbsenceLengths(key));
 
-            Collection<Map.Entry<UUID, Duration>> absentPlayers = this.absentLengths.entrySet()
+            List<UUID> absentPlayers = this.absentLengths.entrySet()
                     .stream()
                     .filter(absence -> absence.getValue().compareTo(ABSENT_MAX) > 0)
+                    .map(Map.Entry::getKey)
                     .collect(Collectors.toList());
 
-            if (absentPlayers.size() <= 5) {
-                absentPlayers.forEach(absence -> playerAbandoned(absence.getKey(), absence.getValue()));
-            }
+            playersAbandoned(absentPlayers);
 
             if (absentPlayers.size() > 0) {
                 rankedManager.getMatch().invalidate();
@@ -129,11 +127,12 @@ public class PlayerWatcher implements Listener {
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onMatchStart(MatchStartEvent event) {
-        List<UUID> absentPlayers = this.absentLengths.keySet().
-                stream().
-                filter(absence -> event.getMatch().getPlayer(absence) == null).collect(Collectors.toList());
+        List<UUID> absentPlayers = this.absentLengths.keySet()
+                .stream()
+                .filter(absence -> event.getMatch().getPlayer(absence) == null)
+                .collect(Collectors.toList());
 
-        absentPlayers.forEach(player -> playerAbandoned(player, this.absentLengths.get(player)));
+        playersAbandoned(absentPlayers);
 
         if (absentPlayers.size() > 0) {
             event.getMatch().finish();
@@ -151,6 +150,12 @@ public class PlayerWatcher implements Listener {
 
             this.playerLeftAt.remove(player);
             this.absentLengths.put(player, absentLength);
+        }
+    }
+
+    private void playersAbandoned(List<UUID> players) {
+        if (players.size() <= 5) {
+            players.forEach(player -> playerAbandoned(player, absentLengths.get(player)));
         }
     }
 
