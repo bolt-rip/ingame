@@ -4,8 +4,7 @@ import java.util.UUID;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
-import rip.bolt.ingame.team.TournamentPlayer;
+import dev.pgm.events.team.TournamentPlayer;
 
 /**
  * Class to represent a single Bolt participant (i.e. player).

@@ -1,33 +1,33 @@
 package rip.bolt.ingame.config;
 
-import rip.bolt.ingame.Tournament;
+import rip.bolt.ingame.Ingame;
 
 public class AppData {
 
     public static class API {
 
         public static boolean isEnabled() {
-            return Tournament.get().getConfig().getBoolean("api.enabled");
+            return Ingame.get().getConfig().getBoolean("api.enabled");
         }
 
         public static String getURL() {
-            return Tournament.get().getConfig().getString("api.url");
+            return Ingame.get().getConfig().getString("api.url");
         }
 
         public static String getKey() {
-            return Tournament.get().getConfig().getString("api.key");
+            return Ingame.get().getConfig().getString("api.key");
         }
 
         public static String getGetMatchPath() {
-            return Tournament.get().getConfig().getString("api.getMatch").replace("{server}", getServerName());            
+            return Ingame.get().getConfig().getString("api.getMatch").replace("{server}", getServerName());            
         }
 
         public static String getPlayerAbandonPath() {
-            return Tournament.get().getConfig().getString("api.playerAbandon");
+            return Ingame.get().getConfig().getString("api.playerAbandon");
         }
 
         public static String getMatchResultsPath() {
-            return Tournament.get().getConfig().getString("api.matchResults").replace("{server}", getServerName());
+            return Ingame.get().getConfig().getString("api.matchResults").replace("{server}", getServerName());
         }
 
         private static String getServerName() {
@@ -36,12 +36,8 @@ public class AppData {
 
     }
 
-    public static boolean observersMustReady() {
-        return Tournament.get().getConfig().getBoolean("observers-must-ready");
-    }
-
     public static long absentSecondsLimit() {
-        return Tournament.get().getConfig().getLong("absence-time-seconds", 120);
+        return Ingame.get().getConfig().getLong("absence-time-seconds", 120);
     }
 
 }

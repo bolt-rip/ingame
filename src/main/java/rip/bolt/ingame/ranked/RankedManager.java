@@ -1,9 +1,19 @@
-package rip.bolt.ingame;
+package rip.bolt.ingame.ranked;
 
 import java.time.Duration;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
+import dev.pgm.events.Tournament;
+import dev.pgm.events.format.RoundReferenceHolder;
+import dev.pgm.events.format.TournamentFormat;
+import dev.pgm.events.format.TournamentFormatImpl;
+import dev.pgm.events.format.TournamentRoundOptions;
+import dev.pgm.events.format.rounds.single.SingleRound;
+import dev.pgm.events.format.rounds.single.SingleRoundOptions;
+import dev.pgm.events.format.winner.BestOfCalculation;
+import dev.pgm.events.team.TournamentPlayer;
+import dev.pgm.events.team.TournamentTeam;
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -11,21 +21,11 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 
 import net.md_5.bungee.api.ChatColor;
+import rip.bolt.ingame.Ingame;
 import rip.bolt.ingame.api.definitions.BoltMatch;
-import rip.bolt.ingame.api.definitions.Team;
-import rip.bolt.ingame.format.RoundReferenceHolder;
-import rip.bolt.ingame.format.TournamentFormat;
-import rip.bolt.ingame.format.TournamentFormatImpl;
-import rip.bolt.ingame.format.TournamentRoundOptions;
-import rip.bolt.ingame.format.rounds.single.SingleRound;
-import rip.bolt.ingame.format.rounds.single.SingleRoundOptions;
-import rip.bolt.ingame.format.winner.BestOfCalculation;
-import rip.bolt.ingame.ranked.PlayerWatcher;
-import rip.bolt.ingame.team.TournamentPlayer;
 import tc.oc.pgm.api.PGM;
 import tc.oc.pgm.api.match.event.MatchFinishEvent;
 import tc.oc.pgm.api.match.event.MatchLoadEvent;
-import tc.oc.pgm.api.party.Competitor;
 
 public class RankedManager implements Listener {
 
@@ -64,7 +64,7 @@ public class RankedManager implements Listener {
         // createMatch(String).get() is blocking
         // bukkit won't be able to complete the load world task on the main thread
         // since this task will be blocking the main thread
-        Bukkit.getScheduler().runTaskAsynchronously(Tournament.get(), new Runnable() {
+        Bukkit.getScheduler().runTaskAsynchronously(Ingame.get(), new Runnable() {
 
             @Override
             public void run() {
@@ -81,7 +81,7 @@ public class RankedManager implements Listener {
     }
 
     public boolean setupMatch() {
-        match = Tournament.get().getApiManager().fetchMatchData();
+        match = Ingame.get().getApiManager().fetchMatchData();
         if (match == null) {
             if (!cycledToRightMap && pollTaskId == -1) // we haven't played a game on this server yet
                 pollTaskId = Bukkit.getScheduler().scheduleSyncRepeatingTask(Tournament.get(), pollTask, 15 * 20, 15 * 20); // every 15 seconds
@@ -94,7 +94,7 @@ public class RankedManager implements Listener {
         }
 
         Tournament.get().getTeamManager().clear();
-        for (Team team : match.getTeams())
+        for (TournamentTeam team : match.getTeams())
             Tournament.get().getTeamManager().addTeam(team);
 
         playerWatcher.addPlayers(match.getTeams().stream().flatMap(team -> team.getPlayers().stream()).map(TournamentPlayer::getUUID).collect(Collectors.toList()));
@@ -130,7 +130,7 @@ public class RankedManager implements Listener {
 
             @Override
             public void run() {
-                Tournament.get().getApiManager().postMatchData(match);
+                Ingame.get().getApiManager().postMatchData(match);
             }
 
         });

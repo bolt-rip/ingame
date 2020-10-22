@@ -3,8 +3,8 @@ package rip.bolt.ingame.commands;
 import org.bukkit.command.CommandSender;
 
 import net.md_5.bungee.api.ChatColor;
-import rip.bolt.ingame.RankedManager;
-import rip.bolt.ingame.Tournament;
+import rip.bolt.ingame.Ingame;
+import rip.bolt.ingame.ranked.RankedManager;
 import tc.oc.pgm.api.match.Match;
 import tc.oc.pgm.api.match.MatchPhase;
 import tc.oc.pgm.lib.app.ashcon.intake.Command;
@@ -17,7 +17,7 @@ public class RankedAdminCommands {
         if (match.getPhase() == MatchPhase.RUNNING)
             throw new CommandException(ChatColor.RED + "You may not run this command while a game is running!");
 
-        RankedManager ranked = Tournament.get().getRankedManager();
+        RankedManager ranked = Ingame.get().getRankedManager();
         if (ranked == null)
             throw new CommandException(ChatColor.RED + "You are not in a ranked server!");
 

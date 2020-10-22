@@ -5,10 +5,8 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerLoginEvent;
-import rip.bolt.ingame.RankedManager;
-import rip.bolt.ingame.Tournament;
+import rip.bolt.ingame.Ingame;
 import rip.bolt.ingame.config.AppData;
-import rip.bolt.ingame.ready.ReadyManager;
 import tc.oc.pgm.api.match.MatchPhase;
 import tc.oc.pgm.api.match.event.MatchFinishEvent;
 import tc.oc.pgm.api.match.event.MatchStartEvent;
@@ -28,7 +26,6 @@ import java.util.stream.Collectors;
 public class PlayerWatcher implements Listener {
 
     private final RankedManager rankedManager;
-    private ReadyManager readyManager;
 
     private static final Duration ABSENT_MAX = Duration.ofSeconds(AppData.absentSecondsLimit());
 
@@ -39,10 +36,6 @@ public class PlayerWatcher implements Listener {
         this.rankedManager = rankedManager;
     }
 
-    public void setManager(ReadyManager readyManager) {
-        this.readyManager = readyManager;
-    }
-
     public void addPlayers(List<UUID> uuids) {
         absentLengths.clear();
         playerLeftAt.clear();
@@ -50,18 +43,18 @@ public class PlayerWatcher implements Listener {
         uuids.forEach(uuid -> this.absentLengths.put(uuid, Duration.ZERO));
     }
 
-    @EventHandler(priority = EventPriority.MONITOR)
-    public void onPartyChange(PlayerPartyChangeEvent event) {
-        MatchPlayer player = event.getPlayer();
-
-        // Add hint to ready up once all players joined
-        if (this.isPlaying(player) && !event.getMatch().isRunning()) {
-            if (readyManager.playerTeamFull(player.getParty())) {
-                event.getPlayer().getParty().sendMessage(ChatColor.GREEN + "You can start the match quicker using " +
-                        ChatColor.YELLOW +  "/ready" + ChatColor.GREEN + ".");
-            }
-        }
-    }
+//    @EventHandler(priority = EventPriority.MONITOR)
+//    public void onPartyChange(PlayerPartyChangeEvent event) {
+//        MatchPlayer player = event.getPlayer();
+//
+//        // Add hint to ready up once all players joined
+//        if (this.isPlaying(player) && !event.getMatch().isRunning()) {
+//            if (readyManager.playerTeamFull(player.getParty())) {
+//                event.getPlayer().getParty().sendMessage(ChatColor.GREEN + "You can start the match quicker using " +
+//                        ChatColor.YELLOW +  "/ready" + ChatColor.GREEN + ".");
+//            }
+//        }
+//    }
 
     @EventHandler(priority = EventPriority.HIGH)
     public void onPlayerLogin(final PlayerLoginEvent event) {
@@ -92,10 +85,10 @@ public class PlayerWatcher implements Listener {
             return;
         }
 
-        if (event.getMatch().getPhase() == MatchPhase.STARTING &&
-                readyManager.getReadyParties().isReady(event.getParty())) {
-            readyManager.unreadyTeam(player.getParty());
-        }
+//        if (event.getMatch().getPhase() == MatchPhase.STARTING &&
+//                readyManager.getReadyParties().isReady(event.getParty())) {
+//            readyManager.unreadyTeam(player.getParty());
+//        }
 
         if (!event.getMatch().isRunning()) {
             return;
@@ -160,7 +153,7 @@ public class PlayerWatcher implements Listener {
     }
 
     private void playerAbandoned(UUID player, Duration duration) {
-        Tournament.get().getApiManager().postMatchPlayerAbandon(player, duration);
+        Ingame.get().getApiManager().postMatchPlayerAbandon(player, duration);
     }
 
     private boolean isPlaying(MatchPlayer player) {

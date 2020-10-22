@@ -3,9 +3,8 @@ package rip.bolt.ingame.api.definitions;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-
-import rip.bolt.ingame.team.TournamentPlayer;
-import rip.bolt.ingame.team.TournamentTeam;
+import dev.pgm.events.team.TournamentPlayer;
+import dev.pgm.events.team.TournamentTeam;
 
 /**
  * Class to represent a given team in a Bolt match.

@@ -29,6 +29,10 @@
 			<id>bolt-rip-public</id>
 			<url>https://repo.repsy.io/mvn/boltrip/public</url>
 		</repository>
+		<repository>
+			<id>jitpack.io</id>
+			<url>https://jitpack.io</url>
+		</repository>
 	</repositories>
 
 	<dependencies>
@@ -47,6 +51,11 @@
 			<groupId>tc.oc.pgm</groupId>
 			<artifactId>util</artifactId>
 			<version>0.9-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>com.github.Pugzy</groupId>
+			<artifactId>ingame</artifactId>
+			<version>interface-fixes-b5b19e9647-1</version>
 		</dependency>
 		<dependency>
 			<groupId>org.glassfish.jersey.core</groupId>
