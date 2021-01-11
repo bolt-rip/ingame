@@ -29,6 +29,11 @@ public class Ingame extends JavaPlugin {
         plugin = this;
         saveDefaultConfig();
 
+        if (!AppData.API.isEnabled()) {
+            System.out.println("[Ingame] Ingame was not enabled!");
+            return;
+        }
+
         apiManager = new APIManager(AppData.API.getURL(),
                 AppData.API.getGetMatchPath(),
                 AppData.API.getMatchResultsPath(),

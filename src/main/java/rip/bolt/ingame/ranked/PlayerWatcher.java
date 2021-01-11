@@ -7,13 +7,11 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerLoginEvent;
 import rip.bolt.ingame.Ingame;
 import rip.bolt.ingame.config.AppData;
-import tc.oc.pgm.api.match.MatchPhase;
 import tc.oc.pgm.api.match.event.MatchFinishEvent;
 import tc.oc.pgm.api.match.event.MatchStartEvent;
 import tc.oc.pgm.api.player.MatchPlayer;
 import tc.oc.pgm.events.PlayerJoinMatchEvent;
 import tc.oc.pgm.events.PlayerLeaveMatchEvent;
-import tc.oc.pgm.events.PlayerPartyChangeEvent;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -43,19 +41,6 @@ public class PlayerWatcher implements Listener {
         uuids.forEach(uuid -> this.absentLengths.put(uuid, Duration.ZERO));
     }
 
-//    @EventHandler(priority = EventPriority.MONITOR)
-//    public void onPartyChange(PlayerPartyChangeEvent event) {
-//        MatchPlayer player = event.getPlayer();
-//
-//        // Add hint to ready up once all players joined
-//        if (this.isPlaying(player) && !event.getMatch().isRunning()) {
-//            if (readyManager.playerTeamFull(player.getParty())) {
-//                event.getPlayer().getParty().sendMessage(ChatColor.GREEN + "You can start the match quicker using " +
-//                        ChatColor.YELLOW +  "/ready" + ChatColor.GREEN + ".");
-//            }
-//        }
-//    }
-
     @EventHandler(priority = EventPriority.HIGH)
     public void onPlayerLogin(final PlayerLoginEvent event) {
         if (event.getResult() == PlayerLoginEvent.Result.KICK_FULL
@@ -80,17 +65,7 @@ public class PlayerWatcher implements Listener {
     @EventHandler(priority = EventPriority.MONITOR)
     public void onLeave(PlayerLeaveMatchEvent event) {
         MatchPlayer player = event.getPlayer();
-
-        if (!this.isPlaying(player)) {
-            return;
-        }
-
-//        if (event.getMatch().getPhase() == MatchPhase.STARTING &&
-//                readyManager.getReadyParties().isReady(event.getParty())) {
-//            readyManager.unreadyTeam(player.getParty());
-//        }
-
-        if (!event.getMatch().isRunning()) {
+        if (!this.isPlaying(player) || !event.getMatch().isRunning()) {
             return;
         }
 
@@ -163,5 +138,4 @@ public class PlayerWatcher implements Listener {
     private Duration getDurationNow() {
         return Duration.ofMillis(Instant.now().toEpochMilli());
     }
-
 }

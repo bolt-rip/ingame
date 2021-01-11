@@ -4,6 +4,7 @@ import java.util.UUID;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import dev.pgm.events.team.TournamentPlayer;
 
 /**
@@ -11,6 +12,7 @@ import dev.pgm.events.team.TournamentPlayer;
  * 
  * @author Picajoluna
  */
+@JsonDeserialize(as = Participant.class)
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Participant implements TournamentPlayer {
 

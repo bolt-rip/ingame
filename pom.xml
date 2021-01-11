@@ -53,9 +53,9 @@
 			<version>0.9-SNAPSHOT</version>
 		</dependency>
 		<dependency>
-			<groupId>com.github.Pugzy</groupId>
-			<artifactId>ingame</artifactId>
-			<version>interface-fixes-b5b19e9647-1</version>
+			<groupId>com.github.PGMDev</groupId>
+			<artifactId>Events</artifactId>
+			<version>ca7de73fe5</version>
 		</dependency>
 		<dependency>
 			<groupId>org.glassfish.jersey.core</groupId>

@@ -1,5 +1,4 @@
 # default config
-observers-must-ready: true
 
 # how long players can be absent
 absence-time-seconds: 120

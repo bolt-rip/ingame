@@ -3,6 +3,7 @@ package rip.bolt.ingame.api.definitions;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import dev.pgm.events.team.TournamentPlayer;
 import dev.pgm.events.team.TournamentTeam;
 
@@ -13,18 +14,19 @@ import dev.pgm.events.team.TournamentTeam;
  * 
  * @author Picajoluna
  */
+@JsonDeserialize(as = Team.class)
 public class Team implements TournamentTeam {
 
     private String name;
 
     @JsonProperty("players")
-    private List<TournamentPlayer> participants;
+    private List<Participant> participants;
 
     public Team() {
 
     }
 
-    public Team(String name, List<TournamentPlayer> participants) {
+    public Team(String name, List<Participant> participants) {
         this.name = name;
         this.participants = participants;
     }
@@ -35,7 +37,7 @@ public class Team implements TournamentTeam {
     }
 
     @Override
-    public List<TournamentPlayer> getPlayers() {
+    public List<Participant> getPlayers() {
         return this.participants;
     }
 
@@ -57,7 +59,7 @@ public class Team implements TournamentTeam {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        TournamentTeam that = (TournamentTeam) o;
+        Team that = (Team) o;
 
         return name.equals(that.getName());
     }
