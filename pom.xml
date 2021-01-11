@@ -38,24 +38,21 @@
 	<dependencies>
 		<dependency>
 			<groupId>app.ashcon</groupId>
-			<artifactId>sportpaper</artifactId>
+			<artifactId>sportpaper-api</artifactId>
 			<version>1.8.8-R0.1-SNAPSHOT</version>
-			<scope>compile</scope> <!-- Remember to exclude in shading -->
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>tc.oc.pgm</groupId>
 			<artifactId>core</artifactId>
-			<version>0.9-SNAPSHOT</version>
-		</dependency>
-		<dependency>
-			<groupId>tc.oc.pgm</groupId>
-			<artifactId>util</artifactId>
-			<version>0.9-SNAPSHOT</version>
+			<version>0.11-SNAPSHOT</version>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>com.github.PGMDev</groupId>
 			<artifactId>Events</artifactId>
 			<version>ca7de73fe5</version>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.glassfish.jersey.core</groupId>

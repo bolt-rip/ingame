@@ -1,6 +1,5 @@
 package rip.bolt.ingame.ranked;
 
-import net.md_5.bungee.api.ChatColor;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -12,6 +11,7 @@ import tc.oc.pgm.api.match.event.MatchStartEvent;
 import tc.oc.pgm.api.player.MatchPlayer;
 import tc.oc.pgm.events.PlayerJoinMatchEvent;
 import tc.oc.pgm.events.PlayerLeaveMatchEvent;
+import tc.oc.pgm.lib.net.kyori.adventure.text.format.NamedTextColor;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -20,6 +20,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
+
+import static tc.oc.pgm.lib.net.kyori.adventure.text.Component.text;
 
 public class PlayerWatcher implements Listener {
 
@@ -87,8 +89,8 @@ public class PlayerWatcher implements Listener {
 
             if (absentPlayers.size() > 0) {
                 rankedManager.getMatch().invalidate();
-                event.getMatch().sendMessage(ChatColor.GRAY + "A player was a temporarily banned due to lack of participation. "
-                        + "As the match was unbalanced it will take less of an effect on player scores.");
+                event.getMatch().sendMessage(text("A player was a temporarily banned due to lack of participation. "
+                        + "As the match was unbalanced it will take less of an effect on player scores.", NamedTextColor.GRAY));
             }
         }
     }
@@ -104,8 +106,8 @@ public class PlayerWatcher implements Listener {
 
         if (absentPlayers.size() > 0) {
             event.getMatch().finish();
-            event.getMatch().sendMessage(ChatColor.RED + "Match could not be started due to lack of players.");
-            event.getMatch().sendMessage(ChatColor.GRAY + "The offending players have received a temporary ban.");
+            event.getMatch().sendMessage(text("Match could not be started due to lack of players.", NamedTextColor.RED));
+            event.getMatch().sendMessage(text("The offending players have received a temporary ban.", NamedTextColor.GRAY));
         }
     }
 
