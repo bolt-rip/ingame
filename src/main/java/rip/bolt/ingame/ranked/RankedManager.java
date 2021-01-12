@@ -48,7 +48,7 @@ public class RankedManager implements Listener {
     playerWatcher = new PlayerWatcher(this);
 
     asyncPollTask = new FetchMatchAsync(this::setupMatch);
-    setupPollTask();
+    setupPollTask(15);
 
     // we use an async task otherwise the server will not start
     // pgm loads the world in the main thread using a task
@@ -69,7 +69,7 @@ public class RankedManager implements Listener {
             });
   }
 
-  public void setupPollTask() {
+  public void setupPollTask(long delaySeconds) {
     cancelPollTask();
 
     syncTaskId =
@@ -84,7 +84,7 @@ public class RankedManager implements Listener {
                             .getTaskId();
                   }
                 },
-                15 * 20,
+                delaySeconds * 20,
                 15 * 20);
   }
 
@@ -166,7 +166,7 @@ public class RankedManager implements Listener {
         .runTaskAsynchronously(
             Tournament.get(), () -> Ingame.get().getApiManager().postMatchEnd(match));
 
-    setupPollTask();
+    setupPollTask(30);
   }
 
   @EventHandler
@@ -186,7 +186,7 @@ public class RankedManager implements Listener {
   }
 
   public void poll() {
-    setupPollTask();
+    setupPollTask(0);
   }
 
   public PlayerWatcher getPlayerWatcher() {
