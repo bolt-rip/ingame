@@ -91,12 +91,7 @@ public class RankedManager implements Listener {
   }
 
   public void setupMatch(BoltMatch match) {
-    if (this.match.getMatchId().equals(match.getMatchId())) {
-      Bukkit.broadcastMessage(
-          ChatColor.RED
-              + "A match with this ID ("
-              + match.getMatchId()
-              + ") has already run on this server!");
+    if (this.match != null && this.match.getMatchId().equals(match.getMatchId())) {
       return;
     }
 
@@ -111,10 +106,6 @@ public class RankedManager implements Listener {
             .flatMap(team -> team.getPlayers().stream())
             .map(TournamentPlayer::getUUID)
             .collect(Collectors.toList()));
-
-    if (format != null) {
-      format.unregisterAll();
-    }
 
     format =
         new TournamentFormatImpl(
@@ -137,7 +128,9 @@ public class RankedManager implements Listener {
     format.addRound(ranked);
 
     Bukkit.broadcastMessage(ChatColor.YELLOW + "A new match is starting on this server!");
-    format.nextRound(PGM.get().getMatchManager().getMatches().next());
+    Tournament.get()
+        .getTournamentManager()
+        .createTournament(PGM.get().getMatchManager().getMatches().next(), format);
   }
 
   public BoltMatch getMatch() {
