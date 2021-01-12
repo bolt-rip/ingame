@@ -29,6 +29,6 @@ public class RankedAdminCommands {
         .sendMessage(
             text("Manual poll has been triggered, checking API for match.", NamedTextColor.GRAY));
 
-    ranked.poll();
+    ranked.setupPollTask(0);
   }
 }

@@ -18,19 +18,15 @@ import java.util.stream.Collectors;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import rip.bolt.ingame.Ingame;
 import rip.bolt.ingame.api.definitions.BoltMatch;
 import tc.oc.pgm.api.PGM;
 import tc.oc.pgm.api.match.event.MatchFinishEvent;
-import tc.oc.pgm.api.match.event.MatchLoadEvent;
 import tc.oc.pgm.api.match.event.MatchStartEvent;
 
 public class RankedManager implements Listener {
-
-  private boolean cycledToRightMap;
 
   private TournamentFormat format;
   private BoltMatch match;
@@ -95,6 +91,15 @@ public class RankedManager implements Listener {
   }
 
   public void setupMatch(BoltMatch match) {
+    if (this.match.getMatchId().equals(match.getMatchId())) {
+      Bukkit.broadcastMessage(
+          ChatColor.RED
+              + "A match with this ID ("
+              + match.getMatchId()
+              + ") has already run on this server!");
+      return;
+    }
+
     this.match = match;
     cancelPollTask();
 
@@ -106,6 +111,10 @@ public class RankedManager implements Listener {
             .flatMap(team -> team.getPlayers().stream())
             .map(TournamentPlayer::getUUID)
             .collect(Collectors.toList()));
+
+    if (format != null) {
+      format.unregisterAll();
+    }
 
     format =
         new TournamentFormatImpl(
@@ -133,14 +142,6 @@ public class RankedManager implements Listener {
 
   public BoltMatch getMatch() {
     return match;
-  }
-
-  @EventHandler(priority = EventPriority.LOWEST)
-  public void onMatchLoad(MatchLoadEvent event) {
-    if (!cycledToRightMap && format != null) {
-      format.nextRound(event.getMatch());
-      cycledToRightMap = true;
-    }
   }
 
   @EventHandler
@@ -183,10 +184,6 @@ public class RankedManager implements Listener {
         event.setCancelled(true);
       }
     }
-  }
-
-  public void poll() {
-    setupPollTask(0);
   }
 
   public PlayerWatcher getPlayerWatcher() {
