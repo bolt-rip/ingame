@@ -18,24 +18,6 @@ public class AppData {
       return Ingame.get().getConfig().getString("api.key");
     }
 
-    public static String getGetMatchPath() {
-      return Ingame.get()
-          .getConfig()
-          .getString("api.getMatch")
-          .replace("{server}", getServerName());
-    }
-
-    public static String getPlayerAbandonPath() {
-      return Ingame.get().getConfig().getString("api.playerAbandon");
-    }
-
-    public static String getMatchResultsPath() {
-      return Ingame.get()
-          .getConfig()
-          .getString("api.matchResults")
-          .replace("{server}", getServerName());
-    }
-
     public static String getServerName() {
       return String.valueOf(System.getenv("SERVER_NAME"));
     }
