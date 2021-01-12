@@ -52,10 +52,10 @@ public class APIManager {
   }
 
   public void postMatchStart(BoltMatch match) {
-    apiService.postMatchStart(this.serverId, match);
+    apiService.postMatchStart(match.getMatchId(), match);
   }
 
   public void postMatchEnd(BoltMatch match) {
-    apiService.postMatchEnd(this.serverId, match);
+    apiService.postMatchEnd(match.getMatchId(), match);
   }
 }
