@@ -1,6 +1,7 @@
 package rip.bolt.ingame.api.definitions;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonProperty.Access;
 import java.time.Instant;
 import java.util.List;
 
@@ -11,6 +12,7 @@ public class BoltMatch {
 
   private String map;
 
+  @JsonProperty(access = Access.WRITE_ONLY)
   private List<Team> teams;
   private List<String> winners;
 
