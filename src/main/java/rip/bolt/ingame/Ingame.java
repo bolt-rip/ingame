@@ -19,75 +19,70 @@ import tc.oc.pgm.lib.app.ashcon.intake.parametric.AbstractModule;
 
 public class Ingame extends JavaPlugin {
 
-    private RankedManager rankedManager;
-    private APIManager apiManager;
+  private RankedManager rankedManager;
+  private APIManager apiManager;
 
-    private static Ingame plugin;
+  private static Ingame plugin;
+
+  @Override
+  public void onEnable() {
+    plugin = this;
+    saveDefaultConfig();
+
+    if (!AppData.API.isEnabled()) {
+      System.out.println("[Ingame] Ingame was not enabled!");
+      return;
+    }
+
+    apiManager = new APIManager();
+
+    rankedManager = new RankedManager();
+
+    Bukkit.getPluginManager().registerEvents(rankedManager, this);
+    Bukkit.getPluginManager().registerEvents(rankedManager.getPlayerWatcher(), this);
+
+    BasicBukkitCommandGraph g = new BasicBukkitCommandGraph(new CommandModule());
+    DispatcherNode node = g.getRootDispatcherNode();
+    node.registerCommands(new RankedAdminCommands());
+    new CommandExecutor(this, g).register();
+
+    System.out.println("[Ingame] Ingame is now enabled!");
+  }
+
+  @Override
+  public void onDisable() {
+    plugin = null;
+    System.out.println("[Ingame] Ingame is now disabled!");
+  }
+
+  public APIManager getApiManager() {
+    return apiManager;
+  }
+
+  public RankedManager getRankedManager() {
+    return rankedManager;
+  }
+
+  public static Ingame get() {
+    return plugin;
+  }
+
+  private static class CommandModule extends AbstractModule {
 
     @Override
-    public void onEnable() {
-        plugin = this;
-        saveDefaultConfig();
-
-        if (!AppData.API.isEnabled()) {
-            System.out.println("[Ingame] Ingame was not enabled!");
-            return;
-        }
-
-        apiManager = new APIManager(AppData.API.getURL(),
-                AppData.API.getGetMatchPath(),
-                AppData.API.getMatchResultsPath(),
-                AppData.API.getPlayerAbandonPath());
-
-        rankedManager = new RankedManager();
-
-        Bukkit.getPluginManager().registerEvents(rankedManager, this);
-        Bukkit.getPluginManager().registerEvents(rankedManager.getPlayerWatcher(), this);
-
-        BasicBukkitCommandGraph g = new BasicBukkitCommandGraph(new CommandModule());
-        DispatcherNode node = g.getRootDispatcherNode();
-        node.registerCommands(new RankedAdminCommands());
-        new CommandExecutor(this, g).register();
-
-        System.out.println("[Ingame] Ingame is now enabled!");
+    protected void configure() {
+      configureInstances();
+      configureProviders();
     }
 
-    @Override
-    public void onDisable() {
-        plugin = null;
-        System.out.println("[Ingame] Ingame is now disabled!");
+    private void configureInstances() {
+      bind(PGM.class).toInstance(PGM.get());
+      bind(Tournament.class).toInstance(Tournament.get());
     }
 
-    public APIManager getApiManager() {
-        return apiManager;
+    private void configureProviders() {
+      bind(MatchPlayer.class).toProvider(new MatchPlayerProvider());
+      bind(Match.class).toProvider(new MatchProvider());
     }
-
-    public RankedManager getRankedManager() {
-        return rankedManager;
-    }
-
-    public static Ingame get() {
-        return plugin;
-    }
-
-    private static class CommandModule extends AbstractModule {
-
-        @Override
-        protected void configure() {
-            configureInstances();
-            configureProviders();
-        }
-
-        private void configureInstances() {
-            bind(PGM.class).toInstance(PGM.get());
-            bind(Tournament.class).toInstance(Tournament.get());
-        }
-
-        private void configureProviders() {
-            bind(MatchPlayer.class).toProvider(new MatchPlayerProvider());
-            bind(Match.class).toProvider(new MatchProvider());
-        }
-
-    }
-
+  }
 }

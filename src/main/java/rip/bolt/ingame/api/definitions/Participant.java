@@ -1,51 +1,46 @@
 package rip.bolt.ingame.api.definitions;
 
-import java.util.UUID;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import dev.pgm.events.team.TournamentPlayer;
+import java.util.UUID;
 
 /**
  * Class to represent a single Bolt participant (i.e. player).
- * 
+ *
  * @author Picajoluna
  */
 @JsonDeserialize(as = Participant.class)
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Participant implements TournamentPlayer {
 
-    private UUID uuid;
+  private UUID uuid;
 
-    @JsonIgnore
-    private boolean canVeto;
+  @JsonIgnore private boolean canVeto;
 
-    public Participant() {
+  public Participant() {}
 
-    }
+  public Participant(UUID uuid, boolean canVeto) {
+    this.uuid = uuid;
+    this.canVeto = canVeto;
+  }
 
-    public Participant(UUID uuid, boolean canVeto) {
-        this.uuid = uuid;
-        this.canVeto = canVeto;
-    }
+  @Override
+  public UUID getUUID() {
+    return uuid;
+  }
 
-    @Override
-    public UUID getUUID() {
-        return uuid;
-    }
+  @Override
+  public boolean canVeto() {
+    return canVeto;
+  }
 
-    @Override
-    public boolean canVeto() {
-        return canVeto;
-    }
+  @Override
+  public String toString() {
+    StringBuilder str = new StringBuilder();
+    str.append(getUUID());
 
-    @Override
-    public String toString() {
-        StringBuilder str = new StringBuilder();
-        str.append(getUUID());
-
-        return str.toString();
-    }
-
+    return str.toString();
+  }
 }

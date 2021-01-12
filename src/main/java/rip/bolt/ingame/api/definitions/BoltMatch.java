@@ -1,77 +1,100 @@
 package rip.bolt.ingame.api.definitions;
 
-import java.util.ArrayList;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import java.time.Instant;
 import java.util.List;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonProperty.Access;
-
-/**
- * Class to represent a single Bolt match (e.g. a Ranked match).
- * 
- * @author Picajoluna
- */
 public class BoltMatch {
 
-    /**
-     * @JsonProperty("field") tells JAX-RS what the API name for the variable is, and that the two represent the same thing.
-     * You only need to do this if the java variable name differs from the variable name returned by the API.
-     * For instance, here, the API returns "match", which below is named "matchId".
-     */
-    @JsonProperty("match")
-    private String matchId; // 6 character hex code representing the match id number
+  @JsonProperty("match")
+  private String matchId; // 6 character hex code representing the match id number
 
-    @JsonProperty(access = Access.WRITE_ONLY) // this is sent to us, but we shouldn't submit (POST) it
-    private String map;
+  private String map;
 
-    @JsonProperty(access = Access.WRITE_ONLY)
-    private List<Team> teams;
+  private List<Team> teams;
+  private List<String> winners;
 
-    @JsonProperty(access = Access.READ_ONLY) // we need to submit (POST) this
-    private List<String> winners = new ArrayList<String>();
+  private Instant startTime;
+  private Instant endTime;
 
-    @JsonProperty(access = Access.READ_ONLY)
-    private boolean invalidate = false;
+  private boolean invalidate = false;
 
-    public BoltMatch() {
+  public BoltMatch() {}
 
-    }
+  public BoltMatch(String matchId) {
+    this.matchId = matchId;
+  }
 
-    public BoltMatch(String matchId) {
-        this.matchId = matchId;
-    }
+  public String getMatchId() {
+    return matchId;
+  }
 
-    public String getMatchID() {
-        return matchId;
-    }
+  public void setMatchId(String matchId) {
+    this.matchId = matchId;
+  }
 
-    public String getMap() {
-        return map;
-    }
+  public String getMap() {
+    return map;
+  }
 
-    public List<Team> getTeams() {
-        return teams;
-    }
+  public void setMap(String map) {
+    this.map = map;
+  }
 
-    public List<String> getWinners() {
-        return winners;
-    }
+  public List<Team> getTeams() {
+    return teams;
+  }
 
-    public void invalidate() {
-        this.invalidate = true;
-    }
+  public void setTeams(List<Team> teams) {
+    this.teams = teams;
+  }
 
-    @Override
-    public String toString() {
-        StringBuilder str = new StringBuilder();
+  public List<String> getWinners() {
+    return winners;
+  }
 
-        str.append("Match ID: " + getMatchID() + "\n");
+  public void setWinners(List<String> winners) {
+    this.winners = winners;
+  }
 
-        str.append("Teams: ");
-        for (int i = 0; i < getTeams().size(); i++)
-            str.append(getTeams().get(i).toString() + "\n");
+  public Instant getStartTime() {
+    return startTime;
+  }
 
-        return str.toString();
-    }
+  public void setStartTime(Instant startTime) {
+    this.startTime = startTime;
+  }
 
+  public Instant getEndTime() {
+    return endTime;
+  }
+
+  public void setEndTime(Instant endTime) {
+    this.endTime = endTime;
+  }
+
+  public boolean isInvalidate() {
+    return invalidate;
+  }
+
+  public void setInvalidate(boolean invalidate) {
+    this.invalidate = invalidate;
+  }
+
+  public void invalidate() {
+    this.invalidate = true;
+  }
+
+  @Override
+  public String toString() {
+    StringBuilder str = new StringBuilder();
+
+    str.append("Match ID: ").append(getMatchId()).append("\n");
+
+    str.append("Teams: ");
+    for (int i = 0; i < getTeams().size(); i++)
+      str.append(getTeams().get(i).toString()).append("\n");
+
+    return str.toString();
+  }
 }
