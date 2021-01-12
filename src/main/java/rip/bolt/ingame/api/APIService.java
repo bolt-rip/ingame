@@ -13,10 +13,10 @@ public interface APIService {
   BoltMatch getMatch(@Path("server") String serverId);
 
   @POST("match/{server}/start")
-  Void postMatchStart(@Body BoltMatch user);
+  Void postMatchStart(@Path("server") String serverId, @Body BoltMatch user);
 
   @POST("match/{server}/finish")
-  Void postMatchEnd(@Body BoltMatch user);
+  Void postMatchEnd(@Path("server") String serverId, @Body BoltMatch user);
 
   @POST("user/{uuid}/ban")
   Void postPlayerAbandon(@Path("uuid") String uuid, @Body Map<String, Object> data);
