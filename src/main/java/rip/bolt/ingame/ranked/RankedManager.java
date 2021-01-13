@@ -84,7 +84,7 @@ public class RankedManager implements Listener {
             new TournamentRoundOptions(
                 false,
                 false,
-                true,
+                false,
                 Duration.ofMinutes(30),
                 Duration.ofSeconds(30),
                 Duration.ofSeconds(40),
