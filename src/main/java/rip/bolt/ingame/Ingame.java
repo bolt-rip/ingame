@@ -1,5 +1,8 @@
 package rip.bolt.ingame;
 
+import co.aikar.taskchain.BukkitTaskChainFactory;
+import co.aikar.taskchain.TaskChain;
+import co.aikar.taskchain.TaskChainFactory;
 import dev.pgm.events.Tournament;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -19,6 +22,7 @@ import tc.oc.pgm.lib.app.ashcon.intake.parametric.AbstractModule;
 
 public class Ingame extends JavaPlugin {
 
+  private static TaskChainFactory taskChainFactory;
   private RankedManager rankedManager;
   private APIManager apiManager;
 
@@ -34,6 +38,8 @@ public class Ingame extends JavaPlugin {
       return;
     }
 
+    taskChainFactory = BukkitTaskChainFactory.create(this);
+
     apiManager = new APIManager();
 
     rankedManager = new RankedManager();
@@ -47,6 +53,10 @@ public class Ingame extends JavaPlugin {
     new CommandExecutor(this, g).register();
 
     System.out.println("[Ingame] Ingame is now enabled!");
+  }
+
+  public static <T> TaskChain<T> newSharedChain(String name) {
+    return taskChainFactory.newSharedChain(name);
   }
 
   @Override

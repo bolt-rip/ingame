@@ -12,7 +12,6 @@ import dev.pgm.events.team.TournamentPlayer;
 import dev.pgm.events.team.TournamentTeam;
 import java.time.Duration;
 import java.time.Instant;
-import java.util.Collections;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 import net.md_5.bungee.api.ChatColor;
@@ -64,7 +63,6 @@ public class RankedManager implements Listener {
 
   public void setupMatch(BoltMatch match) {
     if (this.match != null && this.match.getMatchId().equals(match.getMatchId())) {
-      System.out.println("polled but match id already running");
       return;
     }
 
@@ -115,7 +113,7 @@ public class RankedManager implements Listener {
   }
 
   public void manualPoll() {
-    poll.trigger();
+    poll.trigger(true);
   }
 
   @EventHandler
