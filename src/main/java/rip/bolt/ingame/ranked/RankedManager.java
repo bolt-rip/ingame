@@ -133,7 +133,7 @@ public class RankedManager implements Listener {
   public void onMatchFinish(MatchFinishEvent event) {
     match.setEndTime(Instant.now());
     if (event.getWinner() != null) {
-      match.setWinners(Collections.singletonList(event.getWinner().getNameLegacy()));
+      match.setWinner(event.getWinner().getNameLegacy());
     }
 
     // run async to stop server lag

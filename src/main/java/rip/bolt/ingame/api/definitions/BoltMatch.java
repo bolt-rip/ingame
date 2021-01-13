@@ -15,7 +15,7 @@ public class BoltMatch {
   @JsonProperty(access = Access.WRITE_ONLY)
   private List<Team> teams;
 
-  private List<String> winners;
+  private String winner;
 
   private Instant startTime;
   private Instant endTime;
@@ -52,12 +52,12 @@ public class BoltMatch {
     this.teams = teams;
   }
 
-  public List<String> getWinners() {
-    return winners;
+  public String getWinner() {
+    return winner;
   }
 
-  public void setWinners(List<String> winners) {
-    this.winners = winners;
+  public void setWinner(String winner) {
+    this.winner = winner;
   }
 
   public Instant getStartTime() {
