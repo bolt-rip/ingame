@@ -33,11 +33,6 @@ public class Ingame extends JavaPlugin {
     plugin = this;
     saveDefaultConfig();
 
-    if (!AppData.API.isEnabled()) {
-      System.out.println("[Ingame] Ingame was not enabled!");
-      return;
-    }
-
     taskChainFactory = BukkitTaskChainFactory.create(this);
 
     apiManager = new APIManager();

@@ -6,10 +6,6 @@ public class AppData {
 
   public static class API {
 
-    public static boolean isEnabled() {
-      return Ingame.get().getConfig().getBoolean("api.enabled");
-    }
-
     public static String getURL() {
       return Ingame.get().getConfig().getString("api.url");
     }
