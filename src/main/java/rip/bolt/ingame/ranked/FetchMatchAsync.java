@@ -17,8 +17,6 @@ public class FetchMatchAsync implements Runnable {
   public void run() {
     BoltMatch boltMatch = Ingame.get().getApiManager().fetchMatchData();
 
-    if (boltMatch != null) {
-      Bukkit.runOnMainThread(Ingame.get(), false, () -> callback.accept(boltMatch));
-    }
+    Bukkit.runOnMainThread(Ingame.get(), false, () -> callback.accept(boltMatch));
   }
 }

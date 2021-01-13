@@ -28,14 +28,11 @@ import tc.oc.pgm.api.match.event.MatchStartEvent;
 
 public class RankedManager implements Listener {
 
+  private final PlayerWatcher playerWatcher;
+  private final MatchSearch poll;
+
   private TournamentFormat format;
   private BoltMatch match;
-
-  private final PlayerWatcher playerWatcher;
-
-  private final FetchMatchAsync asyncPollTask;
-  private int syncTaskId = -1;
-  private int asyncTaskId = -1;
 
   private Duration cycleTime = Duration.ofSeconds(0);
 
@@ -43,8 +40,8 @@ public class RankedManager implements Listener {
 
     playerWatcher = new PlayerWatcher(this);
 
-    asyncPollTask = new FetchMatchAsync(this::setupMatch);
-    setupPollTask(15);
+    poll = new MatchSearch(this::setupMatch);
+    poll.startIn(Duration.ofSeconds(15));
 
     // we use an async task otherwise the server will not start
     // pgm loads the world in the main thread using a task
@@ -65,38 +62,14 @@ public class RankedManager implements Listener {
             });
   }
 
-  public void setupPollTask(long delaySeconds) {
-    cancelPollTask();
-
-    syncTaskId =
-        Bukkit.getScheduler()
-            .scheduleSyncRepeatingTask(
-                Tournament.get(),
-                () -> {
-                  if (syncTaskId != -1 && !Bukkit.getScheduler().isCurrentlyRunning(asyncTaskId)) {
-                    asyncTaskId =
-                        Bukkit.getScheduler()
-                            .runTaskAsynchronously(Ingame.get(), asyncPollTask)
-                            .getTaskId();
-                  }
-                },
-                delaySeconds * 20,
-                15 * 20);
-  }
-
-  public void cancelPollTask() {
-    if (syncTaskId != -1) {
-      Bukkit.getScheduler().cancelTask(syncTaskId);
-    }
-  }
-
   public void setupMatch(BoltMatch match) {
     if (this.match != null && this.match.getMatchId().equals(match.getMatchId())) {
+      System.out.println("polled but match id already running");
       return;
     }
 
     this.match = match;
-    cancelPollTask();
+    poll.stop();
 
     Tournament.get().getTeamManager().clear();
     for (TournamentTeam team : match.getTeams()) Tournament.get().getTeamManager().addTeam(team);
@@ -137,6 +110,14 @@ public class RankedManager implements Listener {
     return match;
   }
 
+  public PlayerWatcher getPlayerWatcher() {
+    return playerWatcher;
+  }
+
+  public void manualPoll() {
+    poll.trigger();
+  }
+
   @EventHandler
   public void onMatchStart(MatchStartEvent event) {
     match.setMap(event.getMatch().getMap().getName());
@@ -160,7 +141,7 @@ public class RankedManager implements Listener {
         .runTaskAsynchronously(
             Tournament.get(), () -> Ingame.get().getApiManager().postMatchEnd(match));
 
-    setupPollTask(30);
+    poll.startIn(Duration.ofSeconds(30));
   }
 
   @EventHandler
@@ -177,9 +158,5 @@ public class RankedManager implements Listener {
         event.setCancelled(true);
       }
     }
-  }
-
-  public PlayerWatcher getPlayerWatcher() {
-    return playerWatcher;
   }
 }

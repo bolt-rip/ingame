@@ -14,6 +14,7 @@ public class BoltMatch {
 
   @JsonProperty(access = Access.WRITE_ONLY)
   private List<Team> teams;
+
   private List<String> winners;
 
   private Instant startTime;
