@@ -51,7 +51,7 @@
 		<dependency>
 			<groupId>com.github.PGMDev</groupId>
 			<artifactId>Events</artifactId>
-			<version>ca7de73fe5</version>
+			<version>070c088acd</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
