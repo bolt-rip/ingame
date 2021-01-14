@@ -8,7 +8,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 import rip.bolt.ingame.api.APIManager;
 import rip.bolt.ingame.commands.RankedAdminCommands;
-import rip.bolt.ingame.config.AppData;
 import rip.bolt.ingame.ranked.RankedManager;
 import tc.oc.pgm.api.PGM;
 import tc.oc.pgm.api.match.Match;

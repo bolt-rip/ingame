@@ -1,5 +1,6 @@
 package rip.bolt.ingame.api;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
@@ -16,7 +17,6 @@ public class APIManager {
   public final APIService apiService;
 
   public APIManager() {
-
     serverId = AppData.API.getServerName();
 
     OkHttpClient.Builder httpClient = new OkHttpClient.Builder();
@@ -32,7 +32,8 @@ public class APIManager {
     Retrofit retrofit =
         new Retrofit.Builder()
             .baseUrl(AppData.API.getURL())
-            .addConverterFactory(JacksonConverterFactory.create())
+            .addConverterFactory(
+                JacksonConverterFactory.create(new ObjectMapper().registerModule(new DateModule())))
             .addCallAdapterFactory(new DefaultCallAdapterFactory<>())
             .client(httpClient.build())
             .build();
