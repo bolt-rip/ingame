@@ -26,7 +26,7 @@ public class APIManager {
                 chain
                     .request()
                     .newBuilder()
-                    .header("Authorization", AppData.API.getKey())
+                    .header("Authorization", "Bearer " + AppData.API.getKey())
                     .build()));
 
     Retrofit retrofit =
