@@ -18,7 +18,6 @@ import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import rip.bolt.ingame.Ingame;
 import rip.bolt.ingame.api.definitions.BoltMatch;
 import tc.oc.pgm.api.PGM;
@@ -140,21 +139,5 @@ public class RankedManager implements Listener {
             Tournament.get(), () -> Ingame.get().getApiManager().postMatchEnd(match));
 
     poll.startIn(Duration.ofSeconds(30));
-  }
-
-  @EventHandler
-  public void onPlayerRunCommand(PlayerCommandPreprocessEvent event) {
-    if (event.getMessage().equalsIgnoreCase("/tm")
-        || event.getMessage().toLowerCase().startsWith("/tm ")
-        || event.getMessage().equalsIgnoreCase("/tourney")
-        || event.getMessage().toLowerCase().startsWith("/tourney ")
-        || event.getMessage().equalsIgnoreCase("/tournament")
-        || event.getMessage().toLowerCase().startsWith("/tournament ")) {
-      // Allow staff to run tm commands.
-      if (!event.getPlayer().hasPermission("ingame.staff")) {
-        event.getPlayer().sendMessage(ChatColor.RED + "This command is disabled in Ranked.");
-        event.setCancelled(true);
-      }
-    }
   }
 }
