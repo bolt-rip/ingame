@@ -7,8 +7,8 @@ import java.util.List;
 
 public class BoltMatch {
 
-  @JsonProperty("match")
-  private String matchId; // 6 character hex code representing the match id number
+  @JsonProperty("id")
+  private String matchId;
 
   private String map;
 
@@ -17,8 +17,8 @@ public class BoltMatch {
 
   private String winner;
 
-  private Instant startTime;
-  private Instant endTime;
+  private Instant startedAt;
+  private Instant endedAt;
 
   private boolean invalidate = false;
 
@@ -60,20 +60,20 @@ public class BoltMatch {
     this.winner = winner;
   }
 
-  public Instant getStartTime() {
-    return startTime;
+  public Instant getStartedAt() {
+    return startedAt;
   }
 
-  public void setStartTime(Instant startTime) {
-    this.startTime = startTime;
+  public void setStartedAt(Instant startedAt) {
+    this.startedAt = startedAt;
   }
 
-  public Instant getEndTime() {
-    return endTime;
+  public Instant getEndedAt() {
+    return endedAt;
   }
 
-  public void setEndTime(Instant endTime) {
-    this.endTime = endTime;
+  public void setEndedAt(Instant endedAt) {
+    this.endedAt = endedAt;
   }
 
   public boolean isInvalidate() {

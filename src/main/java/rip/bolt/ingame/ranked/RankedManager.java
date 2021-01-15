@@ -118,7 +118,7 @@ public class RankedManager implements Listener {
   @EventHandler
   public void onMatchStart(MatchStartEvent event) {
     match.setMap(event.getMatch().getMap().getName());
-    match.setStartTime(Instant.now());
+    match.setStartedAt(Instant.now());
 
     // run async to stop server lag
     Bukkit.getScheduler()
@@ -128,7 +128,7 @@ public class RankedManager implements Listener {
 
   @EventHandler
   public void onMatchFinish(MatchFinishEvent event) {
-    match.setEndTime(Instant.now());
+    match.setEndedAt(Instant.now());
     if (event.getWinner() != null) {
       match.setWinner(event.getWinner().getNameLegacy());
     }
