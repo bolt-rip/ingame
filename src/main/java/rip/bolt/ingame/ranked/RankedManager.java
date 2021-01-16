@@ -1,5 +1,8 @@
 package rip.bolt.ingame.ranked;
 
+import static rip.bolt.ingame.utils.Components.command;
+import static tc.oc.pgm.lib.net.kyori.adventure.text.Component.text;
+
 import com.google.common.collect.Iterables;
 import dev.pgm.events.Tournament;
 import dev.pgm.events.format.RoundReferenceHolder;
@@ -26,6 +29,10 @@ import tc.oc.pgm.api.match.Match;
 import tc.oc.pgm.api.match.event.MatchFinishEvent;
 import tc.oc.pgm.api.match.event.MatchStartEvent;
 import tc.oc.pgm.api.party.Competitor;
+import tc.oc.pgm.lib.net.kyori.adventure.text.format.NamedTextColor;
+import tc.oc.pgm.lib.net.kyori.adventure.text.format.Style;
+import tc.oc.pgm.lib.net.kyori.adventure.text.format.TextDecoration;
+import tc.oc.pgm.util.Audience;
 
 public class RankedManager implements Listener {
 
@@ -111,6 +118,20 @@ public class RankedManager implements Listener {
     postMatchStatus(event.getMatch(), MatchStatus.ENDED);
 
     poll.startIn(Duration.ofSeconds(30));
+
+    Bukkit.getScheduler()
+        .scheduleSyncDelayedTask(
+            Ingame.get(),
+            () -> {
+              Audience.get(event.getMatch().getCompetitors())
+                  .sendMessage(
+                      text("You can queue for another match using ", NamedTextColor.GREEN)
+                          .append(
+                              command(
+                                  Style.style(NamedTextColor.YELLOW, TextDecoration.UNDERLINED),
+                                  "/requeue")));
+            },
+            130);
   }
 
   public void postMatchStatus(Match match, MatchStatus status) {
