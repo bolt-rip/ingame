@@ -9,12 +9,12 @@ import rip.bolt.ingame.api.definitions.BoltMatch;
 
 public interface APIService {
 
-  @GET("server/{server}/match")
+  @GET("ranked/servers/{server}/match")
   BoltMatch getMatch(@Path("server") String serverId);
 
-  @POST("matches/{match}")
+  @POST("ranked/matches/{match}")
   Void postMatch(@Path("match") String matchId, @Body BoltMatch match);
 
-  @POST("user/{uuid}/ban")
+  @POST("ranked/users/{uuid}/ban")
   Void postPlayerAbandon(@Path("uuid") String uuid, @Body Map<String, Object> data);
 }
