@@ -14,7 +14,6 @@ import dev.pgm.events.team.TournamentTeam;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Collection;
-import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
@@ -41,27 +40,10 @@ public class RankedManager implements Listener {
   public RankedManager() {
 
     playerWatcher = new PlayerWatcher(this);
+    MatchPreloader.create();
 
     poll = new MatchSearch(this::setupMatch);
     poll.startIn(Duration.ofSeconds(15));
-
-    // we use an async task otherwise the server will not start
-    // pgm loads the world in the main thread using a task
-    // createMatch(String).get() is blocking
-    // bukkit won't be able to complete the load world task on the main thread
-    // since this task will be blocking the main thread
-    Bukkit.getScheduler()
-        .runTaskAsynchronously(
-            Ingame.get(),
-            () -> {
-              try {
-                PGM.get().getMatchManager().createMatch(null).get();
-              } catch (InterruptedException e) {
-                e.printStackTrace();
-              } catch (ExecutionException e) {
-                e.printStackTrace();
-              }
-            });
   }
 
   public void setupMatch(BoltMatch match) {
