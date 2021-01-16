@@ -17,6 +17,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerLoginEvent;
 import rip.bolt.ingame.Ingame;
 import rip.bolt.ingame.config.AppData;
+import tc.oc.pgm.api.match.Match;
 import tc.oc.pgm.api.match.event.MatchFinishEvent;
 import tc.oc.pgm.api.match.event.MatchStartEvent;
 import tc.oc.pgm.api.player.MatchPlayer;
@@ -86,10 +87,7 @@ public class PlayerWatcher implements Listener {
               .map(Map.Entry::getKey)
               .collect(Collectors.toList());
 
-      playersAbandoned(absentPlayers);
-
       if (absentPlayers.size() > 0) {
-        rankedManager.getMatch().invalidate();
         event
             .getMatch()
             .sendMessage(
@@ -103,24 +101,26 @@ public class PlayerWatcher implements Listener {
 
   @EventHandler(priority = EventPriority.MONITOR)
   public void onMatchStart(MatchStartEvent event) {
-    List<UUID> absentPlayers =
-        this.absentLengths.keySet().stream()
-            .filter(absence -> event.getMatch().getPlayer(absence) == null)
-            .collect(Collectors.toList());
+    if (!playersAbandoned(getMissingPlayers(event.getMatch()))) return;
 
-    playersAbandoned(absentPlayers);
+    // the order of these two lines should not be changed
+    rankedManager.postMatchStatus(event.getMatch(), MatchStatus.CANCELLED);
+    event.getMatch().finish();
 
-    if (absentPlayers.size() > 0) {
-      event.getMatch().finish();
-      event
-          .getMatch()
-          .sendMessage(
-              text("Match could not be started due to lack of players.", NamedTextColor.RED));
-      event
-          .getMatch()
-          .sendMessage(
-              text("The offending players have received a temporary ban.", NamedTextColor.GRAY));
-    }
+    event
+        .getMatch()
+        .sendMessage(
+            text("Match could not be started due to lack of players.", NamedTextColor.RED));
+    event
+        .getMatch()
+        .sendMessage(
+            text("The offending players have received a temporary ban.", NamedTextColor.GRAY));
+  }
+
+  public List<UUID> getMissingPlayers(Match match) {
+    return this.absentLengths.keySet().stream()
+        .filter(absence -> match.getPlayer(absence) == null)
+        .collect(Collectors.toList());
   }
 
   private void updateAbsenceLengths(UUID player) {
@@ -135,10 +135,12 @@ public class PlayerWatcher implements Listener {
     }
   }
 
-  private void playersAbandoned(List<UUID> players) {
+  private boolean playersAbandoned(List<UUID> players) {
     if (players.size() <= 5) {
       players.forEach(player -> playerAbandoned(player, absentLengths.get(player)));
     }
+
+    return players.size() > 0;
   }
 
   private void playerAbandoned(UUID player, Duration duration) {

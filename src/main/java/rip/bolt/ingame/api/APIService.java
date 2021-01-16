@@ -9,14 +9,11 @@ import rip.bolt.ingame.api.definitions.BoltMatch;
 
 public interface APIService {
 
-  @GET("match/{server}")
+  @GET("server/{server}/match")
   BoltMatch getMatch(@Path("server") String serverId);
 
-  @POST("match/{match}/start")
-  Void postMatchStart(@Path("match") String matchId, @Body BoltMatch user);
-
-  @POST("match/{match}/finish")
-  Void postMatchEnd(@Path("match") String matchId, @Body BoltMatch user);
+  @POST("matches/{match}")
+  Void postMatch(@Path("match") String matchId, @Body BoltMatch match);
 
   @POST("user/{uuid}/ban")
   Void postPlayerAbandon(@Path("uuid") String uuid, @Body Map<String, Object> data);

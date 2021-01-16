@@ -52,11 +52,7 @@ public class APIManager {
     apiService.postPlayerAbandon(uuid.toString(), data);
   }
 
-  public void postMatchStart(BoltMatch match) {
-    apiService.postMatchStart(match.getMatchId(), match);
-  }
-
-  public void postMatchEnd(BoltMatch match) {
-    apiService.postMatchEnd(match.getMatchId(), match);
+  public void postMatch(BoltMatch match) {
+    apiService.postMatch(match.getMatchId(), match);
   }
 }

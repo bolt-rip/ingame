@@ -1,5 +1,6 @@
 package rip.bolt.ingame.ranked;
 
+import com.google.common.collect.Iterables;
 import dev.pgm.events.Tournament;
 import dev.pgm.events.format.RoundReferenceHolder;
 import dev.pgm.events.format.TournamentFormat;
@@ -12,6 +13,7 @@ import dev.pgm.events.team.TournamentPlayer;
 import dev.pgm.events.team.TournamentTeam;
 import java.time.Duration;
 import java.time.Instant;
+import java.util.Collection;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 import net.md_5.bungee.api.ChatColor;
@@ -21,8 +23,10 @@ import org.bukkit.event.Listener;
 import rip.bolt.ingame.Ingame;
 import rip.bolt.ingame.api.definitions.BoltMatch;
 import tc.oc.pgm.api.PGM;
+import tc.oc.pgm.api.match.Match;
 import tc.oc.pgm.api.match.event.MatchFinishEvent;
 import tc.oc.pgm.api.match.event.MatchStartEvent;
+import tc.oc.pgm.api.party.Competitor;
 
 public class RankedManager implements Listener {
 
@@ -117,27 +121,47 @@ public class RankedManager implements Listener {
 
   @EventHandler
   public void onMatchStart(MatchStartEvent event) {
-    match.setMap(event.getMatch().getMap().getName());
-    match.setStartedAt(Instant.now());
-
-    // run async to stop server lag
-    Bukkit.getScheduler()
-        .runTaskAsynchronously(
-            Tournament.get(), () -> Ingame.get().getApiManager().postMatchStart(match));
+    postMatchStatus(event.getMatch(), MatchStatus.STARTED);
   }
 
   @EventHandler
   public void onMatchFinish(MatchFinishEvent event) {
-    match.setEndedAt(Instant.now());
-    if (event.getWinner() != null) {
-      match.setWinner(event.getWinner().getNameLegacy());
-    }
-
-    // run async to stop server lag
-    Bukkit.getScheduler()
-        .runTaskAsynchronously(
-            Tournament.get(), () -> Ingame.get().getApiManager().postMatchEnd(match));
+    postMatchStatus(event.getMatch(), MatchStatus.ENDED);
 
     poll.startIn(Duration.ofSeconds(30));
+  }
+
+  public void postMatchStatus(Match match, MatchStatus status) {
+    Instant now = Instant.now();
+    Ingame.newSharedChain("post")
+        .syncFirst(() -> transition(match, this.match, status, now))
+        .abortIfNull()
+        .asyncLast(Ingame.get().getApiManager()::postMatch)
+        .execute();
+  }
+
+  public BoltMatch transition(
+      Match match, BoltMatch boltMatch, MatchStatus newStatus, Instant transitonAt) {
+    if (!boltMatch.getStatus().canTransitionTo(newStatus)) return null;
+
+    switch (newStatus) {
+      case STARTED:
+        boltMatch.setMap(match.getMap().getName());
+        boltMatch.setStartedAt(transitonAt);
+        break;
+      case ENDED:
+        boltMatch.setEndedAt(transitonAt);
+        Collection<Competitor> winners = match.getWinners();
+        if (winners.size() == 1)
+          boltMatch.setWinner(Iterables.getOnlyElement(winners).getNameLegacy());
+        break;
+      case CANCELLED:
+        boltMatch.setEndedAt(transitonAt);
+        break;
+    }
+
+    boltMatch.setStatus(newStatus);
+
+    return boltMatch;
   }
 }

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonProperty.Access;
 import java.time.Instant;
 import java.util.List;
+import rip.bolt.ingame.ranked.MatchStatus;
 
 public class BoltMatch {
 
@@ -19,6 +20,8 @@ public class BoltMatch {
 
   private Instant startedAt;
   private Instant endedAt;
+
+  private MatchStatus status;
 
   private boolean invalidate = false;
 
@@ -76,16 +79,12 @@ public class BoltMatch {
     this.endedAt = endedAt;
   }
 
-  public boolean isInvalidate() {
-    return invalidate;
+  public MatchStatus getStatus() {
+    return status;
   }
 
-  public void setInvalidate(boolean invalidate) {
-    this.invalidate = invalidate;
-  }
-
-  public void invalidate() {
-    this.invalidate = true;
+  public void setStatus(MatchStatus status) {
+    this.status = status;
   }
 
   @Override
