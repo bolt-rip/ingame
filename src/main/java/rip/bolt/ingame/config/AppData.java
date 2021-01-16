@@ -22,4 +22,8 @@ public class AppData {
   public static long absentSecondsLimit() {
     return Ingame.get().getConfig().getLong("absence-time-seconds", 120);
   }
+
+  public static boolean fullTeamsRequired() {
+    return Ingame.get().getConfig().getBoolean("full-teams-required", true);
+  }
 }

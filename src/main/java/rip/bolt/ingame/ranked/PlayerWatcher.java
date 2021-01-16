@@ -101,6 +101,7 @@ public class PlayerWatcher implements Listener {
 
   @EventHandler(priority = EventPriority.MONITOR)
   public void onMatchStart(MatchStartEvent event) {
+    if (!AppData.fullTeamsRequired()) return;
     if (!playersAbandoned(getMissingPlayers(event.getMatch()))) return;
 
     // the order of these two lines should not be changed

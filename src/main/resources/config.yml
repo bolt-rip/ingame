@@ -3,6 +3,9 @@
 # how long players can be absent
 absence-time-seconds: 120
 
+# match will auto end if players missing
+full-teams-required: true
+
 api:
   url: https://localhost:3000/v1/
   key: authorisation-key
