@@ -119,18 +119,18 @@ public class RankedManager implements Listener {
 
     poll.startIn(Duration.ofSeconds(30));
 
+    // delay requeue message until after match stats are sent
     Bukkit.getScheduler()
         .scheduleSyncDelayedTask(
             Ingame.get(),
-            () -> {
-              Audience.get(event.getMatch().getCompetitors())
-                  .sendMessage(
-                      text("You can queue for another match using ", NamedTextColor.GREEN)
-                          .append(
-                              command(
-                                  Style.style(NamedTextColor.YELLOW, TextDecoration.UNDERLINED),
-                                  "/requeue")));
-            },
+            () ->
+                Audience.get(event.getMatch().getCompetitors())
+                    .sendMessage(
+                        text("You can queue for another match using ", NamedTextColor.GREEN)
+                            .append(
+                                command(
+                                    Style.style(NamedTextColor.YELLOW, TextDecoration.UNDERLINED),
+                                    "requeue"))),
             130);
   }
 
