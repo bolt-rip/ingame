@@ -15,6 +15,6 @@ public interface APIService {
   @POST("ranked/matches/{match}")
   Void postMatch(@Path("match") String matchId, @Body BoltMatch match);
 
-  @POST("ranked/users/{uuid}/ban")
+  @POST("users/{uuid}/ban")
   Void postPlayerAbandon(@Path("uuid") String uuid, @Body Map<String, Object> data);
 }
