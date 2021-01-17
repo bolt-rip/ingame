@@ -8,6 +8,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 import rip.bolt.ingame.api.APIManager;
 import rip.bolt.ingame.commands.RankedAdminCommands;
+import rip.bolt.ingame.commands.RequeueCommands;
 import rip.bolt.ingame.ranked.RankedManager;
 import tc.oc.pgm.api.PGM;
 import tc.oc.pgm.api.match.Match;
@@ -44,9 +45,14 @@ public class Ingame extends JavaPlugin {
     BasicBukkitCommandGraph g = new BasicBukkitCommandGraph(new CommandModule());
     DispatcherNode node = g.getRootDispatcherNode();
     node.registerCommands(new RankedAdminCommands());
+    node.registerCommands(new RequeueCommands());
     new CommandExecutor(this, g).register();
 
     System.out.println("[Ingame] Ingame is now enabled!");
+  }
+
+  public static <T> TaskChain<T> newChain() {
+    return taskChainFactory.newChain();
   }
 
   public static <T> TaskChain<T> newSharedChain(String name) {

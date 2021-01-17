@@ -26,4 +26,8 @@ public class AppData {
   public static boolean fullTeamsRequired() {
     return Ingame.get().getConfig().getBoolean("full-teams-required", true);
   }
+
+  public static boolean allowRequeue() {
+    return Ingame.get().getConfig().getBoolean("allow-requeue", true);
+  }
 }

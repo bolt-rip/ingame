@@ -6,6 +6,9 @@ absence-time-seconds: 120
 # match will auto end if players missing
 full-teams-required: true
 
+# enable the requeue command and prompt
+allow-requeue: true
+
 api:
   url: https://localhost:3000/v1/
   key: authorisation-key

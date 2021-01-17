@@ -6,6 +6,7 @@ import retrofit2.http.GET;
 import retrofit2.http.POST;
 import retrofit2.http.Path;
 import rip.bolt.ingame.api.definitions.BoltMatch;
+import rip.bolt.ingame.api.definitions.BoltResponse;
 
 public interface APIService {
 
@@ -17,4 +18,7 @@ public interface APIService {
 
   @POST("users/{uuid}/ban")
   Void postPlayerAbandon(@Path("uuid") String uuid, @Body Map<String, Object> data);
+
+  @POST("users/{uuid}/requeue")
+  BoltResponse postPlayerRequeue(@Path("uuid") String uuid);
 }

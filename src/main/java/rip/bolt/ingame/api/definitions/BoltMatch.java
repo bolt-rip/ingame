@@ -23,8 +23,6 @@ public class BoltMatch {
 
   private MatchStatus status;
 
-  private boolean invalidate = false;
-
   public BoltMatch() {}
 
   public BoltMatch(String matchId) {
