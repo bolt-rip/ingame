@@ -2,7 +2,6 @@ package rip.bolt.ingame.api.definitions;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import dev.pgm.events.team.TournamentPlayer;
 import java.util.UUID;
 
@@ -11,7 +10,6 @@ import java.util.UUID;
  *
  * @author Picajoluna
  */
-@JsonDeserialize(as = Participant.class)
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Participant implements TournamentPlayer {
 

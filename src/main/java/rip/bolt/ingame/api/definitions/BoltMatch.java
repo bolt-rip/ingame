@@ -1,11 +1,13 @@
 package rip.bolt.ingame.api.definitions;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonProperty.Access;
 import java.time.Instant;
 import java.util.List;
 import rip.bolt.ingame.ranked.MatchStatus;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class BoltMatch {
 
   @JsonProperty("id")
