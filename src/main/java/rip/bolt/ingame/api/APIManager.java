@@ -9,6 +9,7 @@ import okhttp3.OkHttpClient;
 import retrofit2.Retrofit;
 import retrofit2.converter.jackson.JacksonConverterFactory;
 import rip.bolt.ingame.api.definitions.BoltMatch;
+import rip.bolt.ingame.api.definitions.BoltResponse;
 import rip.bolt.ingame.config.AppData;
 
 public class APIManager {
@@ -45,11 +46,15 @@ public class APIManager {
     return apiService.getMatch(this.serverId);
   }
 
-  public void postMatchPlayerAbandon(UUID uuid, Duration duration) {
+  public void postPlayerAbandon(UUID uuid, Duration duration) {
     Map<String, Object> data = new HashMap<>();
     data.put("duration", duration.getSeconds());
 
     apiService.postPlayerAbandon(uuid.toString(), data);
+  }
+
+  public BoltResponse postPlayerRequeue(UUID uuid) {
+    return apiService.postPlayerRequeue(uuid.toString());
   }
 
   public void postMatch(BoltMatch match) {

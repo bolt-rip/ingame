@@ -148,7 +148,7 @@ public class PlayerWatcher implements Listener {
     Bukkit.getScheduler()
         .runTaskAsynchronously(
             Tournament.get(),
-            () -> Ingame.get().getApiManager().postMatchPlayerAbandon(player, duration));
+            () -> Ingame.get().getApiManager().postPlayerAbandon(player, duration));
   }
 
   private boolean isPlaying(MatchPlayer player) {
