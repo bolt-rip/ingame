@@ -17,6 +17,7 @@ import dev.pgm.events.team.TournamentTeam;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Collection;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
@@ -55,7 +56,7 @@ public class RankedManager implements Listener {
   }
 
   public void setupMatch(BoltMatch match) {
-    if (this.match != null && this.match.getMatchId().equals(match.getMatchId())) {
+    if (this.match != null && Objects.equals(this.match.getMatchId(), match.getMatchId())) {
       return;
     }
 
