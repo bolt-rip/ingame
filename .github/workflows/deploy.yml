@@ -18,9 +18,3 @@ jobs:
           servers: '[{ "id": "bolt-rip-public", "username": "${{ secrets.MAVEN_USERNAME }}", "password": "${{ secrets.MAVEN_PASSWORD }}" }]'
       - name: Publish package
         run: mvn -B deploy
-      - name: trigger docker image building
-        run: |
-            curl -H "Authorization: token "${{ secrets.PERSONAL_ACCESS_TOKEN }}"" \
-              --request POST \
-              --data '{"event_type": "build"}' \
-              https://api.github.com/repos/bolt-rip/config-pgm/dispatches
