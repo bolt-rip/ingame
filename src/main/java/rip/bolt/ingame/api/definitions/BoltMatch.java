@@ -89,11 +89,19 @@ public class BoltMatch {
 
   @Override
   public String toString() {
-    StringBuilder str = new StringBuilder();
+    StringBuilder str =
+        new StringBuilder()
+            .append("Match ID: ")
+            .append(getMatchId())
+            .append("\n")
+            .append("Map: ")
+            .append(getMap())
+            .append("\n")
+            .append("Status: ")
+            .append(getStatus())
+            .append("\n");
 
-    str.append("Match ID: ").append(getMatchId()).append("\n");
-
-    str.append("Teams: ");
+    str.append("Teams: ").append("\n");
     for (int i = 0; i < getTeams().size(); i++)
       str.append(getTeams().get(i).toString()).append("\n");
 
