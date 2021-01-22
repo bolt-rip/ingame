@@ -2,6 +2,7 @@ package rip.bolt.ingame.ranked;
 
 public enum MatchStatus {
   CREATED,
+  LOADED,
   STARTED,
   ENDED,
   CANCELLED;
@@ -11,7 +12,9 @@ public enum MatchStatus {
   public boolean canTransitionTo(MatchStatus next) {
     switch (this) {
       case CREATED:
-        return true;
+        return next == LOADED;
+      case LOADED:
+        return next == STARTED;
       case STARTED:
         return next == ENDED || next == CANCELLED;
       case ENDED:
