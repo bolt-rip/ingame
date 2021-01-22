@@ -1,9 +1,7 @@
 name: Publish compiled jar to GitHub releases
 on:
-  pull_request:
-    branches: ['*']
   push:
-    branches: ['*']
+    branches: [ master ]
 jobs:
   build:
     runs-on: ubuntu-latest
