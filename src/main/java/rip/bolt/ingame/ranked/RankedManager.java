@@ -29,6 +29,7 @@ import rip.bolt.ingame.config.AppData;
 import tc.oc.pgm.api.PGM;
 import tc.oc.pgm.api.match.Match;
 import tc.oc.pgm.api.match.event.MatchFinishEvent;
+import tc.oc.pgm.api.match.event.MatchLoadEvent;
 import tc.oc.pgm.api.match.event.MatchStartEvent;
 import tc.oc.pgm.api.party.Competitor;
 import tc.oc.pgm.lib.net.kyori.adventure.text.format.NamedTextColor;
@@ -56,9 +57,7 @@ public class RankedManager implements Listener {
   }
 
   public void setupMatch(BoltMatch match) {
-    if (this.match != null && Objects.equals(this.match.getMatchId(), match.getMatchId())) {
-      return;
-    }
+    if (!this.isValidMatch(match)) return;
 
     this.match = match;
     poll.stop();
@@ -98,6 +97,18 @@ public class RankedManager implements Listener {
         .createTournament(PGM.get().getMatchManager().getMatches().next(), format);
   }
 
+  private boolean isValidMatch(BoltMatch match) {
+    if (Objects.equals(match.getMatchId(), "") || Objects.equals(match.getMap(), "")) {
+      return false;
+    }
+
+    if (this.match != null) {
+      return !Objects.equals(this.match.getMatchId(), match.getMatchId());
+    }
+
+    return true;
+  }
+
   public BoltMatch getMatch() {
     return match;
   }
@@ -108,6 +119,11 @@ public class RankedManager implements Listener {
 
   public void manualPoll() {
     poll.trigger(true);
+  }
+
+  @EventHandler
+  public void onMatchLoad(MatchLoadEvent event) {
+    postMatchStatus(event.getMatch(), MatchStatus.LOADED);
   }
 
   @EventHandler
@@ -147,22 +163,24 @@ public class RankedManager implements Listener {
   }
 
   public BoltMatch transition(
-      Match match, BoltMatch boltMatch, MatchStatus newStatus, Instant transitonAt) {
-    if (!boltMatch.getStatus().canTransitionTo(newStatus)) return null;
+      Match match, BoltMatch boltMatch, MatchStatus newStatus, Instant transitionAt) {
+    if (boltMatch == null || !boltMatch.getStatus().canTransitionTo(newStatus)) return null;
 
     switch (newStatus) {
+      case LOADED:
+        break;
       case STARTED:
         boltMatch.setMap(match.getMap().getName());
-        boltMatch.setStartedAt(transitonAt);
+        boltMatch.setStartedAt(transitionAt);
         break;
       case ENDED:
-        boltMatch.setEndedAt(transitonAt);
+        boltMatch.setEndedAt(transitionAt);
         Collection<Competitor> winners = match.getWinners();
         if (winners.size() == 1)
           boltMatch.setWinner(Iterables.getOnlyElement(winners).getNameLegacy());
         break;
       case CANCELLED:
-        boltMatch.setEndedAt(transitonAt);
+        boltMatch.setEndedAt(transitionAt);
         break;
     }
 
