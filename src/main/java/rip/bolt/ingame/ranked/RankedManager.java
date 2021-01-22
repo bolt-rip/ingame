@@ -121,6 +121,10 @@ public class RankedManager implements Listener {
     poll.trigger(true);
   }
 
+  public void manualReset() {
+    this.match = null;
+  }
+
   @EventHandler
   public void onMatchLoad(MatchLoadEvent event) {
     postMatchStatus(event.getMatch(), MatchStatus.LOADED);

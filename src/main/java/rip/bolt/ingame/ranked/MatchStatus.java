@@ -12,9 +12,9 @@ public enum MatchStatus {
   public boolean canTransitionTo(MatchStatus next) {
     switch (this) {
       case CREATED:
-        return next == LOADED;
+        return next == LOADED || next == CANCELLED;
       case LOADED:
-        return next == STARTED;
+        return next == STARTED || next == CANCELLED;
       case STARTED:
         return next == ENDED || next == CANCELLED;
       case ENDED:

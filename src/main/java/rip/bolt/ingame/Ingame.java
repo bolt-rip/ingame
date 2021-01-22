@@ -44,8 +44,9 @@ public class Ingame extends JavaPlugin {
 
     BasicBukkitCommandGraph g = new BasicBukkitCommandGraph(new CommandModule());
     DispatcherNode node = g.getRootDispatcherNode();
-    node.registerCommands(new RankedAdminCommands());
     node.registerCommands(new RequeueCommands());
+    DispatcherNode subNode = node.registerNode("ingame");
+    subNode.registerCommands(new RankedAdminCommands());
     new CommandExecutor(this, g).register();
 
     System.out.println("[Ingame] Ingame is now enabled!");
