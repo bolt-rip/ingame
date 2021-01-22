@@ -98,15 +98,12 @@ public class RankedManager implements Listener {
   }
 
   private boolean isValidMatch(BoltMatch match) {
-    if (Objects.equals(match.getMatchId(), "") || Objects.equals(match.getMap(), "")) {
-      return false;
-    }
-
-    if (this.match != null) {
-      return !Objects.equals(this.match.getMatchId(), match.getMatchId());
-    }
-
-    return true;
+    return match != null
+        && match.getMatchId() != null
+        && !match.getMatchId().isEmpty()
+        && match.getMap() != null
+        && !match.getMap().isEmpty()
+        && (this.match == null || !Objects.equals(this.match.getMatchId(), match.getMatchId()));
   }
 
   public BoltMatch getMatch() {
