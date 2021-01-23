@@ -46,7 +46,7 @@ public class Ingame extends JavaPlugin {
     DispatcherNode node = g.getRootDispatcherNode();
     node.registerCommands(new RequeueCommands());
     DispatcherNode subNode = node.registerNode("ingame");
-    subNode.registerCommands(new RankedAdminCommands());
+    subNode.registerCommands(new RankedAdminCommands(rankedManager));
     new CommandExecutor(this, g).register();
 
     System.out.println("[Ingame] Ingame is now enabled!");

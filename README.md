@@ -14,6 +14,7 @@ Used alongside Events which handles teams and matches.
 | ------- | ----------- |
 | `ingame match` | View info about the current Bolt match |
 | `ingame poll` | Poll the API once for a new Bolt match |
+| `ingame status` | View the status of the API polling |
 | `ingame clear` | Clear the currently stored Bolt match |
 | `ingame cancel` | Report the current Bolt match as cancelled |
 
