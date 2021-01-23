@@ -30,6 +30,7 @@ import tc.oc.pgm.api.match.event.MatchFinishEvent;
 import tc.oc.pgm.api.match.event.MatchLoadEvent;
 import tc.oc.pgm.api.match.event.MatchStartEvent;
 import tc.oc.pgm.api.party.Competitor;
+import tc.oc.pgm.restart.RestartManager;
 import tc.oc.pgm.util.Audience;
 
 public class RankedManager implements Listener {
@@ -52,6 +53,7 @@ public class RankedManager implements Listener {
   }
 
   public void setupMatch(BoltMatch match) {
+    if (!this.isServerReady()) return;
     if (!this.isMatchValid(match)) return;
 
     this.match = match;
@@ -101,6 +103,10 @@ public class RankedManager implements Listener {
         && (match.getStatus().equals(MatchStatus.CREATED)
             || match.getStatus().equals(MatchStatus.LOADED))
         && (this.match == null || !Objects.equals(this.match.getMatchId(), match.getMatchId()));
+  }
+
+  private boolean isServerReady() {
+    return !RestartManager.isQueued() && RestartManager.getCountdown() == null;
   }
 
   public BoltMatch getMatch() {
