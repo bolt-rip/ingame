@@ -14,6 +14,7 @@ import tc.oc.pgm.lib.app.ashcon.intake.Command;
 import tc.oc.pgm.lib.app.ashcon.intake.CommandException;
 import tc.oc.pgm.lib.app.ashcon.intake.parametric.annotation.Switch;
 import tc.oc.pgm.lib.net.kyori.adventure.text.format.NamedTextColor;
+import tc.oc.pgm.result.TieVictoryCondition;
 import tc.oc.pgm.util.Audience;
 
 public class RankedAdminCommands {
@@ -111,6 +112,7 @@ public class RankedAdminCommands {
 
     boolean running = match.getPhase().equals(MatchPhase.RUNNING);
     if (running) {
+      match.addVictoryCondition(new TieVictoryCondition());
       match.finish();
     }
 
