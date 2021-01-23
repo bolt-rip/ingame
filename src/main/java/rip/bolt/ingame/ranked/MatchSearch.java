@@ -16,15 +16,11 @@ public class MatchSearch {
     this.setupMatch = setupMatch;
   }
 
-  public void startIn(Duration delay) {
-    setupPollTask(delay.getSeconds() * 20);
-  }
-
   public void stop() {
     if (isSyncTaskRunning()) Bukkit.getScheduler().cancelTask(syncTaskId);
   }
 
-  private boolean isSyncTaskRunning() {
+  public boolean isSyncTaskRunning() {
     return syncTaskId != -1
         && (Bukkit.getScheduler().isCurrentlyRunning(syncTaskId)
             || Bukkit.getScheduler().isQueued(syncTaskId));
@@ -43,7 +39,11 @@ public class MatchSearch {
         .execute();
   }
 
-  private void setupPollTask(long delay) {
+  public void startIn(Duration delay) {
+    startIn(delay.getSeconds() * 20);
+  }
+
+  public void startIn(long delay) {
     stop();
 
     syncTaskId =

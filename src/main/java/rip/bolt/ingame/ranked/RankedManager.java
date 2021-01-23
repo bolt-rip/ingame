@@ -1,8 +1,5 @@
 package rip.bolt.ingame.ranked;
 
-import static rip.bolt.ingame.utils.Components.command;
-import static tc.oc.pgm.lib.net.kyori.adventure.text.Component.text;
-
 import com.google.common.collect.Iterables;
 import dev.pgm.events.Tournament;
 import dev.pgm.events.format.RoundReferenceHolder;
@@ -26,15 +23,13 @@ import org.bukkit.event.Listener;
 import rip.bolt.ingame.Ingame;
 import rip.bolt.ingame.api.definitions.BoltMatch;
 import rip.bolt.ingame.config.AppData;
+import rip.bolt.ingame.utils.Messages;
 import tc.oc.pgm.api.PGM;
 import tc.oc.pgm.api.match.Match;
 import tc.oc.pgm.api.match.event.MatchFinishEvent;
 import tc.oc.pgm.api.match.event.MatchLoadEvent;
 import tc.oc.pgm.api.match.event.MatchStartEvent;
 import tc.oc.pgm.api.party.Competitor;
-import tc.oc.pgm.lib.net.kyori.adventure.text.format.NamedTextColor;
-import tc.oc.pgm.lib.net.kyori.adventure.text.format.Style;
-import tc.oc.pgm.lib.net.kyori.adventure.text.format.TextDecoration;
 import tc.oc.pgm.util.Audience;
 
 public class RankedManager implements Listener {
@@ -57,7 +52,7 @@ public class RankedManager implements Listener {
   }
 
   public void setupMatch(BoltMatch match) {
-    if (!this.isValidMatch(match)) return;
+    if (!this.isMatchValid(match)) return;
 
     this.match = match;
     poll.stop();
@@ -97,12 +92,14 @@ public class RankedManager implements Listener {
         .createTournament(PGM.get().getMatchManager().getMatches().next(), format);
   }
 
-  private boolean isValidMatch(BoltMatch match) {
+  private boolean isMatchValid(BoltMatch match) {
     return match != null
         && match.getMatchId() != null
         && !match.getMatchId().isEmpty()
         && match.getMap() != null
         && !match.getMap().isEmpty()
+        && (match.getStatus().equals(MatchStatus.CREATED)
+            || match.getStatus().equals(MatchStatus.LOADED))
         && (this.match == null || !Objects.equals(this.match.getMatchId(), match.getMatchId()));
   }
 
@@ -114,7 +111,16 @@ public class RankedManager implements Listener {
     return playerWatcher;
   }
 
-  public void manualPoll() {
+  public MatchSearch getPoll() {
+    return poll;
+  }
+
+  public void manualPoll(boolean repeat) {
+    if (repeat) {
+      poll.startIn(0L);
+      return;
+    }
+
     poll.trigger(true);
   }
 
@@ -143,14 +149,7 @@ public class RankedManager implements Listener {
     Bukkit.getScheduler()
         .scheduleSyncDelayedTask(
             Ingame.get(),
-            () ->
-                Audience.get(event.getMatch().getCompetitors())
-                    .sendMessage(
-                        text("You can queue for another match using ", NamedTextColor.GREEN)
-                            .append(
-                                command(
-                                    Style.style(NamedTextColor.YELLOW, TextDecoration.UNDERLINED),
-                                    "requeue"))),
+            () -> Audience.get(event.getMatch().getCompetitors()).sendMessage(Messages.requeue()),
             130);
   }
 
