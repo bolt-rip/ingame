@@ -42,6 +42,7 @@ public class RankedManager implements Listener {
   private BoltMatch match;
 
   private Duration cycleTime = Duration.ofSeconds(0);
+  private boolean manuallyCanceled;
 
   public RankedManager() {
 
@@ -57,6 +58,7 @@ public class RankedManager implements Listener {
     if (!this.isMatchValid(match)) return;
 
     this.match = match;
+    this.manuallyCanceled = false;
     poll.stop();
 
     Tournament.get().getTeamManager().clear();
@@ -132,6 +134,15 @@ public class RankedManager implements Listener {
 
   public void manualReset() {
     this.match = null;
+  }
+
+  public void manualCancel(Match match) {
+    this.manuallyCanceled = true;
+    this.postMatchStatus(match, MatchStatus.CANCELLED);
+  }
+
+  public boolean isManuallyCanceled() {
+    return manuallyCanceled;
   }
 
   @EventHandler

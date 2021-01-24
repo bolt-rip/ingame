@@ -31,8 +31,6 @@ public class RequeueCommands {
       throw new CommandException(
           ChatColor.RED + "You may only run this command after a match has ended.");
 
-    sender.sendMessage(text("Request to requeue has been sent.", NamedTextColor.GRAY));
-
     Ingame.newChain()
         .asyncFirst(() -> Ingame.get().getApiManager().postPlayerRequeue(sender.getId()))
         .syncLast(response -> sendResponse(sender, response))

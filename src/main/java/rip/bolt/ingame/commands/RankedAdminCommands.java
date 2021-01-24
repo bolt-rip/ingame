@@ -2,6 +2,7 @@ package rip.bolt.ingame.commands;
 
 import static tc.oc.pgm.lib.net.kyori.adventure.text.Component.text;
 
+import java.time.Duration;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.command.CommandSender;
 import rip.bolt.ingame.api.definitions.BoltMatch;
@@ -104,13 +105,13 @@ public class RankedAdminCommands {
       throw new CommandException(ChatColor.RED + "Unable to transition to the cancelled state.");
     }
 
-    ranked.postMatchStatus(match, MatchStatus.CANCELLED);
+    ranked.manualCancel(match);
 
     if (match.getPhase().equals(MatchPhase.STARTING)) {
       match.getCountdown().cancelAll();
     }
 
-    boolean running = match.getPhase().equals(MatchPhase.RUNNING);
+    boolean running = match.getPhase().canTransitionTo(MatchPhase.FINISHED);
     if (running) {
       match.addVictoryCondition(new TieVictoryCondition());
       match.finish();
@@ -125,7 +126,7 @@ public class RankedAdminCommands {
 
     if (!running) {
       Audience.get(match.getCompetitors()).sendMessage(Messages.requeue());
-      ranked.manualPoll(true);
+      ranked.getPoll().startIn(Duration.ofSeconds(15));
     }
   }
 }
