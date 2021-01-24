@@ -139,17 +139,16 @@ public class PlayerWatcher implements Listener {
 
   private boolean playersAbandoned(List<UUID> players) {
     if (players.size() <= 5) {
-      players.forEach(player -> playerAbandoned(player, absentLengths.get(player)));
+      players.forEach(this::playerAbandoned);
     }
 
     return players.size() > 0;
   }
 
-  private void playerAbandoned(UUID player, Duration duration) {
+  private void playerAbandoned(UUID player) {
     Bukkit.getScheduler()
         .runTaskAsynchronously(
-            Tournament.get(),
-            () -> Ingame.get().getApiManager().postPlayerAbandon(player, duration));
+            Tournament.get(), () -> Ingame.get().getApiManager().postPlayerPunishment(player));
   }
 
   private boolean isPlaying(MatchPlayer player) {
