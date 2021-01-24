@@ -1,6 +1,5 @@
 package rip.bolt.ingame.api;
 
-import java.util.Map;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
 import retrofit2.http.POST;
@@ -16,8 +15,8 @@ public interface APIService {
   @POST("ranked/matches/{match}")
   Void postMatch(@Path("match") String matchId, @Body BoltMatch match);
 
-  @POST("users/{uuid}/ban")
-  Void postPlayerAbandon(@Path("uuid") String uuid, @Body Map<String, Object> data);
+  @POST("users/{uuid}/punishments")
+  Void postPlayerPunishment(@Path("uuid") String uuid);
 
   @POST("users/{uuid}/requeue")
   BoltResponse postPlayerRequeue(@Path("uuid") String uuid);

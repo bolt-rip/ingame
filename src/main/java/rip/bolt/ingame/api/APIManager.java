@@ -1,9 +1,6 @@
 package rip.bolt.ingame.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.time.Duration;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.UUID;
 import okhttp3.OkHttpClient;
 import retrofit2.Retrofit;
@@ -46,11 +43,8 @@ public class APIManager {
     return apiService.getMatch(this.serverId);
   }
 
-  public void postPlayerAbandon(UUID uuid, Duration duration) {
-    Map<String, Object> data = new HashMap<>();
-    data.put("duration", duration.getSeconds());
-
-    apiService.postPlayerAbandon(uuid.toString(), data);
+  public void postPlayerPunishment(UUID uuid) {
+    apiService.postPlayerPunishment(uuid.toString());
   }
 
   public BoltResponse postPlayerRequeue(UUID uuid) {
