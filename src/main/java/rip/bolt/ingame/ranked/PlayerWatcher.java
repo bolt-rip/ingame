@@ -78,6 +78,8 @@ public class PlayerWatcher implements Listener {
 
   @EventHandler(priority = EventPriority.LOW)
   public void onMatchEnd(MatchFinishEvent event) {
+    if (rankedManager.isManuallyCanceled()) return;
+
     if (event.getMatch().getDuration().compareTo(ABSENT_MAX) > 0) {
       this.absentLengths.forEach((key, value) -> updateAbsenceLengths(key));
 
@@ -87,15 +89,14 @@ public class PlayerWatcher implements Listener {
               .map(Map.Entry::getKey)
               .collect(Collectors.toList());
 
-      if (absentPlayers.size() > 0) {
-        event
-            .getMatch()
-            .sendMessage(
-                text(
-                    "A player was a temporarily banned due to lack of participation. "
-                        + "As the match was unbalanced it will take less of an effect on player scores.",
-                    NamedTextColor.GRAY));
-      }
+      if (!playersAbandoned(absentPlayers)) return;
+
+      event
+          .getMatch()
+          .sendMessage(
+              text(
+                  "Player(s) temporarily banned due to lack of participation.",
+                  NamedTextColor.GRAY));
     }
   }
 
