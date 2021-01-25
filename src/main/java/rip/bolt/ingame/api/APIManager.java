@@ -1,6 +1,7 @@
 package rip.bolt.ingame.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.Collections;
 import java.util.UUID;
 import okhttp3.OkHttpClient;
 import retrofit2.Retrofit;
@@ -44,7 +45,7 @@ public class APIManager {
   }
 
   public void postPlayerPunishment(UUID uuid) {
-    apiService.postPlayerPunishment(uuid.toString());
+    apiService.postPlayerPunishment(uuid.toString(), Collections.singletonMap("punisher", null));
   }
 
   public BoltResponse postPlayerRequeue(UUID uuid) {
