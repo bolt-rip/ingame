@@ -20,6 +20,7 @@ Used alongside [Events](https://github.com/PGMDev/Events) which handles teams an
 | `ingame status` | View the status of the API polling |
 | `ingame clear` | Clear the currently stored Bolt match |
 | `ingame cancel` | Report the current Bolt match as cancelled |
+| `ingame ban <player>` | Manually queue bans a player |
 
 ### Player Commands
 

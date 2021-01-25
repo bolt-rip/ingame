@@ -5,6 +5,8 @@ import static tc.oc.pgm.lib.net.kyori.adventure.text.Component.text;
 import java.time.Duration;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
+import rip.bolt.ingame.Ingame;
 import rip.bolt.ingame.api.definitions.BoltMatch;
 import rip.bolt.ingame.ranked.MatchStatus;
 import rip.bolt.ingame.ranked.RankedManager;
@@ -128,5 +130,13 @@ public class RankedAdminCommands {
       Audience.get(match.getCompetitors()).sendMessage(Messages.requeue());
       ranked.getPoll().startIn(Duration.ofSeconds(15));
     }
+  }
+
+  @Command(aliases = "ban", desc = "Manually queue bans a player", perms = "ingame.staff.ban")
+  public void ban(CommandSender sender, Player target) {
+    Audience.get(sender)
+        .sendMessage(text(target.getName() + " has been queue banned.", NamedTextColor.GRAY));
+
+    Ingame.get().getApiManager().postPlayerPunishment(target.getUniqueId());
   }
 }
