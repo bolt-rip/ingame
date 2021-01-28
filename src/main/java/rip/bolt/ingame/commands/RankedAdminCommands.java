@@ -3,6 +3,8 @@ package rip.bolt.ingame.commands;
 import static tc.oc.pgm.lib.net.kyori.adventure.text.Component.text;
 
 import java.time.Duration;
+import java.util.UUID;
+import javax.annotation.Nullable;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -16,6 +18,7 @@ import tc.oc.pgm.api.match.MatchPhase;
 import tc.oc.pgm.lib.app.ashcon.intake.Command;
 import tc.oc.pgm.lib.app.ashcon.intake.CommandException;
 import tc.oc.pgm.lib.app.ashcon.intake.parametric.annotation.Switch;
+import tc.oc.pgm.lib.app.ashcon.intake.parametric.annotation.Text;
 import tc.oc.pgm.lib.net.kyori.adventure.text.format.NamedTextColor;
 import tc.oc.pgm.result.TieVictoryCondition;
 import tc.oc.pgm.util.Audience;
@@ -133,10 +136,12 @@ public class RankedAdminCommands {
   }
 
   @Command(aliases = "ban", desc = "Manually queue bans a player", perms = "ingame.staff.ban")
-  public void ban(CommandSender sender, Player target) {
+  public void ban(CommandSender sender, Player target, @Text @Nullable String reason) {
     Audience.get(sender)
         .sendMessage(text(target.getName() + " has been queue banned.", NamedTextColor.GRAY));
 
-    Ingame.get().getApiManager().postPlayerPunishment(target.getUniqueId());
+    UUID senderUuid = (sender instanceof Player) ? ((Player) sender).getUniqueId() : null;
+
+    Ingame.get().getApiManager().postPlayerPunishment(target.getUniqueId(), senderUuid, reason);
   }
 }
