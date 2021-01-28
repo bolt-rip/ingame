@@ -1,6 +1,6 @@
 # Ingame
 
-Plugin to used to manage competitive matches on bolt.rip.
+Plugin used to manage competitive matches on bolt.rip.
 
 Used alongside [Events](https://github.com/PGMDev/Events) which handles teams and matches.
 
