@@ -38,9 +38,8 @@ public class RequeueCommands {
   }
 
   private void sendResponse(MatchPlayer player, BoltResponse response) {
-    player.sendMessage(
-        text(
-            response.getMessage(),
-            response.getSuccess() ? NamedTextColor.GREEN : NamedTextColor.RED));
+    if (response.getSuccess()) return;
+
+    player.sendMessage(text(response.getMessage(), NamedTextColor.RED));
   }
 }
