@@ -16,6 +16,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerLoginEvent;
 import rip.bolt.ingame.Ingame;
+import rip.bolt.ingame.api.definitions.Punishment;
 import rip.bolt.ingame.config.AppData;
 import tc.oc.pgm.api.match.Match;
 import tc.oc.pgm.api.match.event.MatchFinishEvent;
@@ -148,7 +149,8 @@ public class PlayerWatcher implements Listener {
   private void playerAbandoned(UUID player) {
     Bukkit.getScheduler()
         .runTaskAsynchronously(
-            Tournament.get(), () -> Ingame.get().getApiManager().postPlayerPunishment(player));
+            Tournament.get(),
+            () -> Ingame.get().getApiManager().postPlayerPunishment(new Punishment(player)));
   }
 
   private boolean isPlaying(MatchPlayer player) {

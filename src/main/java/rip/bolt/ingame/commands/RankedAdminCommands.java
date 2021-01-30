@@ -2,14 +2,16 @@ package rip.bolt.ingame.commands;
 
 import static tc.oc.pgm.lib.net.kyori.adventure.text.Component.text;
 
+import dev.pgm.events.Tournament;
 import java.time.Duration;
-import java.util.UUID;
 import javax.annotation.Nullable;
 import net.md_5.bungee.api.ChatColor;
+import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import rip.bolt.ingame.Ingame;
 import rip.bolt.ingame.api.definitions.BoltMatch;
+import rip.bolt.ingame.api.definitions.Punishment;
 import rip.bolt.ingame.ranked.MatchStatus;
 import rip.bolt.ingame.ranked.RankedManager;
 import rip.bolt.ingame.utils.Messages;
@@ -140,8 +142,10 @@ public class RankedAdminCommands {
     Audience.get(sender)
         .sendMessage(text(target.getName() + " has been queue banned.", NamedTextColor.GRAY));
 
-    UUID senderUuid = (sender instanceof Player) ? ((Player) sender).getUniqueId() : null;
+    Punishment punishment = new Punishment(target.getUniqueId(), sender, reason);
 
-    Ingame.get().getApiManager().postPlayerPunishment(target.getUniqueId(), senderUuid, reason);
+    Bukkit.getScheduler()
+        .runTaskAsynchronously(
+            Tournament.get(), () -> Ingame.get().getApiManager().postPlayerPunishment(punishment));
   }
 }
