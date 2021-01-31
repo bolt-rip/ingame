@@ -41,6 +41,7 @@ public class Ingame extends JavaPlugin {
 
     Bukkit.getPluginManager().registerEvents(rankedManager, this);
     Bukkit.getPluginManager().registerEvents(rankedManager.getPlayerWatcher(), this);
+    Bukkit.getPluginManager().registerEvents(rankedManager.getRankManager(), this);
 
     BasicBukkitCommandGraph g = new BasicBukkitCommandGraph(new CommandModule());
     DispatcherNode node = g.getRootDispatcherNode();

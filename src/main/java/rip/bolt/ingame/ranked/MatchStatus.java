@@ -7,8 +7,6 @@ public enum MatchStatus {
   ENDED,
   CANCELLED;
 
-  private MatchStatus() {}
-
   public boolean canTransitionTo(MatchStatus next) {
     switch (this) {
       case CREATED:

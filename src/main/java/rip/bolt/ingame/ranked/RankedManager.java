@@ -18,10 +18,12 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import rip.bolt.ingame.Ingame;
 import rip.bolt.ingame.api.definitions.BoltMatch;
+import rip.bolt.ingame.api.definitions.Team;
 import rip.bolt.ingame.config.AppData;
 import rip.bolt.ingame.utils.Messages;
 import tc.oc.pgm.api.PGM;
@@ -36,6 +38,7 @@ import tc.oc.pgm.util.Audience;
 public class RankedManager implements Listener {
 
   private final PlayerWatcher playerWatcher;
+  private final RankManager rankManager;
   private final MatchSearch poll;
 
   private TournamentFormat format;
@@ -45,8 +48,8 @@ public class RankedManager implements Listener {
   private boolean manuallyCanceled;
 
   public RankedManager() {
-
     playerWatcher = new PlayerWatcher(this);
+    rankManager = new RankManager(this);
     MatchPreloader.create();
 
     poll = new MatchSearch(this::setupMatch);
@@ -69,6 +72,7 @@ public class RankedManager implements Listener {
             .flatMap(team -> team.getPlayers().stream())
             .map(TournamentPlayer::getUUID)
             .collect(Collectors.toList()));
+    rankManager.updateAll();
 
     format =
         new TournamentFormatImpl(
@@ -96,15 +100,21 @@ public class RankedManager implements Listener {
         .createTournament(PGM.get().getMatchManager().getMatches().next(), format);
   }
 
+  private void updateMatch(BoltMatch match) {
+    // TODO: handle the result after updating a match
+  }
+
+  private void updatePlayer(Player player) {}
+
   private boolean isMatchValid(BoltMatch match) {
     return match != null
-        && match.getMatchId() != null
-        && !match.getMatchId().isEmpty()
+        && match.getId() != null
+        && !match.getId().isEmpty()
         && match.getMap() != null
         && !match.getMap().isEmpty()
         && (match.getStatus().equals(MatchStatus.CREATED)
             || match.getStatus().equals(MatchStatus.LOADED))
-        && (this.match == null || !Objects.equals(this.match.getMatchId(), match.getMatchId()));
+        && (this.match == null || !Objects.equals(this.match.getId(), match.getId()));
   }
 
   private boolean isServerReady() {
@@ -117,6 +127,10 @@ public class RankedManager implements Listener {
 
   public PlayerWatcher getPlayerWatcher() {
     return playerWatcher;
+  }
+
+  public RankManager getRankManager() {
+    return rankManager;
   }
 
   public MatchSearch getPoll() {
@@ -167,15 +181,16 @@ public class RankedManager implements Listener {
         .scheduleSyncDelayedTask(
             Ingame.get(),
             () -> Audience.get(event.getMatch().getCompetitors()).sendMessage(Messages.requeue()),
-            130);
+            20);
   }
 
   public void postMatchStatus(Match match, MatchStatus status) {
     Instant now = Instant.now();
-    Ingame.newSharedChain("post")
+    Ingame.newSharedChain("match")
         .syncFirst(() -> transition(match, this.match, status, now))
         .abortIfNull()
-        .asyncLast(Ingame.get().getApiManager()::postMatch)
+        .async(Ingame.get().getApiManager()::postMatch)
+        .syncLast(this::updateMatch)
         .execute();
   }
 
@@ -193,8 +208,14 @@ public class RankedManager implements Listener {
       case ENDED:
         boltMatch.setEndedAt(transitionAt);
         Collection<Competitor> winners = match.getWinners();
-        if (winners.size() == 1)
-          boltMatch.setWinner(Iterables.getOnlyElement(winners).getNameLegacy());
+        if (winners.size() == 1) {
+          format
+              .teamManager()
+              .tournamentTeam(Iterables.getOnlyElement(winners))
+              .filter(t -> t instanceof Team)
+              .map(t -> (Team) t)
+              .ifPresent(boltMatch::setWinner);
+        }
         break;
       case CANCELLED:
         boltMatch.setEndedAt(transitionAt);

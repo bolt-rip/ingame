@@ -31,7 +31,7 @@ public class MatchSearch {
   }
 
   public void trigger(boolean force) {
-    Ingame.newSharedChain("poll")
+    Ingame.newSharedChain("match")
         .abortIf(o -> !force && !isSyncTaskRunning())
         .asyncFirst(() -> Ingame.get().getApiManager().fetchMatchData())
         .abortIfNull()
