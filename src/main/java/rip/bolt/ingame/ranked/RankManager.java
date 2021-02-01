@@ -10,9 +10,16 @@ import rip.bolt.ingame.Ingame;
 import rip.bolt.ingame.api.definitions.User;
 import tc.oc.pgm.api.PGM;
 import tc.oc.pgm.api.event.NameDecorationChangeEvent;
+import tc.oc.pgm.api.match.Match;
+import tc.oc.pgm.api.party.Competitor;
+import tc.oc.pgm.api.party.Party;
 import tc.oc.pgm.api.player.MatchPlayer;
 import tc.oc.pgm.events.PlayerPartyChangeEvent;
 import tc.oc.pgm.util.bukkit.OnlinePlayerMapAdapter;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import java.util.Iterator;
 
 public class RankManager implements Listener {
 
@@ -25,29 +32,31 @@ public class RankManager implements Listener {
   }
 
   public void updateAll() {
-    Bukkit.getOnlinePlayers().forEach(this::updatePlayer);
+    Iterator<Match> matches = PGM.get().getMatchManager().getMatches();
+    while (matches.hasNext()) {
+      Match match = matches.next();
+      match.getPlayers().forEach(p -> updatePlayer(p, p.getParty()));
+    }
   }
 
-  public void updatePlayer(Player player) {
+  public void updatePlayer(@Nonnull MatchPlayer mp, @Nullable Party party) {
+    Player player = mp.getBukkit();
     PermissionAttachment perm = permissions.get(player);
+    User user = manager.getMatch().getUser(mp.getId());
 
-    User user = manager.getMatch().getUser(player.getUniqueId());
-    MatchPlayer mp = PGM.get().getMatchManager().getPlayer(player);
-
-    if ((perm != null) == (user != null && mp != null && mp.getCompetitor() != null)) return;
+    if ((perm != null) == (user != null && party instanceof Competitor)) return;
 
     if (perm != null) {
-      player.removeAttachment(perm);
-      permissions.remove(player);
+      mp.getBukkit().removeAttachment(perm);
+      permissions.remove(mp.getBukkit());
     } else {
-      permissions.put(
-          player, player.addAttachment(Ingame.get(), "pgm.group." + user.getRank(), true));
+      permissions.put(player, player.addAttachment(Ingame.get(), "pgm.group." + user.getRank(), true));
     }
-    Bukkit.getPluginManager().callEvent(new NameDecorationChangeEvent(player.getUniqueId()));
+    Bukkit.getPluginManager().callEvent(new NameDecorationChangeEvent(mp.getId()));
   }
 
   @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
   public void onPlayerJoin(PlayerPartyChangeEvent e) {
-    updatePlayer(e.getPlayer().getBukkit());
+    updatePlayer(e.getPlayer(), e.getNewParty());
   }
 }
