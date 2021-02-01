@@ -72,7 +72,7 @@ public class RankedManager implements Listener {
             .flatMap(team -> team.getPlayers().stream())
             .map(TournamentPlayer::getUUID)
             .collect(Collectors.toList()));
-    rankManager.updateAll();
+    //rankManager.updateAll();
 
     format =
         new TournamentFormatImpl(
