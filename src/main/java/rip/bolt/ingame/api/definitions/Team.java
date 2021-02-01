@@ -1,5 +1,6 @@
 package rip.bolt.ingame.api.definitions;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonProperty.Access;
@@ -50,6 +51,7 @@ public class Team implements TournamentTeam {
   }
 
   @Override
+  @JsonIgnore
   public List<? extends TournamentPlayer> getPlayers() {
     return getParticipations().stream().map(Participation::getUser).collect(Collectors.toList());
   }
