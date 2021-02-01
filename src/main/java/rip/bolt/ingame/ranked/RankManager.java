@@ -1,5 +1,8 @@
 package rip.bolt.ingame.ranked;
 
+import java.util.Iterator;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -7,6 +10,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.permissions.PermissionAttachment;
 import rip.bolt.ingame.Ingame;
+import rip.bolt.ingame.api.definitions.BoltMatch;
 import rip.bolt.ingame.api.definitions.User;
 import tc.oc.pgm.api.PGM;
 import tc.oc.pgm.api.event.NameDecorationChangeEvent;
@@ -16,10 +20,6 @@ import tc.oc.pgm.api.party.Party;
 import tc.oc.pgm.api.player.MatchPlayer;
 import tc.oc.pgm.events.PlayerPartyChangeEvent;
 import tc.oc.pgm.util.bukkit.OnlinePlayerMapAdapter;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import java.util.Iterator;
 
 public class RankManager implements Listener {
 
@@ -42,7 +42,8 @@ public class RankManager implements Listener {
   public void updatePlayer(@Nonnull MatchPlayer mp, @Nullable Party party) {
     Player player = mp.getBukkit();
     PermissionAttachment perm = permissions.get(player);
-    User user = manager.getMatch().getUser(mp.getId());
+    BoltMatch match = manager.getMatch();
+    User user = match == null ? null : match.getUser(mp.getId());
 
     if ((perm != null) == (user != null && party instanceof Competitor)) return;
 
@@ -50,7 +51,8 @@ public class RankManager implements Listener {
       mp.getBukkit().removeAttachment(perm);
       permissions.remove(mp.getBukkit());
     } else {
-      permissions.put(player, player.addAttachment(Ingame.get(), "pgm.group." + user.getRank(), true));
+      permissions.put(
+          player, player.addAttachment(Ingame.get(), "pgm.group." + user.getRank(), true));
     }
     Bukkit.getPluginManager().callEvent(new NameDecorationChangeEvent(mp.getId()));
   }
