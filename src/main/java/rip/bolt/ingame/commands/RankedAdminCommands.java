@@ -56,7 +56,8 @@ public class RankedAdminCommands {
       desc = "Clear the currently stored Bolt match",
       perms = "ingame.staff.clear")
   public void clear(CommandSender sender) throws CommandException {
-    if (ranked.getMatch() == null)
+    BoltMatch match = ranked.getMatch();
+    if (match == null)
       throw new CommandException(
           ChatColor.RED + "Unable to clear as no ranked match currently stored.");
 
@@ -65,7 +66,7 @@ public class RankedAdminCommands {
     Audience.get(sender)
         .sendMessage(
             text(
-                "Currently stored Bolt match " + ranked.getMatch().getId() + " has been removed.",
+                "Currently stored Bolt match " + match.getId() + " has been removed.",
                 NamedTextColor.GRAY));
   }
 

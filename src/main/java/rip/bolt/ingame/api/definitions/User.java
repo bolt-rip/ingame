@@ -1,6 +1,8 @@
 package rip.bolt.ingame.api.definitions;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import dev.pgm.events.team.TournamentPlayer;
 import java.util.UUID;
 
@@ -29,6 +31,8 @@ public class User implements TournamentPlayer {
   }
 
   @Override
+  @JsonIgnore
+  @JsonProperty("UUID")
   public UUID getUUID() {
     return uuid;
   }
