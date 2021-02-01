@@ -14,7 +14,7 @@ public interface APIService {
   BoltMatch getMatch(@Path("server") String serverId);
 
   @POST("ranked/matches/{match}")
-  Void postMatch(@Path("match") String matchId, @Body BoltMatch match);
+  BoltMatch postMatch(@Path("match") String matchId, @Body BoltMatch match);
 
   @POST("users/{uuid}/punishments")
   Void postPlayerPunishment(@Path("uuid") String uuid, @Body Punishment punishment);

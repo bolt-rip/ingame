@@ -4,21 +4,21 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonProperty.Access;
 import java.time.Instant;
+import java.util.Collection;
 import java.util.List;
+import java.util.UUID;
 import rip.bolt.ingame.ranked.MatchStatus;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class BoltMatch {
 
-  @JsonProperty("id")
-  private String matchId;
-
+  private String id;
   private String map;
 
   @JsonProperty(access = Access.WRITE_ONLY)
   private List<Team> teams;
 
-  private String winner;
+  private Team winner;
 
   private Instant startedAt;
   private Instant endedAt;
@@ -28,15 +28,15 @@ public class BoltMatch {
   public BoltMatch() {}
 
   public BoltMatch(String matchId) {
-    this.matchId = matchId;
+    this.id = matchId;
   }
 
-  public String getMatchId() {
-    return matchId;
+  public String getId() {
+    return id;
   }
 
-  public void setMatchId(String matchId) {
-    this.matchId = matchId;
+  public void setId(String id) {
+    this.id = id;
   }
 
   public String getMap() {
@@ -55,11 +55,11 @@ public class BoltMatch {
     this.teams = teams;
   }
 
-  public String getWinner() {
+  public Team getWinner() {
     return winner;
   }
 
-  public void setWinner(String winner) {
+  public void setWinner(Team winner) {
     this.winner = winner;
   }
 
@@ -87,12 +87,22 @@ public class BoltMatch {
     this.status = status;
   }
 
+  public User getUser(UUID uuid) {
+    return teams.stream()
+        .map(Team::getParticipations)
+        .flatMap(Collection::stream)
+        .map(Participation::getUser)
+        .filter(u -> u.getUUID().equals(uuid))
+        .findFirst()
+        .orElse(null);
+  }
+
   @Override
   public String toString() {
     StringBuilder str =
         new StringBuilder()
             .append("Match ID: ")
-            .append(getMatchId())
+            .append(getId())
             .append("\n")
             .append("Map: ")
             .append(getMap())

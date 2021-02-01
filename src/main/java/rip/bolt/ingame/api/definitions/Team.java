@@ -2,30 +2,34 @@ package rip.bolt.ingame.api.definitions;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonProperty.Access;
 import dev.pgm.events.team.TournamentPlayer;
 import dev.pgm.events.team.TournamentTeam;
 import java.util.List;
+import java.util.Objects;
+import java.util.function.Consumer;
+import java.util.stream.Collectors;
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 
-/**
- * Class to represent a given team in a Bolt match. The team will have a list of {@link
- * Participant}s (aka the team roster) assigned to it. This list of players is fetched from the Bolt
- * API in the {@link rip.bolt.ingame.api.APIManager} class.
- *
- * @author Picajoluna
- */
+/** A team for a bolt match, has the id & name, as well as the involved participants */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Team implements TournamentTeam {
 
+  private Integer id;
   private String name;
 
-  @JsonProperty("players")
-  private List<Participant> participants;
+  @JsonProperty(access = Access.WRITE_ONLY)
+  private List<Participation> participations;
 
   public Team() {}
 
-  public Team(String name, List<Participant> participants) {
-    this.name = name;
-    this.participants = participants;
+  public Integer getId() {
+    return id;
+  }
+
+  public void setId(Integer id) {
+    this.id = id;
   }
 
   @Override
@@ -33,21 +37,42 @@ public class Team implements TournamentTeam {
     return name;
   }
 
+  public void setName(String name) {
+    this.name = name;
+  }
+
+  public List<Participation> getParticipations() {
+    return participations;
+  }
+
+  public void setParticipations(List<Participation> participations) {
+    this.participations = participations;
+  }
+
   @Override
-  public List<Participant> getPlayers() {
-    return this.participants;
+  public List<? extends TournamentPlayer> getPlayers() {
+    return getParticipations().stream().map(Participation::getUser).collect(Collectors.toList());
+  }
+
+  @Override
+  public void forEachPlayer(Consumer<Player> func) {
+    participations.stream()
+        .map(Participation::getUser)
+        .map(User::getUUID)
+        .map(Bukkit::getPlayer)
+        .filter(Objects::nonNull)
+        .forEach(func);
   }
 
   @Override
   public String toString() {
-    StringBuilder str = new StringBuilder();
-    str.append("Team ").append(getName()).append(": ");
-
-    // Print list of participants on the team
-    for (TournamentPlayer player : getPlayers()) str.append(player.toString()).append(", ");
-    str.setLength(str.length() - 2); // remove the final ", "
-
-    return str.toString();
+    return "Team "
+        + getName()
+        + ": "
+        + getParticipations().stream()
+            .map(Participation::getUser)
+            .map(User::toString)
+            .collect(Collectors.joining(", "));
   }
 
   @Override
@@ -57,11 +82,11 @@ public class Team implements TournamentTeam {
 
     Team that = (Team) o;
 
-    return name.equals(that.getName());
+    return Objects.equals(id, that.id);
   }
 
   @Override
   public int hashCode() {
-    return name.hashCode();
+    return Objects.hash(id);
   }
 }

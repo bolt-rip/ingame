@@ -52,7 +52,7 @@ public class APIManager {
     return apiService.postPlayerRequeue(uuid.toString());
   }
 
-  public void postMatch(BoltMatch match) {
-    apiService.postMatch(match.getMatchId(), match);
+  public BoltMatch postMatch(BoltMatch match) {
+    return apiService.postMatch(match.getId(), match);
   }
 }

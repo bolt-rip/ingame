@@ -2,43 +2,48 @@ package rip.bolt.ingame.api.definitions;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import dev.pgm.events.team.TournamentPlayer;
 import java.util.UUID;
 
-/**
- * Class to represent a single Bolt participant (i.e. player).
- *
- * @author Picajoluna
- */
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class Participant implements TournamentPlayer {
+public class User implements TournamentPlayer {
 
   private UUID uuid;
+  private String rank;
 
-  @JsonIgnore private boolean canVeto;
+  public User() {}
 
-  public Participant() {}
+  public UUID getUuid() {
+    return uuid;
+  }
 
-  public Participant(UUID uuid, boolean canVeto) {
+  public void setUuid(UUID uuid) {
     this.uuid = uuid;
-    this.canVeto = canVeto;
+  }
+
+  public String getRank() {
+    return rank;
+  }
+
+  public void setRank(String rank) {
+    this.rank = rank;
   }
 
   @Override
+  @JsonIgnore
+  @JsonProperty("UUID")
   public UUID getUUID() {
     return uuid;
   }
 
   @Override
   public boolean canVeto() {
-    return canVeto;
+    return true;
   }
 
   @Override
   public String toString() {
-    StringBuilder str = new StringBuilder();
-    str.append(getUUID());
-
-    return str.toString();
+    return String.valueOf(uuid);
   }
 }
