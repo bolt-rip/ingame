@@ -10,8 +10,7 @@ import tc.oc.pgm.lib.net.kyori.adventure.text.format.TextColor;
 
 public class Components {
 
-  private static final String MATCH_PENDING = "\u29be", // ⦾
-      MATCH_ENDED = "\u29bf"; // ⦿
+  private static final String MATCH_ICON = "\u29bf";
 
   public static Component command(Style style, String command, String... args) {
     StringBuilder builder = new StringBuilder();
@@ -33,7 +32,7 @@ public class Components {
     return input.replace(" ", "┈");
   }
 
-  public static Component match(boolean ended, TextColor color) {
-    return text(ended ? MATCH_ENDED : MATCH_PENDING, color);
+  public static Component matchResult(TextColor color) {
+    return text(MATCH_ICON, color);
   }
 }

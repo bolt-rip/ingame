@@ -31,10 +31,11 @@ import tc.oc.pgm.util.bukkit.OnlinePlayerMapAdapter;
 
 public class RankManager implements Listener {
 
-  private static final Component RANK_PREFIX = text("Rank: ", NamedTextColor.WHITE),
-      MMR_PREFIX = text("MMR: ", NamedTextColor.WHITE),
-      PLACEMENT_MATCHES = text("Placement matches: ", NamedTextColor.WHITE),
-      ARROW = text(" ➞ ", NamedTextColor.WHITE);
+  private static final Component RANK_PREFIX = text("Rank: ");
+  private static final Component MMR_PREFIX = text("MMR: ");
+  private static final Component PLACEMENT_MATCHES = text("Placement matches: ");
+  private static final Component ARROW = text(" ➔ ", NamedTextColor.WHITE);
+  private static final Component MATCH_SEPARATOR = text("-", NamedTextColor.DARK_GRAY);
 
   private static final LegacyComponentSerializer SERIALIZER =
       LegacyComponentSerializer.legacySection();
@@ -88,9 +89,8 @@ public class RankManager implements Listener {
       while ((results.size() % 15) != 0) results.add(MatchResult.UNKNOWN);
 
       player.sendMessage(PLACEMENT_MATCHES);
-      for (int i = 0; i < results.size(); ) {
-        player.sendMessage(Component.join(text("-"), results.subList(i, i += 15)));
-      }
+      for (int i = 0; i < results.size(); )
+        player.sendMessage(Component.join(MATCH_SEPARATOR, results.subList(i, i += 15)));
     }
 
     return player;
