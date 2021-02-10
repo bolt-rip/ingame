@@ -102,7 +102,10 @@ public class RankedManager implements Listener {
   }
 
   private void updateMatch(BoltMatch match) {
-    if (this.match == null || match == null || !Objects.equals(this.match.getId(), match.getId())) {
+    if (this.match == null
+        || match == null
+        || !Objects.equals(this.match.getId(), match.getId())
+        || match.getStatus() != MatchStatus.ENDED) {
       return;
     }
 
