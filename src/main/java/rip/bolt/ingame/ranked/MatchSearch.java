@@ -1,6 +1,5 @@
 package rip.bolt.ingame.ranked;
 
-import dev.pgm.events.Tournament;
 import java.time.Duration;
 import java.util.function.Consumer;
 import org.bukkit.Bukkit;
@@ -48,6 +47,6 @@ public class MatchSearch {
 
     syncTaskId =
         Bukkit.getScheduler()
-            .scheduleSyncRepeatingTask(Tournament.get(), this::trigger, delay, 15 * 20);
+            .scheduleSyncRepeatingTask(Ingame.get(), this::trigger, delay, 15 * 20);
   }
 }

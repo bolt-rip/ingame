@@ -2,7 +2,6 @@ package rip.bolt.ingame.ranked;
 
 import static tc.oc.pgm.lib.net.kyori.adventure.text.Component.text;
 
-import dev.pgm.events.Tournament;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.HashMap;
@@ -149,7 +148,7 @@ public class PlayerWatcher implements Listener {
   private void playerAbandoned(UUID player) {
     Bukkit.getScheduler()
         .runTaskAsynchronously(
-            Tournament.get(),
+            Ingame.get(),
             () -> Ingame.get().getApiManager().postPlayerPunishment(new Punishment(player)));
   }
 

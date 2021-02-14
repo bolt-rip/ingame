@@ -2,7 +2,6 @@ package rip.bolt.ingame.commands;
 
 import static tc.oc.pgm.lib.net.kyori.adventure.text.Component.text;
 
-import dev.pgm.events.Tournament;
 import java.time.Duration;
 import javax.annotation.Nullable;
 import net.md_5.bungee.api.ChatColor;
@@ -77,7 +76,7 @@ public class RankedAdminCommands {
   public void match(CommandSender sender) throws CommandException {
     BoltMatch boltMatch = ranked.getMatch();
     if (boltMatch == null)
-      throw new CommandException(ChatColor.RED + "No match Bolt match currently loaded.");
+      throw new CommandException(ChatColor.RED + "No Bolt match currently loaded.");
 
     Audience.get(sender).sendMessage(text(boltMatch.toString(), NamedTextColor.GRAY));
   }
@@ -105,7 +104,7 @@ public class RankedAdminCommands {
   public void cancel(CommandSender sender, Match match) throws CommandException {
     BoltMatch boltMatch = ranked.getMatch();
     if (boltMatch == null)
-      throw new CommandException(ChatColor.RED + "No match Bolt match currently loaded.");
+      throw new CommandException(ChatColor.RED + "No Bolt match currently loaded.");
 
     if (!boltMatch.getStatus().canTransitionTo(MatchStatus.CANCELLED)) {
       throw new CommandException(ChatColor.RED + "Unable to transition to the cancelled state.");
@@ -145,6 +144,6 @@ public class RankedAdminCommands {
 
     Bukkit.getScheduler()
         .runTaskAsynchronously(
-            Tournament.get(), () -> Ingame.get().getApiManager().postPlayerPunishment(punishment));
+            Ingame.get(), () -> Ingame.get().getApiManager().postPlayerPunishment(punishment));
   }
 }
