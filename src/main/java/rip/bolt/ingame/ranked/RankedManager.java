@@ -55,7 +55,7 @@ public class RankedManager implements Listener {
     MatchPreloader.create();
 
     poll = new MatchSearch(this::setupMatch);
-    poll.startIn(Duration.ofSeconds(15));
+    poll.startIn(Duration.ofSeconds(5));
   }
 
   public void setupMatch(BoltMatch match) {
