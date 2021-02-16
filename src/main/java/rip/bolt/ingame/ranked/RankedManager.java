@@ -25,13 +25,16 @@ import rip.bolt.ingame.Ingame;
 import rip.bolt.ingame.api.definitions.BoltMatch;
 import rip.bolt.ingame.api.definitions.Participation;
 import rip.bolt.ingame.api.definitions.Team;
+import rip.bolt.ingame.api.definitions.User;
 import rip.bolt.ingame.config.AppData;
 import rip.bolt.ingame.utils.Messages;
 import tc.oc.pgm.api.PGM;
 import tc.oc.pgm.api.match.Match;
+import tc.oc.pgm.api.match.MatchManager;
 import tc.oc.pgm.api.match.event.MatchFinishEvent;
 import tc.oc.pgm.api.match.event.MatchLoadEvent;
 import tc.oc.pgm.api.match.event.MatchStartEvent;
+import tc.oc.pgm.api.match.event.MatchStatsEvent;
 import tc.oc.pgm.api.party.Competitor;
 import tc.oc.pgm.api.player.MatchPlayer;
 import tc.oc.pgm.restart.RestartManager;
@@ -109,17 +112,43 @@ public class RankedManager implements Listener {
       return;
     }
 
-    List<MatchPlayer> players =
+    MatchManager mm = PGM.get().getMatchManager();
+
+    List<UpdateRecord> updates =
         match.getTeams().stream()
             .map(Team::getParticipations)
             .flatMap(Collection::stream)
             .map(Participation::getUser)
-            .map(rankManager::notifyUpdates)
-            .filter(Objects::nonNull)
+            .map(
+                u ->
+                    new UpdateRecord(u, this.match.getUser(u.getUuid()), mm.getPlayer(u.getUuid())))
+            .filter(UpdateRecord::isValid)
             .collect(Collectors.toList());
 
     this.match = match;
-    players.forEach(rankManager::updatePlayer);
+    if (updates.isEmpty()) return;
+
+    Match pgmMatch = updates.get(0).player.getMatch();
+    pgmMatch.callEvent(new MatchStatsEvent(pgmMatch, true, true));
+
+    for (UpdateRecord update : updates) {
+      rankManager.notifyUpdates(update.old, update.updated, update.player);
+    }
+  }
+
+  public static class UpdateRecord {
+    private final User old, updated;
+    private final MatchPlayer player;
+
+    public UpdateRecord(User old, User updated, MatchPlayer mp) {
+      this.old = old;
+      this.updated = updated;
+      this.player = mp;
+    }
+
+    public boolean isValid() {
+      return old != null && updated != null && player != null;
+    }
   }
 
   private boolean isMatchValid(BoltMatch match) {
