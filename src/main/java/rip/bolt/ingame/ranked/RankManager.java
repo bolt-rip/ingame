@@ -3,8 +3,10 @@ package rip.bolt.ingame.ranked;
 import static tc.oc.pgm.lib.net.kyori.adventure.text.Component.text;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import org.bukkit.Bukkit;
@@ -16,9 +18,13 @@ import org.bukkit.permissions.PermissionAttachment;
 import rip.bolt.ingame.Ingame;
 import rip.bolt.ingame.api.definitions.BoltMatch;
 import rip.bolt.ingame.api.definitions.MatchResult;
+import rip.bolt.ingame.api.definitions.Participation;
+import rip.bolt.ingame.api.definitions.Team;
 import rip.bolt.ingame.api.definitions.User;
 import tc.oc.pgm.api.PGM;
 import tc.oc.pgm.api.event.NameDecorationChangeEvent;
+import tc.oc.pgm.api.match.MatchManager;
+import tc.oc.pgm.api.match.event.MatchStatsEvent;
 import tc.oc.pgm.api.party.Competitor;
 import tc.oc.pgm.api.party.Party;
 import tc.oc.pgm.api.player.MatchPlayer;
@@ -61,7 +67,31 @@ public class RankManager implements Listener {
     Bukkit.getPluginManager().callEvent(new NameDecorationChangeEvent(mp.getId()));
   }
 
-  public void notifyUpdates(@Nonnull User old, @Nonnull User user, @Nonnull MatchPlayer player) {
+  public void handleMatchUpdate(@Nonnull BoltMatch old, @Nonnull BoltMatch update) {
+    MatchManager matchManager = PGM.get().getMatchManager();
+
+    List<RankUpdate> updates =
+        update.getTeams().stream()
+            .map(Team::getParticipations)
+            .flatMap(Collection::stream)
+            .map(Participation::getUser)
+            .map(
+                user ->
+                    new RankUpdate(
+                        user, old.getUser(user.getUuid()), matchManager.getPlayer(user.getUuid())))
+            .filter(RankUpdate::isValid)
+            .collect(Collectors.toList());
+
+    if (updates.isEmpty()) return;
+
+    Bukkit.getServer()
+        .getPluginManager()
+        .callEvent(new MatchStatsEvent(updates.get(0).player.getMatch(), true, true));
+
+    updates.forEach(upd -> notifyUpdate(upd.old, upd.updated, upd.player));
+  }
+
+  public void notifyUpdate(@Nonnull User old, @Nonnull User user, @Nonnull MatchPlayer player) {
     updatePlayer(player, player.getParty());
 
     Component rank = RANK_PREFIX;
@@ -86,9 +116,24 @@ public class RankManager implements Listener {
     }
   }
 
+  private static class RankUpdate {
+    private final User old, updated;
+    private final MatchPlayer player;
+
+    public RankUpdate(User old, User updated, MatchPlayer player) {
+      this.old = old;
+      this.updated = updated;
+      this.player = player;
+    }
+
+    public boolean isValid() {
+      return old != null && updated != null && player != null;
+    }
+  }
+
   @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-  public void onPartyChange(PlayerPartyChangeEvent e) {
-    updatePlayer(e.getPlayer(), e.getNewParty());
+  public void onPartyChange(PlayerPartyChangeEvent event) {
+    updatePlayer(event.getPlayer(), event.getNewParty());
   }
 
   private Component getRank(User user) {

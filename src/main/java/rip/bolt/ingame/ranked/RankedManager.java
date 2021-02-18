@@ -14,7 +14,6 @@ import dev.pgm.events.team.TournamentTeam;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Collection;
-import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import net.md_5.bungee.api.ChatColor;
@@ -23,20 +22,15 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import rip.bolt.ingame.Ingame;
 import rip.bolt.ingame.api.definitions.BoltMatch;
-import rip.bolt.ingame.api.definitions.Participation;
 import rip.bolt.ingame.api.definitions.Team;
-import rip.bolt.ingame.api.definitions.User;
 import rip.bolt.ingame.config.AppData;
 import rip.bolt.ingame.utils.Messages;
 import tc.oc.pgm.api.PGM;
 import tc.oc.pgm.api.match.Match;
-import tc.oc.pgm.api.match.MatchManager;
 import tc.oc.pgm.api.match.event.MatchFinishEvent;
 import tc.oc.pgm.api.match.event.MatchLoadEvent;
 import tc.oc.pgm.api.match.event.MatchStartEvent;
-import tc.oc.pgm.api.match.event.MatchStatsEvent;
 import tc.oc.pgm.api.party.Competitor;
-import tc.oc.pgm.api.player.MatchPlayer;
 import tc.oc.pgm.restart.RestartManager;
 import tc.oc.pgm.util.Audience;
 
@@ -104,51 +98,18 @@ public class RankedManager implements Listener {
         .createTournament(PGM.get().getMatchManager().getMatches().next(), format);
   }
 
-  private void updateMatch(BoltMatch match) {
+  private void updateMatch(BoltMatch update) {
     if (this.match == null
-        || match == null
-        || !Objects.equals(this.match.getId(), match.getId())
-        || match.getStatus() != MatchStatus.ENDED) {
+        || update == null
+        || !Objects.equals(this.match.getId(), update.getId())
+        || update.getStatus() != MatchStatus.ENDED) {
       return;
     }
 
-    MatchManager mm = PGM.get().getMatchManager();
+    BoltMatch old = this.match;
+    this.match = update;
 
-    List<UpdateRecord> updates =
-        match.getTeams().stream()
-            .map(Team::getParticipations)
-            .flatMap(Collection::stream)
-            .map(Participation::getUser)
-            .map(
-                u ->
-                    new UpdateRecord(u, this.match.getUser(u.getUuid()), mm.getPlayer(u.getUuid())))
-            .filter(UpdateRecord::isValid)
-            .collect(Collectors.toList());
-
-    this.match = match;
-    if (updates.isEmpty()) return;
-
-    Match pgmMatch = updates.get(0).player.getMatch();
-    pgmMatch.callEvent(new MatchStatsEvent(pgmMatch, true, true));
-
-    for (UpdateRecord update : updates) {
-      rankManager.notifyUpdates(update.old, update.updated, update.player);
-    }
-  }
-
-  public static class UpdateRecord {
-    private final User old, updated;
-    private final MatchPlayer player;
-
-    public UpdateRecord(User old, User updated, MatchPlayer mp) {
-      this.old = old;
-      this.updated = updated;
-      this.player = mp;
-    }
-
-    public boolean isValid() {
-      return old != null && updated != null && player != null;
-    }
+    rankManager.handleMatchUpdate(old, update);
   }
 
   private boolean isMatchValid(BoltMatch match) {
