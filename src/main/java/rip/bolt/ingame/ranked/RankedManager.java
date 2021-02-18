@@ -14,7 +14,6 @@ import dev.pgm.events.team.TournamentTeam;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Collection;
-import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import net.md_5.bungee.api.ChatColor;
@@ -23,7 +22,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import rip.bolt.ingame.Ingame;
 import rip.bolt.ingame.api.definitions.BoltMatch;
-import rip.bolt.ingame.api.definitions.Participation;
 import rip.bolt.ingame.api.definitions.Team;
 import rip.bolt.ingame.config.AppData;
 import rip.bolt.ingame.utils.Messages;
@@ -33,7 +31,6 @@ import tc.oc.pgm.api.match.event.MatchFinishEvent;
 import tc.oc.pgm.api.match.event.MatchLoadEvent;
 import tc.oc.pgm.api.match.event.MatchStartEvent;
 import tc.oc.pgm.api.party.Competitor;
-import tc.oc.pgm.api.player.MatchPlayer;
 import tc.oc.pgm.restart.RestartManager;
 import tc.oc.pgm.util.Audience;
 
@@ -101,25 +98,17 @@ public class RankedManager implements Listener {
         .createTournament(PGM.get().getMatchManager().getMatches().next(), format);
   }
 
-  private void updateMatch(BoltMatch match) {
-    if (this.match == null
-        || match == null
-        || !Objects.equals(this.match.getId(), match.getId())
-        || match.getStatus() != MatchStatus.ENDED) {
+  private void updateMatch(BoltMatch newMatch) {
+    BoltMatch oldMatch = this.match;
+    if (oldMatch == null
+        || newMatch == null
+        || !Objects.equals(oldMatch.getId(), newMatch.getId())
+        || newMatch.getStatus() != MatchStatus.ENDED) {
       return;
     }
 
-    List<MatchPlayer> players =
-        match.getTeams().stream()
-            .map(Team::getParticipations)
-            .flatMap(Collection::stream)
-            .map(Participation::getUser)
-            .map(rankManager::notifyUpdates)
-            .filter(Objects::nonNull)
-            .collect(Collectors.toList());
-
-    this.match = match;
-    players.forEach(rankManager::updatePlayer);
+    this.match = newMatch;
+    rankManager.handleMatchUpdate(oldMatch, newMatch);
   }
 
   private boolean isMatchValid(BoltMatch match) {

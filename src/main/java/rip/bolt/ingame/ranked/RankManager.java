@@ -3,8 +3,10 @@ package rip.bolt.ingame.ranked;
 import static tc.oc.pgm.lib.net.kyori.adventure.text.Component.text;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import org.bukkit.Bukkit;
@@ -16,9 +18,13 @@ import org.bukkit.permissions.PermissionAttachment;
 import rip.bolt.ingame.Ingame;
 import rip.bolt.ingame.api.definitions.BoltMatch;
 import rip.bolt.ingame.api.definitions.MatchResult;
+import rip.bolt.ingame.api.definitions.Participation;
+import rip.bolt.ingame.api.definitions.Team;
 import rip.bolt.ingame.api.definitions.User;
 import tc.oc.pgm.api.PGM;
 import tc.oc.pgm.api.event.NameDecorationChangeEvent;
+import tc.oc.pgm.api.match.MatchManager;
+import tc.oc.pgm.api.match.event.MatchStatsEvent;
 import tc.oc.pgm.api.party.Competitor;
 import tc.oc.pgm.api.party.Party;
 import tc.oc.pgm.api.player.MatchPlayer;
@@ -31,10 +37,9 @@ import tc.oc.pgm.util.bukkit.OnlinePlayerMapAdapter;
 
 public class RankManager implements Listener {
 
-  private static final Component RANK_PREFIX = text("Rank: ");
-  private static final Component MMR_PREFIX = text("MMR: ");
+  private static final Component RANK_PREFIX = text("Bolt rank: ");
   private static final Component PLACEMENT_MATCHES = text("Placement matches: ");
-  private static final Component ARROW = text(" ➔ ", NamedTextColor.WHITE);
+  private static final Component ARROW = text("➔ ", NamedTextColor.WHITE);
   private static final Component MATCH_SEPARATOR = text("-", NamedTextColor.DARK_GRAY);
 
   private static final LegacyComponentSerializer SERIALIZER =
@@ -46,10 +51,6 @@ public class RankManager implements Listener {
   public RankManager(RankedManager manager) {
     this.manager = manager;
     this.permissions = new OnlinePlayerMapAdapter<>(Ingame.get());
-  }
-
-  public void updatePlayer(@Nonnull MatchPlayer mp) {
-    updatePlayer(mp, mp.getParty());
   }
 
   public void updatePlayer(@Nonnull MatchPlayer mp, @Nullable Party party) {
@@ -66,21 +67,44 @@ public class RankManager implements Listener {
     Bukkit.getPluginManager().callEvent(new NameDecorationChangeEvent(mp.getId()));
   }
 
-  public MatchPlayer notifyUpdates(User user) {
-    MatchPlayer player = PGM.get().getMatchManager().getPlayer(user.getUuid());
+  public void handleMatchUpdate(@Nonnull BoltMatch oldMatch, @Nonnull BoltMatch newMatch) {
+    MatchManager matchManager = PGM.get().getMatchManager();
 
-    User old = manager.getMatch().getUser(user.getUuid());
-    if (old == null || player == null) return player;
+    List<RankUpdate> updates =
+        newMatch.getTeams().stream()
+            .map(Team::getParticipations)
+            .flatMap(Collection::stream)
+            .map(Participation::getUser)
+            .map(
+                user ->
+                    new RankUpdate(
+                        oldMatch.getUser(user.getUuid()),
+                        user,
+                        matchManager.getPlayer(user.getUuid())))
+            .filter(RankUpdate::isValid)
+            .collect(Collectors.toList());
 
-    player.sendMessage(
-        !old.getRank().equals(user.getRank())
-            ? RANK_PREFIX.append(getRank(old)).append(ARROW).append(getRank(user))
-            : RANK_PREFIX.append(getRank(user)));
+    if (updates.isEmpty()) return;
 
-    player.sendMessage(
-        old.getMmr() != null && old.getMmr() < user.getMmr()
-            ? MMR_PREFIX.append(mmr(old)).append(ARROW).append(mmr(user))
-            : MMR_PREFIX.append(mmr(user)));
+    Bukkit.getServer()
+        .getPluginManager()
+        .callEvent(new MatchStatsEvent(updates.get(0).player.getMatch(), true, true));
+
+    updates.forEach(update -> notifyUpdate(update.old, update.updated, update.player));
+  }
+
+  public void notifyUpdate(@Nonnull User old, @Nonnull User user, @Nonnull MatchPlayer player) {
+    updatePlayer(player, player.getParty());
+
+    Component rank = RANK_PREFIX;
+    if (!old.getRank().equals(user.getRank())) rank = rank.append(getRank(old)).append(ARROW);
+    rank = rank.append(getRank(user)).append(text("("));
+
+    if (old.getMmr() != null && old.getMmr() < user.getMmr())
+      rank = rank.append(mmr(old)).append(text(" ")).append(ARROW);
+    rank = rank.append(mmr(user)).append(text(")"));
+
+    player.sendMessage(rank);
 
     if (user.getHistory() != null) {
       List<MatchResult> results = new ArrayList<>(user.getHistory());
@@ -92,13 +116,26 @@ public class RankManager implements Listener {
       for (int i = 0; i < results.size(); )
         player.sendMessage(Component.join(MATCH_SEPARATOR, results.subList(i, i += 15)));
     }
+  }
 
-    return player;
+  private static class RankUpdate {
+    private final User old, updated;
+    private final MatchPlayer player;
+
+    public RankUpdate(User old, User updated, MatchPlayer player) {
+      this.old = old;
+      this.updated = updated;
+      this.player = player;
+    }
+
+    public boolean isValid() {
+      return old != null && updated != null && player != null;
+    }
   }
 
   @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-  public void onPlayerJoin(PlayerPartyChangeEvent e) {
-    updatePlayer(e.getPlayer(), e.getNewParty());
+  public void onPartyChange(PlayerPartyChangeEvent event) {
+    updatePlayer(event.getPlayer(), event.getNewParty());
   }
 
   private Component getRank(User user) {
@@ -115,7 +152,7 @@ public class RankManager implements Listener {
     Component rankComp = SERIALIZER.deserialize(SERIALIZER.serialize(getRank(user)));
     if (rankComp.color() != null) return rankComp.color();
     for (Component child : rankComp.children()) {
-      if (child.color() != null) return rankComp.color();
+      if (child.color() != null) return child.color();
     }
     return NamedTextColor.WHITE; // Fallback to white
   }
