@@ -98,18 +98,17 @@ public class RankedManager implements Listener {
         .createTournament(PGM.get().getMatchManager().getMatches().next(), format);
   }
 
-  private void updateMatch(BoltMatch update) {
-    if (this.match == null
-        || update == null
-        || !Objects.equals(this.match.getId(), update.getId())
-        || update.getStatus() != MatchStatus.ENDED) {
+  private void updateMatch(BoltMatch newMatch) {
+    BoltMatch oldMatch = this.match;
+    if (oldMatch == null
+        || newMatch == null
+        || !Objects.equals(oldMatch.getId(), newMatch.getId())
+        || newMatch.getStatus() != MatchStatus.ENDED) {
       return;
     }
 
-    BoltMatch old = this.match;
-    this.match = update;
-
-    rankManager.handleMatchUpdate(old, update);
+    this.match = newMatch;
+    rankManager.handleMatchUpdate(oldMatch, newMatch);
   }
 
   private boolean isMatchValid(BoltMatch match) {

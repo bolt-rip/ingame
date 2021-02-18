@@ -67,18 +67,20 @@ public class RankManager implements Listener {
     Bukkit.getPluginManager().callEvent(new NameDecorationChangeEvent(mp.getId()));
   }
 
-  public void handleMatchUpdate(@Nonnull BoltMatch old, @Nonnull BoltMatch update) {
+  public void handleMatchUpdate(@Nonnull BoltMatch oldMatch, @Nonnull BoltMatch newMatch) {
     MatchManager matchManager = PGM.get().getMatchManager();
 
     List<RankUpdate> updates =
-        update.getTeams().stream()
+        newMatch.getTeams().stream()
             .map(Team::getParticipations)
             .flatMap(Collection::stream)
             .map(Participation::getUser)
             .map(
                 user ->
                     new RankUpdate(
-                        old.getUser(user.getUuid()), user, matchManager.getPlayer(user.getUuid())))
+                        oldMatch.getUser(user.getUuid()),
+                        user,
+                        matchManager.getPlayer(user.getUuid())))
             .filter(RankUpdate::isValid)
             .collect(Collectors.toList());
 
@@ -88,7 +90,7 @@ public class RankManager implements Listener {
         .getPluginManager()
         .callEvent(new MatchStatsEvent(updates.get(0).player.getMatch(), true, true));
 
-    updates.forEach(upd -> notifyUpdate(upd.old, upd.updated, upd.player));
+    updates.forEach(update -> notifyUpdate(update.old, update.updated, update.player));
   }
 
   public void notifyUpdate(@Nonnull User old, @Nonnull User user, @Nonnull MatchPlayer player) {
