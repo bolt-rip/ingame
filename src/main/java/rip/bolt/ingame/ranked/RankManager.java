@@ -78,7 +78,7 @@ public class RankManager implements Listener {
             .map(
                 user ->
                     new RankUpdate(
-                        user, old.getUser(user.getUuid()), matchManager.getPlayer(user.getUuid())))
+                            old.getUser(user.getUuid()), user, matchManager.getPlayer(user.getUuid())))
             .filter(RankUpdate::isValid)
             .collect(Collectors.toList());
 
