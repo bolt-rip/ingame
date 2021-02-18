@@ -39,7 +39,7 @@ public class RankManager implements Listener {
 
   private static final Component RANK_PREFIX = text("Bolt rank: ");
   private static final Component PLACEMENT_MATCHES = text("Placement matches: ");
-  private static final Component ARROW = text(" ➔ ", NamedTextColor.WHITE);
+  private static final Component ARROW = text("➔ ", NamedTextColor.WHITE);
   private static final Component MATCH_SEPARATOR = text("-", NamedTextColor.DARK_GRAY);
 
   private static final LegacyComponentSerializer SERIALIZER =
@@ -78,7 +78,7 @@ public class RankManager implements Listener {
             .map(
                 user ->
                     new RankUpdate(
-                            old.getUser(user.getUuid()), user, matchManager.getPlayer(user.getUuid())))
+                        old.getUser(user.getUuid()), user, matchManager.getPlayer(user.getUuid())))
             .filter(RankUpdate::isValid)
             .collect(Collectors.toList());
 
@@ -96,10 +96,10 @@ public class RankManager implements Listener {
 
     Component rank = RANK_PREFIX;
     if (!old.getRank().equals(user.getRank())) rank = rank.append(getRank(old)).append(ARROW);
-    rank = rank.append(getRank(user)).append(text(" ("));
+    rank = rank.append(getRank(user)).append(text("("));
 
     if (old.getMmr() != null && old.getMmr() < user.getMmr())
-      rank = rank.append(mmr(old)).append(ARROW);
+      rank = rank.append(mmr(old)).append(text(" ")).append(ARROW);
     rank = rank.append(mmr(user)).append(text(")"));
 
     player.sendMessage(rank);
@@ -150,7 +150,7 @@ public class RankManager implements Listener {
     Component rankComp = SERIALIZER.deserialize(SERIALIZER.serialize(getRank(user)));
     if (rankComp.color() != null) return rankComp.color();
     for (Component child : rankComp.children()) {
-      if (child.color() != null) return rankComp.color();
+      if (child.color() != null) return child.color();
     }
     return NamedTextColor.WHITE; // Fallback to white
   }
