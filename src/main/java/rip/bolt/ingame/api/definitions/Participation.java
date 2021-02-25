@@ -7,6 +7,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 public class Participation {
 
   private User user;
+  private Stats stats;
 
   public Participation() {}
 
@@ -16,5 +17,13 @@ public class Participation {
 
   public void setUser(User user) {
     this.user = user;
+  }
+
+  public Stats getStats() {
+    return stats;
+  }
+
+  public void setStats(Stats stats) {
+    this.stats = stats;
   }
 }

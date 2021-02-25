@@ -2,8 +2,6 @@ package rip.bolt.ingame.api.definitions;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonProperty.Access;
 import dev.pgm.events.team.TournamentPlayer;
 import dev.pgm.events.team.TournamentTeam;
 import java.util.List;
@@ -19,11 +17,13 @@ public class Team implements TournamentTeam {
 
   private Integer id;
   private String name;
-
-  @JsonProperty(access = Access.WRITE_ONLY)
   private List<Participation> participations;
 
   public Team() {}
+
+  public Team(int id) {
+    this.id = id;
+  }
 
   public Integer getId() {
     return id;

@@ -38,6 +38,7 @@ public class RankedManager implements Listener {
 
   private final PlayerWatcher playerWatcher;
   private final RankManager rankManager;
+  private final StatsManager statsManager;
   private final MatchSearch poll;
 
   private TournamentFormat format;
@@ -49,6 +50,7 @@ public class RankedManager implements Listener {
   public RankedManager() {
     playerWatcher = new PlayerWatcher(this);
     rankManager = new RankManager(this);
+    statsManager = new StatsManager(this);
     MatchPreloader.create();
 
     poll = new MatchSearch(this::setupMatch);
@@ -211,6 +213,7 @@ public class RankedManager implements Listener {
         boltMatch.setStartedAt(transitionAt);
         break;
       case ENDED:
+        statsManager.handleMatchUpdate(boltMatch, match);
         boltMatch.setEndedAt(transitionAt);
         Collection<Competitor> winners = match.getWinners();
         if (winners.size() == 1) {
@@ -219,7 +222,7 @@ public class RankedManager implements Listener {
               .tournamentTeam(Iterables.getOnlyElement(winners))
               .filter(t -> t instanceof Team)
               .map(t -> (Team) t)
-              .ifPresent(boltMatch::setWinner);
+              .ifPresent(winner -> boltMatch.setWinner(new Team(winner.getId())));
         }
         break;
       case CANCELLED:
