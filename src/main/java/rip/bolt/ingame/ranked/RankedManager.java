@@ -90,7 +90,7 @@ public class RankedManager implements Listener {
         new SingleRound(
             format,
             new SingleRoundOptions(
-                "ranked", cycleTime, Duration.ofSeconds(300), match.getMap(), 1, true, true));
+                "ranked", cycleTime, AppData.matchStartDuration(), match.getMap(), 1, true, true));
     cycleTime = Duration.ofSeconds(5);
     format.addRound(ranked);
 

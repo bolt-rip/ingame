@@ -1,5 +1,8 @@
 package rip.bolt.ingame.config;
 
+import static tc.oc.pgm.util.text.TextParser.parseDuration;
+
+import java.time.Duration;
 import rip.bolt.ingame.Ingame;
 
 public class AppData {
@@ -29,5 +32,9 @@ public class AppData {
 
   public static boolean allowRequeue() {
     return Ingame.get().getConfig().getBoolean("allow-requeue", true);
+  }
+
+  public static Duration matchStartDuration() {
+    return parseDuration(Ingame.get().getConfig().getString("match-start-duration", "300s"));
   }
 }
