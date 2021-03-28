@@ -9,6 +9,9 @@ full-teams-required: true
 # enable the requeue command and prompt
 allow-requeue: true
 
+# enable the forfeit command and prompt
+allow-forfeit: true
+
 # duration to countdown before starting match
 match-start-duration: "300s"
 

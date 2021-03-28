@@ -3,7 +3,6 @@ package rip.bolt.ingame.ranked;
 import static tc.oc.pgm.lib.net.kyori.adventure.text.Component.text;
 
 import java.time.Duration;
-import java.time.Instant;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -20,29 +19,33 @@ import rip.bolt.ingame.config.AppData;
 import tc.oc.pgm.api.match.Match;
 import tc.oc.pgm.api.match.event.MatchFinishEvent;
 import tc.oc.pgm.api.match.event.MatchStartEvent;
+import tc.oc.pgm.api.party.Competitor;
 import tc.oc.pgm.api.player.MatchPlayer;
 import tc.oc.pgm.events.PlayerJoinMatchEvent;
-import tc.oc.pgm.events.PlayerLeaveMatchEvent;
+import tc.oc.pgm.events.PlayerPartyChangeEvent;
 import tc.oc.pgm.lib.net.kyori.adventure.text.format.NamedTextColor;
 
 public class PlayerWatcher implements Listener {
 
+  public static final Duration ABSENT_MAX = Duration.ofSeconds(AppData.absentSecondsLimit());
+
   private final RankedManager rankedManager;
-
-  private static final Duration ABSENT_MAX = Duration.ofSeconds(AppData.absentSecondsLimit());
-
-  final Map<UUID, Duration> absentLengths = new HashMap<>();
-  final Map<UUID, Duration> playerLeftAt = new HashMap<>();
+  private final ForfeitManager forfeitManager;
+  final Map<UUID, MatchParticipation> players = new HashMap<>();
 
   public PlayerWatcher(RankedManager rankedManager) {
     this.rankedManager = rankedManager;
+    this.forfeitManager = new ForfeitManager();
+  }
+
+  public ForfeitManager getForfeitManager() {
+    return forfeitManager;
   }
 
   public void addPlayers(List<UUID> uuids) {
-    absentLengths.clear();
-    playerLeftAt.clear();
-
-    uuids.forEach(uuid -> this.absentLengths.put(uuid, Duration.ZERO));
+    players.clear();
+    forfeitManager.clearCheckers();
+    uuids.forEach(uuid -> players.put(uuid, new MatchParticipation(uuid)));
   }
 
   @EventHandler(priority = EventPriority.HIGH)
@@ -50,7 +53,7 @@ public class PlayerWatcher implements Listener {
     if (event.getResult() == PlayerLoginEvent.Result.KICK_FULL
         || event.getResult() == PlayerLoginEvent.Result.KICK_WHITELIST) {
       // allow if player is on a team
-      if (this.absentLengths.containsKey(event.getPlayer().getUniqueId())) {
+      if (isPlaying(event.getPlayer().getUniqueId())) {
         event.allow();
       }
     }
@@ -59,21 +62,29 @@ public class PlayerWatcher implements Listener {
   @EventHandler(priority = EventPriority.MONITOR)
   public void onJoin(PlayerJoinMatchEvent event) {
     MatchPlayer player = event.getPlayer();
-    if (!event.getMatch().isRunning() && !this.isPlaying(player)) {
+    if (!isPlaying(player.getId()) || !event.getMatch().isRunning()) {
       return;
     }
 
-    updateAbsenceLengths(player.getId());
+    MatchParticipation participation = players.get(player.getId());
+    participation.playerJoined();
+    forfeitManager.stopCountdown(participation, players);
   }
 
   @EventHandler(priority = EventPriority.MONITOR)
-  public void onLeave(PlayerLeaveMatchEvent event) {
+  public void onLeave(PlayerPartyChangeEvent event) {
+    // player changing to null party is leaving
+    if (event.getNewParty() != null) return;
+    if (!(event.getOldParty() instanceof Competitor)) return;
+
     MatchPlayer player = event.getPlayer();
-    if (!this.isPlaying(player) || !event.getMatch().isRunning()) {
+    if (!isPlaying(player.getId()) || !event.getMatch().isRunning()) {
       return;
     }
 
-    this.playerLeftAt.put(player.getId(), getDurationNow());
+    MatchParticipation participation = players.get(player.getId());
+    participation.playerLeft();
+    forfeitManager.startCountdown((Competitor) event.getOldParty(), participation);
   }
 
   @EventHandler(priority = EventPriority.LOW)
@@ -81,15 +92,13 @@ public class PlayerWatcher implements Listener {
     if (rankedManager.isManuallyCanceled()) return;
 
     if (event.getMatch().getDuration().compareTo(ABSENT_MAX) > 0) {
-      this.absentLengths.forEach((key, value) -> updateAbsenceLengths(key));
-
-      List<UUID> absentPlayers =
-          this.absentLengths.entrySet().stream()
-              .filter(absence -> absence.getValue().compareTo(ABSENT_MAX) > 0)
+      List<UUID> abandonedPlayers =
+          players.entrySet().stream()
+              .filter(player -> player.getValue().absentDuration().compareTo(ABSENT_MAX) > 0)
               .map(Map.Entry::getKey)
               .collect(Collectors.toList());
 
-      if (!playersAbandoned(absentPlayers)) return;
+      if (!playersAbandoned(abandonedPlayers)) return;
 
       event
           .getMatch()
@@ -98,6 +107,12 @@ public class PlayerWatcher implements Listener {
                   "Player(s) temporarily banned due to lack of participation.",
                   NamedTextColor.GRAY));
     }
+  }
+
+  @EventHandler(priority = EventPriority.MONITOR)
+  public void onMatchEndMonitor(MatchFinishEvent event) {
+    players.clear();
+    forfeitManager.clearCheckers();
   }
 
   @EventHandler(priority = EventPriority.MONITOR)
@@ -120,21 +135,9 @@ public class PlayerWatcher implements Listener {
   }
 
   public List<UUID> getMissingPlayers(Match match) {
-    return this.absentLengths.keySet().stream()
+    return players.keySet().stream()
         .filter(absence -> match.getPlayer(absence) == null)
         .collect(Collectors.toList());
-  }
-
-  private void updateAbsenceLengths(UUID player) {
-    if (this.playerLeftAt.containsKey(player)) {
-      Duration leftAt = this.playerLeftAt.get(player);
-
-      Duration totalAbsentLength = this.absentLengths.get(player);
-      Duration absentLength = getDurationNow().minus(leftAt).plus(totalAbsentLength);
-
-      this.playerLeftAt.remove(player);
-      this.absentLengths.put(player, absentLength);
-    }
   }
 
   private boolean playersAbandoned(List<UUID> players) {
@@ -152,11 +155,36 @@ public class PlayerWatcher implements Listener {
             () -> Ingame.get().getApiManager().postPlayerPunishment(new Punishment(player)));
   }
 
-  private boolean isPlaying(MatchPlayer player) {
-    return this.absentLengths.containsKey(player.getId());
+  private boolean isPlaying(UUID uuid) {
+    return players.containsKey(uuid);
   }
 
-  private Duration getDurationNow() {
-    return Duration.ofMillis(Instant.now().toEpochMilli());
+  public static class MatchParticipation {
+
+    final UUID uuid;
+    long absentLength = 0;
+    Long playerLeftAt = null;
+
+    public MatchParticipation(UUID uuid) {
+      this.uuid = uuid;
+    }
+
+    public void playerJoined() {
+      if (playerLeftAt != null) absentLength += System.currentTimeMillis() - playerLeftAt;
+      playerLeftAt = null;
+    }
+
+    public void playerLeft() {
+      playerLeftAt = System.currentTimeMillis();
+    }
+
+    public boolean canStartCountdown() {
+      return playerLeftAt != null;
+    }
+
+    public Duration absentDuration() {
+      return Duration.ofMillis(
+          absentLength + (playerLeftAt == null ? 0 : System.currentTimeMillis() - playerLeftAt));
+    }
   }
 }

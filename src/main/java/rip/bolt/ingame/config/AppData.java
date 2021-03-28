@@ -34,6 +34,10 @@ public class AppData {
     return Ingame.get().getConfig().getBoolean("allow-requeue", true);
   }
 
+  public static boolean allowForfeit() {
+    return Ingame.get().getConfig().getBoolean("allow-forfeit", true);
+  }
+
   public static Duration matchStartDuration() {
     return parseDuration(Ingame.get().getConfig().getString("match-start-duration", "300s"));
   }

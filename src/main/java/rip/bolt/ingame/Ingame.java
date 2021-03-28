@@ -7,6 +7,7 @@ import dev.pgm.events.Tournament;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 import rip.bolt.ingame.api.APIManager;
+import rip.bolt.ingame.commands.ForfeitCommands;
 import rip.bolt.ingame.commands.RankedAdminCommands;
 import rip.bolt.ingame.commands.RequeueCommands;
 import rip.bolt.ingame.ranked.RankedManager;
@@ -46,6 +47,8 @@ public class Ingame extends JavaPlugin {
     BasicBukkitCommandGraph g = new BasicBukkitCommandGraph(new CommandModule());
     DispatcherNode node = g.getRootDispatcherNode();
     node.registerCommands(new RequeueCommands());
+    node.registerCommands(new ForfeitCommands(rankedManager));
+
     DispatcherNode subNode = node.registerNode("ingame");
     subNode.registerCommands(new RankedAdminCommands(rankedManager));
     new CommandExecutor(this, g).register();
