@@ -1,9 +1,13 @@
 package rip.bolt.ingame.utils;
 
 import static rip.bolt.ingame.utils.Components.command;
+import static rip.bolt.ingame.utils.Components.link;
 import static tc.oc.pgm.lib.net.kyori.adventure.text.Component.newline;
 import static tc.oc.pgm.lib.net.kyori.adventure.text.Component.text;
 
+import rip.bolt.ingame.api.definitions.BoltMatch;
+import rip.bolt.ingame.config.AppData;
+import tc.oc.pgm.api.player.MatchPlayer;
 import tc.oc.pgm.lib.net.kyori.adventure.text.Component;
 import tc.oc.pgm.lib.net.kyori.adventure.text.format.NamedTextColor;
 import tc.oc.pgm.lib.net.kyori.adventure.text.format.Style;
@@ -24,5 +28,19 @@ public class Messages {
                 .append(
                     command(
                         Style.style(NamedTextColor.YELLOW, TextDecoration.UNDERLINED), "forfeit")));
+  }
+
+  public static Component matchLink(BoltMatch match) {
+    String url = AppData.Web.getMatch().replace("{matchId}", match.getId());
+
+    return text("Match link: ", NamedTextColor.WHITE)
+        .append(link(Style.style(NamedTextColor.BLUE, TextDecoration.UNDERLINED), url));
+  }
+
+  public static Component profileLink(MatchPlayer player) {
+    String url = AppData.Web.getProfile().replace("{name}", player.getNameLegacy());
+
+    return text("Profile link: ", NamedTextColor.WHITE)
+        .append(link(Style.style(NamedTextColor.BLUE, TextDecoration.UNDERLINED), url));
   }
 }

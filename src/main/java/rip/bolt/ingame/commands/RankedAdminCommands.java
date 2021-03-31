@@ -11,6 +11,7 @@ import org.bukkit.entity.Player;
 import rip.bolt.ingame.Ingame;
 import rip.bolt.ingame.api.definitions.BoltMatch;
 import rip.bolt.ingame.api.definitions.Punishment;
+import rip.bolt.ingame.config.AppData;
 import rip.bolt.ingame.ranked.MatchStatus;
 import rip.bolt.ingame.ranked.RankedManager;
 import rip.bolt.ingame.utils.Messages;
@@ -78,7 +79,9 @@ public class RankedAdminCommands {
     if (boltMatch == null)
       throw new CommandException(ChatColor.RED + "No Bolt match currently loaded.");
 
-    Audience.get(sender).sendMessage(text(boltMatch.toString(), NamedTextColor.GRAY));
+    Audience audience = Audience.get(sender);
+    audience.sendMessage(text(boltMatch.toString(), NamedTextColor.GRAY));
+    if (AppData.Web.getMatch() != null) audience.sendMessage(Messages.matchLink(boltMatch));
   }
 
   @Command(

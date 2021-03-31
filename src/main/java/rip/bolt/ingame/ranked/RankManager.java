@@ -1,5 +1,6 @@
 package rip.bolt.ingame.ranked;
 
+import static tc.oc.pgm.lib.net.kyori.adventure.text.Component.empty;
 import static tc.oc.pgm.lib.net.kyori.adventure.text.Component.text;
 
 import java.util.ArrayList;
@@ -21,8 +22,11 @@ import rip.bolt.ingame.api.definitions.MatchResult;
 import rip.bolt.ingame.api.definitions.Participation;
 import rip.bolt.ingame.api.definitions.Team;
 import rip.bolt.ingame.api.definitions.User;
+import rip.bolt.ingame.config.AppData;
+import rip.bolt.ingame.utils.Messages;
 import tc.oc.pgm.api.PGM;
 import tc.oc.pgm.api.event.NameDecorationChangeEvent;
+import tc.oc.pgm.api.match.Match;
 import tc.oc.pgm.api.match.MatchManager;
 import tc.oc.pgm.api.match.event.MatchStatsEvent;
 import tc.oc.pgm.api.party.Competitor;
@@ -86,9 +90,13 @@ public class RankManager implements Listener {
 
     if (updates.isEmpty()) return;
 
-    Bukkit.getServer()
-        .getPluginManager()
-        .callEvent(new MatchStatsEvent(updates.get(0).player.getMatch(), true, true));
+    Match match = updates.get(0).player.getMatch();
+    Bukkit.getServer().getPluginManager().callEvent(new MatchStatsEvent(match, true, true));
+
+    if (AppData.Web.getMatch() != null) {
+      match.sendMessage(Messages.matchLink(newMatch));
+      match.sendMessage(empty());
+    }
 
     updates.forEach(update -> notifyUpdate(update.old, update.updated, update.player));
   }

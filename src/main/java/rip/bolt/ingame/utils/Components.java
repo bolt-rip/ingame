@@ -27,6 +27,14 @@ public class Components {
                 .append(Component.text(command, style)));
   }
 
+  public static Component link(Style style, String url) {
+    return Component.text(url, style)
+        .clickEvent(ClickEvent.clickEvent(ClickEvent.Action.OPEN_URL, url))
+        .hoverEvent(
+            Component.text("Click to visit ", NamedTextColor.YELLOW)
+                .append(Component.text(url, style)));
+  }
+
   static String toArgument(String input) {
     if (input == null) return null;
     return input.replace(" ", "┈");
