@@ -24,6 +24,7 @@ import tc.oc.pgm.api.player.MatchPlayer;
 import tc.oc.pgm.events.PlayerJoinMatchEvent;
 import tc.oc.pgm.events.PlayerPartyChangeEvent;
 import tc.oc.pgm.lib.net.kyori.adventure.text.format.NamedTextColor;
+import tc.oc.pgm.result.TieVictoryCondition;
 
 public class PlayerWatcher implements Listener {
 
@@ -115,13 +116,14 @@ public class PlayerWatcher implements Listener {
     forfeitManager.clearCheckers();
   }
 
-  @EventHandler(priority = EventPriority.MONITOR)
+  @EventHandler(priority = EventPriority.HIGHEST)
   public void onMatchStart(MatchStartEvent event) {
     if (!AppData.fullTeamsRequired()) return;
     if (!playersAbandoned(getMissingPlayers(event.getMatch()))) return;
 
     // the order of these two lines should not be changed
     rankedManager.postMatchStatus(event.getMatch(), MatchStatus.CANCELLED);
+    event.getMatch().addVictoryCondition(new TieVictoryCondition());
     event.getMatch().finish();
 
     event

@@ -19,6 +19,7 @@ import java.util.stream.Collectors;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import rip.bolt.ingame.Ingame;
 import rip.bolt.ingame.api.definitions.BoltMatch;
@@ -171,7 +172,7 @@ public class RankedManager implements Listener {
     postMatchStatus(event.getMatch(), MatchStatus.LOADED);
   }
 
-  @EventHandler
+  @EventHandler(priority = EventPriority.MONITOR)
   public void onMatchStart(MatchStartEvent event) {
     postMatchStatus(event.getMatch(), MatchStatus.STARTED);
   }
