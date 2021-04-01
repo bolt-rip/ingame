@@ -22,6 +22,17 @@ public class AppData {
     }
   }
 
+  public static class Web {
+
+    public static String getMatch() {
+      return Ingame.get().getConfig().getString("web.match", null);
+    }
+
+    public static String getProfile() {
+      return Ingame.get().getConfig().getString("web.profile", null);
+    }
+  }
+
   public static long absentSecondsLimit() {
     return Ingame.get().getConfig().getLong("absence-time-seconds", 120);
   }

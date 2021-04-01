@@ -15,6 +15,12 @@ allow-forfeit: true
 # duration to countdown before starting match
 match-start-duration: "300s"
 
+# website page links (remove section to remove references)
+web:
+  match: https://localhost:3000/matches/{matchId}
+  profile: https://localhost:3000/{name}
+
+# api connection details
 api:
   url: https://localhost:3000/v1/
   key: authorisation-key
