@@ -17,6 +17,7 @@ public class Team implements TournamentTeam {
 
   private Integer id;
   private String name;
+  private String mmr;
   private List<Participation> participations;
 
   public Team() {}
@@ -40,6 +41,14 @@ public class Team implements TournamentTeam {
 
   public void setName(String name) {
     this.name = name;
+  }
+
+  public String getMmr() {
+    return mmr;
+  }
+
+  public void setMmr(String mmr) {
+    this.mmr = mmr;
   }
 
   public List<Participation> getParticipations() {
