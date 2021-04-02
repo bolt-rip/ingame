@@ -27,7 +27,7 @@ public class ForfeitCommands {
       aliases = {"forfeit", "ff"},
       desc = "Accept that you have no chance of winning")
   public void forfeit(MatchPlayer sender, Match match) throws CommandException {
-    if (!AppData.allowForfeit())
+    if (!AppData.forfeitEnabled())
       throw new CommandException(
           ChatColor.RED + "The forfeit command is not enabled on this server.");
 
@@ -39,15 +39,16 @@ public class ForfeitCommands {
           ChatColor.RED + "Only match players are able to run this command.");
 
     Competitor team = (Competitor) sender.getParty();
-    ForfeitManager.ForfeitCheck checker = forfeits.getChecker(team);
-    if (checker == null || !checker.isVotable())
+    if (!forfeits.mayForfeit(team))
       throw new CommandException(
-          ChatColor.RED + "You may only run this command when your team has lost a player.");
+              ChatColor.YELLOW + "It's too early to forfeit this match, you can still win!");
 
-    if (checker.getVoted().contains(sender.getId()))
+    ForfeitManager.ForfeitPoll poll = forfeits.getForfeitPoll(team);
+
+    if (poll.getVoted().contains(sender.getId()))
       throw new CommandException(ChatColor.RED + "You have already voted to forfeit this match.");
 
     sender.sendMessage(text("You have voted to forfeit this match."));
-    checker.addVote(sender);
+    poll.addVote(sender);
   }
 }

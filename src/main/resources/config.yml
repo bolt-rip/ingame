@@ -10,7 +10,9 @@ full-teams-required: true
 allow-requeue: true
 
 # enable the forfeit command and prompt
-allow-forfeit: true
+forfeit:
+  enabled: true
+  after: "300s"
 
 # duration to countdown before starting match
 match-start-duration: "300s"

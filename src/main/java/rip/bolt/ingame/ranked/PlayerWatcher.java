@@ -36,7 +36,7 @@ public class PlayerWatcher implements Listener {
 
   public PlayerWatcher(RankedManager rankedManager) {
     this.rankedManager = rankedManager;
-    this.forfeitManager = new ForfeitManager();
+    this.forfeitManager = new ForfeitManager(this);
   }
 
   public ForfeitManager getForfeitManager() {
@@ -45,8 +45,12 @@ public class PlayerWatcher implements Listener {
 
   public void addPlayers(List<UUID> uuids) {
     players.clear();
-    forfeitManager.clearCheckers();
+    forfeitManager.clearPolls();
     uuids.forEach(uuid -> players.put(uuid, new MatchParticipation(uuid)));
+  }
+
+  public MatchParticipation getParticipation(UUID uuid) {
+    return players.get(uuid);
   }
 
   @EventHandler(priority = EventPriority.HIGH)
@@ -69,7 +73,7 @@ public class PlayerWatcher implements Listener {
 
     MatchParticipation participation = players.get(player.getId());
     participation.playerJoined();
-    forfeitManager.stopCountdown(participation, players);
+    forfeitManager.updateCountdown(event.getNewParty());
   }
 
   @EventHandler(priority = EventPriority.MONITOR)
@@ -85,7 +89,7 @@ public class PlayerWatcher implements Listener {
 
     MatchParticipation participation = players.get(player.getId());
     participation.playerLeft();
-    forfeitManager.startCountdown((Competitor) event.getOldParty(), participation);
+    forfeitManager.updateCountdown(event.getOldParty());
   }
 
   @EventHandler(priority = EventPriority.LOW)
@@ -95,7 +99,7 @@ public class PlayerWatcher implements Listener {
     if (event.getMatch().getDuration().compareTo(ABSENT_MAX) > 0) {
       List<UUID> abandonedPlayers =
           players.entrySet().stream()
-              .filter(player -> player.getValue().absentDuration().compareTo(ABSENT_MAX) > 0)
+              .filter(player -> player.getValue().hasAbandoned())
               .map(Map.Entry::getKey)
               .collect(Collectors.toList());
 
@@ -113,7 +117,7 @@ public class PlayerWatcher implements Listener {
   @EventHandler(priority = EventPriority.MONITOR)
   public void onMatchEndMonitor(MatchFinishEvent event) {
     players.clear();
-    forfeitManager.clearCheckers();
+    forfeitManager.clearPolls();
   }
 
   @EventHandler(priority = EventPriority.HIGHEST)
@@ -182,6 +186,10 @@ public class PlayerWatcher implements Listener {
 
     public boolean canStartCountdown() {
       return playerLeftAt != null;
+    }
+
+    public boolean hasAbandoned() {
+      return absentDuration().compareTo(ABSENT_MAX) > 0;
     }
 
     public Duration absentDuration() {
