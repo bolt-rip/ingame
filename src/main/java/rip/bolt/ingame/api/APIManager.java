@@ -53,6 +53,21 @@ public class APIManager {
   }
 
   public BoltMatch postMatch(BoltMatch match) {
-    return apiService.postMatch(match.getId(), match);
+    for (int i = 0; i < 10; ) {
+      try {
+        return apiService.postMatch(match.getId(), match);
+      } catch (Exception ex) {
+        i += 1;
+
+        System.out.println(
+            "Failed to report match end, retrying in " + (i * 5) + "s (" + i + "/10)");
+        ex.printStackTrace();
+        try {
+          Thread.sleep(i * 5000L);
+        } catch (InterruptedException ignore) {
+        }
+      }
+    }
+    return null;
   }
 }
