@@ -1,4 +1,4 @@
-package rip.bolt.ingame.ranked;
+package rip.bolt.ingame.setup;
 
 import java.time.Duration;
 import java.util.function.Consumer;
@@ -42,7 +42,15 @@ public class MatchSearch {
     startIn(delay.getSeconds() * 20);
   }
 
-  public void startIn(long delay) {
+  public synchronized void startIn(long delay) {
+
+    System.out.println("[Ingame] Request poll for " + delay);
+
+    // Don't poll if already polling
+    if (this.isSyncTaskRunning()) return;
+
+    System.out.println("[Ingame] Starting poll for " + delay);
+
     stop();
 
     syncTaskId =

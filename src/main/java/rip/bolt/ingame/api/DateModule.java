@@ -2,7 +2,6 @@ package rip.bolt.ingame.api;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonSerializer;
@@ -30,7 +29,7 @@ public class DateModule extends SimpleModule {
   private static class InstantDeserializer extends JsonDeserializer<Instant> {
     @Override
     public Instant deserialize(JsonParser jsonParser, DeserializationContext deserializationContext)
-        throws IOException, JsonProcessingException {
+        throws IOException {
       return Instant.parse(jsonParser.getValueAsString());
     }
   }

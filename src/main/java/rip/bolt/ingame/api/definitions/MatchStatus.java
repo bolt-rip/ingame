@@ -1,11 +1,11 @@
-package rip.bolt.ingame.ranked;
+package rip.bolt.ingame.api.definitions;
 
 public enum MatchStatus {
   CREATED,
   LOADED,
+  CANCELLED,
   STARTED,
-  ENDED,
-  CANCELLED;
+  ENDED;
 
   public boolean canTransitionTo(MatchStatus next) {
     switch (this) {
@@ -21,6 +21,14 @@ public enum MatchStatus {
       default:
         throw new IllegalStateException("Unknown transition state for " + next);
     }
+  }
+
+  public boolean isPreGame() {
+    return this == CREATED || this == LOADED;
+  }
+
+  public boolean isFinished() {
+    return this == ENDED || this == CANCELLED;
   }
 
   public String toString() {

@@ -24,7 +24,7 @@ public class RequeueManager implements Listener {
   private static final ItemStack RED_DYE = createRequeueItem(1);
   private static final ItemStack GREEN_DYE = createRequeueItem(2);
 
-  private Map<Player, Long> lastRequeues = new OnlinePlayerMapAdapter<Long>(Ingame.get());
+  private final Map<Player, Long> lastRequeues = new OnlinePlayerMapAdapter<>(Ingame.get());
 
   private static ItemStack createRequeueItem(int data) {
     ItemStack item = new ItemStack(Material.INK_SACK, 1, (short) data);

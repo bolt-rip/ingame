@@ -14,10 +14,13 @@ import rip.bolt.ingame.config.AppData;
 public class APIManager {
 
   private final String serverId;
+
   public final APIService apiService;
+  public final ObjectMapper objectMapper;
 
   public APIManager() {
     serverId = AppData.API.getServerName();
+    objectMapper = new ObjectMapper().registerModule(new DateModule());
 
     ObjectMapper objectMapper = new ObjectMapper().registerModule(new DateModule());
     objectMapper.enable(MapperFeature.ACCEPT_CASE_INSENSITIVE_ENUMS);
@@ -57,19 +60,31 @@ public class APIManager {
 
   public BoltMatch postMatch(BoltMatch match) {
     int retries = 40;
+
+    final int PRECONDITION_FAILED = 412;
+
     for (int i = 0; i < retries; ) {
       try {
         return apiService.postMatch(match.getId(), match);
-      } catch (Exception ex) {
-        i += 1;
-
-        System.out.println(
-            "Failed to report match end, retrying in " + (i * 5) + "s (" + i + "/" + retries + ")");
+      } catch (APIException ex) {
         ex.printStackTrace();
-        try {
-          Thread.sleep(i * 5000L);
-        } catch (InterruptedException ignore) {
-        }
+        if (ex.getCode() == PRECONDITION_FAILED && i > 2) return match;
+      } catch (Exception ex) {
+        ex.printStackTrace();
+      }
+
+      i += 1;
+      System.out.println(
+          "[Ingame] Failed to report match end, retrying in "
+              + (i * 5)
+              + "s ("
+              + i
+              + "/"
+              + retries
+              + ")");
+      try {
+        Thread.sleep(i * 5000L);
+      } catch (InterruptedException ignore) {
       }
     }
     return null;

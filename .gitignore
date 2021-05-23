@@ -25,6 +25,9 @@ local.properties
 .classpath
 .project
 
+# VSCode
+.vscode
+
 # External tool builders
 .externalToolBuilders/
 

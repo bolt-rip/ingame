@@ -11,7 +11,9 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.permissions.PermissionAttachment;
 import rip.bolt.ingame.Ingame;
+import rip.bolt.ingame.api.definitions.MatchStatus;
 import rip.bolt.ingame.events.BoltMatchStatusChangeEvent;
+import rip.bolt.ingame.ranked.forfeit.PlayerWatcher;
 import tc.oc.pgm.api.PGM;
 import tc.oc.pgm.api.integration.Integration;
 import tc.oc.pgm.api.player.MatchPlayer;
@@ -48,9 +50,9 @@ public class SpectatorManager implements Listener {
   }
 
   private void updatePlayer(Player player) {
-    if (Ingame.get().getRankedManager().getMatch() == null) return;
+    if (Ingame.get().getMatchManager().getMatch() == null) return;
 
-    boolean hidden = Ingame.get().getRankedManager().getMatch().getSeries().getHideObservers();
+    boolean hidden = Ingame.get().getMatchManager().getMatch().getSeries().getHideObservers();
     boolean playing = watcher.isPlaying(player.getUniqueId());
 
     // Allow people who can vanish to remain in current state

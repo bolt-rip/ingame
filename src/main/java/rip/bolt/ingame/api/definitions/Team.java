@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import dev.pgm.events.team.TournamentPlayer;
 import dev.pgm.events.team.TournamentTeam;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Consumer;
@@ -18,12 +19,16 @@ public class Team implements TournamentTeam {
   private Integer id;
   private String name;
   private String mmr;
+
+  private Double score;
+
   private List<Participation> participations;
 
   public Team() {}
 
   public Team(int id) {
     this.id = id;
+    this.participations = new ArrayList<>();
   }
 
   public Integer getId() {
@@ -49,6 +54,14 @@ public class Team implements TournamentTeam {
 
   public void setMmr(String mmr) {
     this.mmr = mmr;
+  }
+
+  public Double getScore() {
+    return score;
+  }
+
+  public void setScore(Double score) {
+    this.score = score;
   }
 
   public List<Participation> getParticipations() {
@@ -79,7 +92,7 @@ public class Team implements TournamentTeam {
   public String toString() {
     return "Team "
         + getName()
-        + ": "
+        + ": \n "
         + getParticipations().stream()
             .map(Participation::getUser)
             .map(User::toString)

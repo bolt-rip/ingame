@@ -1,4 +1,4 @@
-package rip.bolt.ingame.ranked;
+package rip.bolt.ingame.ranked.forfeit;
 
 import static net.kyori.adventure.text.Component.text;
 
@@ -34,7 +34,7 @@ public class CancelManager {
 
   protected void cancelMatch(Match match, List<UUID> players) {
     playerWatcher.playersAbandoned(players);
-    playerWatcher.getRankedManager().cancel(match, CancelReason.AUTOMATED_CANCEL);
+    playerWatcher.getMatchManager().cancel(match, CancelReason.AUTOMATED_CANCEL);
     match.sendMessage(Messages.participationBan());
   }
 

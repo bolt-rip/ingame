@@ -12,6 +12,7 @@ import java.util.UUID;
 public class User implements TournamentPlayer {
 
   private UUID uuid;
+  private String username;
   private Ranking ranking;
 
   @JsonProperty(access = Access.WRITE_ONLY)
@@ -19,12 +20,25 @@ public class User implements TournamentPlayer {
 
   public User() {}
 
+  public User(UUID uuid, String username) {
+    this.uuid = uuid;
+    this.username = username;
+  }
+
   public UUID getUuid() {
     return uuid;
   }
 
   public void setUuid(UUID uuid) {
     this.uuid = uuid;
+  }
+
+  public String getUsername() {
+    return username;
+  }
+
+  public void setUsername(String username) {
+    this.username = username;
   }
 
   public List<MatchResult> getHistory() {
@@ -52,7 +66,12 @@ public class User implements TournamentPlayer {
 
   @JsonIgnore
   public String getRank() {
-    return this.getRanking().getRank().getId();
+    if (this.ranking == null) return null;
+
+    BoltRank rank = this.ranking.getRank();
+    if (rank == null) return null;
+
+    return rank.getId();
   }
 
   @Override

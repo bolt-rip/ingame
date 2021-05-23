@@ -1,10 +1,11 @@
 package rip.bolt.ingame.utils;
 
-import dev.pgm.events.Tournament;
+import dev.pgm.events.EventsPlugin;
 import dev.pgm.events.team.TournamentTeam;
 import java.util.Optional;
 import javax.annotation.Nullable;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import rip.bolt.ingame.api.definitions.Team;
@@ -14,7 +15,7 @@ import tc.oc.pgm.util.tablist.TabView;
 public class RankedTeamTabEntry extends TeamTabEntry {
 
   @Nullable private Component mmrComponent;
-  private tc.oc.pgm.teams.Team team;
+  private final tc.oc.pgm.teams.Team team;
 
   public RankedTeamTabEntry(tc.oc.pgm.teams.Team team) {
     super(team);
@@ -34,12 +35,18 @@ public class RankedTeamTabEntry extends TeamTabEntry {
 
   private Component getMmrComponent() {
     Optional<TournamentTeam> tournamentTeam =
-        Tournament.get().getTeamManager().tournamentTeam(team);
+        EventsPlugin.get().getTeamManager().tournamentTeam(team);
 
     return tournamentTeam
         .filter(t -> t instanceof Team)
         .map(t -> (Team) t)
-        .map(t -> Component.text("  " + t.getMmr(), NamedTextColor.GRAY, TextDecoration.ITALIC))
+        .map(Team::getMmr)
+        .filter(mmr -> !mmr.isEmpty() && !mmr.equals("0"))
+        .map(this::getMmrComponent)
         .orElse(null);
+  }
+
+  private TextComponent getMmrComponent(String mmr) {
+    return Component.text("  " + mmr, NamedTextColor.GRAY, TextDecoration.ITALIC);
   }
 }

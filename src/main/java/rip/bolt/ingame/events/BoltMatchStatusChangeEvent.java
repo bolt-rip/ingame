@@ -3,7 +3,7 @@ package rip.bolt.ingame.events;
 import javax.annotation.Nullable;
 import org.bukkit.event.HandlerList;
 import rip.bolt.ingame.api.definitions.BoltMatch;
-import rip.bolt.ingame.ranked.MatchStatus;
+import rip.bolt.ingame.api.definitions.MatchStatus;
 
 public class BoltMatchStatusChangeEvent extends BoltMatchEvent {
 

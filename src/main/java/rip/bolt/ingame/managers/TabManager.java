@@ -1,4 +1,4 @@
-package rip.bolt.ingame.ranked;
+package rip.bolt.ingame.managers;
 
 import org.bukkit.plugin.Plugin;
 import rip.bolt.ingame.config.AppData;

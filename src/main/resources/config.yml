@@ -30,6 +30,9 @@ match-start-duration: "300s"
 # if custom tab list should be used
 custom-tab-enabled: true
 
+# if PUGs should be able to publicly show logs
+publicly-log-pugs: false
+
 # website page links (remove section to remove references)
 web:
   match: https://localhost:3000/matches/{matchId}
@@ -40,3 +43,6 @@ api:
   url: https://localhost:3000/v1/
   key: authorisation-key
 
+# web socket connection details
+socket:
+  url: "ws://localhost:3000"

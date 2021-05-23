@@ -47,15 +47,15 @@
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
-			<groupId>com.github.applenick</groupId>
+			<groupId>com.github.Pablete1234</groupId>
 			<artifactId>PGM</artifactId>
 			<version>community-SNAPSHOT</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
-			<groupId>com.github.PGMDev</groupId>
+			<groupId>com.github.bolt-rip</groupId>
 			<artifactId>Events</artifactId>
-			<version>070c088acd</version>
+			<version>team-refactor-SNAPSHOT</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
@@ -77,6 +77,11 @@
 			<groupId>co.aikar</groupId>
 			<artifactId>taskchain-bukkit</artifactId>
 			<version>3.7.2</version>
+		</dependency>
+		<dependency>
+			<groupId>org.java-websocket</groupId>
+			<artifactId>Java-WebSocket</artifactId>
+			<version>1.5.1</version>
 		</dependency>
 	</dependencies>
 

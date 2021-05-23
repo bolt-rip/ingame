@@ -1,15 +1,9 @@
-package rip.bolt.ingame.ranked;
+package rip.bolt.ingame.managers;
 
 import static net.kyori.adventure.text.Component.empty;
 import static net.kyori.adventure.text.Component.text;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -26,21 +20,21 @@ import org.bukkit.permissions.PermissionAttachment;
 import rip.bolt.ingame.Ingame;
 import rip.bolt.ingame.api.definitions.BoltMatch;
 import rip.bolt.ingame.api.definitions.MatchResult;
+import rip.bolt.ingame.api.definitions.MatchStatus;
 import rip.bolt.ingame.api.definitions.Participation;
 import rip.bolt.ingame.api.definitions.Team;
 import rip.bolt.ingame.api.definitions.User;
 import rip.bolt.ingame.config.AppData;
+import rip.bolt.ingame.events.BoltMatchResponseEvent;
 import rip.bolt.ingame.utils.Messages;
 import tc.oc.pgm.api.PGM;
 import tc.oc.pgm.api.event.NameDecorationChangeEvent;
 import tc.oc.pgm.api.match.Match;
-import tc.oc.pgm.api.match.MatchManager;
 import tc.oc.pgm.api.match.event.MatchStatsEvent;
 import tc.oc.pgm.api.party.Competitor;
 import tc.oc.pgm.api.party.Party;
 import tc.oc.pgm.api.player.MatchPlayer;
 import tc.oc.pgm.events.PlayerPartyChangeEvent;
-import tc.oc.pgm.stats.PlayerStats;
 import tc.oc.pgm.util.bukkit.OnlinePlayerMapAdapter;
 
 public class RankManager implements Listener {
@@ -53,10 +47,10 @@ public class RankManager implements Listener {
   private static final LegacyComponentSerializer SERIALIZER =
       LegacyComponentSerializer.legacySection();
 
-  private final RankedManager manager;
+  private final MatchManager manager;
   private final OnlinePlayerMapAdapter<PermissionAttachment> permissions;
 
-  public RankManager(RankedManager manager) {
+  public RankManager(MatchManager manager) {
     this.manager = manager;
     this.permissions = new OnlinePlayerMapAdapter<>(Ingame.get());
   }
@@ -68,21 +62,30 @@ public class RankManager implements Listener {
     User user = match == null ? null : match.getUser(mp.getId());
 
     if (perm != null) mp.getBukkit().removeAttachment(perm);
-    if (user != null && party instanceof Competitor)
+    if (user != null && user.getRank() != null && party instanceof Competitor)
       permissions.put(
           player, player.addAttachment(Ingame.get(), "pgm.group." + user.getRank(), true));
 
     Bukkit.getPluginManager().callEvent(new NameDecorationChangeEvent(mp.getId()));
   }
 
-  public void handleMatchUpdate(@Nonnull BoltMatch oldMatch, @Nonnull BoltMatch newMatch) {
-    MatchManager matchManager = PGM.get().getMatchManager();
+  @EventHandler(priority = EventPriority.NORMAL)
+  public void onBoltMatchResponse(BoltMatchResponseEvent event) {
+    if (event.hasMatchFinished() && event.getResponseMatch().getStatus() == MatchStatus.ENDED) {
+      handleMatchUpdate(event.getBoltMatch(), event.getResponseMatch(), event.getPgmMatch());
+    }
+  }
+
+  public void handleMatchUpdate(
+      @Nonnull BoltMatch oldMatch, @Nonnull BoltMatch newMatch, Match match) {
+    tc.oc.pgm.api.match.MatchManager matchManager = PGM.get().getMatchManager();
 
     List<RankUpdate> updates =
         newMatch.getTeams().stream()
             .map(Team::getParticipations)
             .flatMap(Collection::stream)
             .map(Participation::getUser)
+            .filter(Objects::nonNull)
             .map(
                 user ->
                     new RankUpdate(
@@ -92,11 +95,9 @@ public class RankManager implements Listener {
             .filter(RankUpdate::isValid)
             .collect(Collectors.toList());
 
-    if (updates.isEmpty()) return;
-
-    Match match = updates.get(0).player.getMatch();
-    Map<UUID, PlayerStats> stats = new HashMap<>();
-    Bukkit.getServer().getPluginManager().callEvent(new MatchStatsEvent(match, true, true, stats));
+    // FIXME: stats passed in are null. they should not be required in the event, but this is a
+    // community PGM thing.
+    Bukkit.getServer().getPluginManager().callEvent(new MatchStatsEvent(match, true, true, null));
 
     if (AppData.Web.getMatch() != null) {
       match.sendMessage(Messages.matchLink(newMatch));
@@ -129,6 +130,7 @@ public class RankManager implements Listener {
 
       player.sendMessage(PLACEMENT_MATCHES);
       for (int i = 0; i < results.size(); )
+        //noinspection UnstableApiUsage
         player.sendMessage(Component.join(MATCH_SEPARATOR, results.subList(i, i += 15)));
     }
   }

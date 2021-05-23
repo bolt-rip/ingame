@@ -5,12 +5,14 @@ import java.time.Instant;
 import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
-import rip.bolt.ingame.ranked.MatchStatus;
+import java.util.stream.Collectors;
+import rip.bolt.ingame.api.definitions.pug.PugMatch;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class BoltMatch {
 
   private String id;
+  private String lobbyId;
   private Series series;
 
   private BoltPGMMap map;
@@ -29,12 +31,29 @@ public class BoltMatch {
     this.id = matchId;
   }
 
+  public BoltMatch(String lobbyId, Series series, PugMatch pugMatch) {
+    this.id = pugMatch.getId();
+    this.lobbyId = lobbyId;
+    this.series = series;
+    this.map = pugMatch.getMap();
+    this.teams = pugMatch.getTeamIds().stream().map(Team::new).collect(Collectors.toList());
+    this.status = pugMatch.getStatus();
+  }
+
   public String getId() {
     return id;
   }
 
   public void setId(String id) {
     this.id = id;
+  }
+
+  public String getLobbyId() {
+    return lobbyId;
+  }
+
+  public void setLobbyId(String lobbyId) {
+    this.lobbyId = lobbyId;
   }
 
   public Series getSeries() {
@@ -93,6 +112,15 @@ public class BoltMatch {
     this.status = status;
   }
 
+  public Participation getParticipation(UUID uuid) {
+    return teams.stream()
+        .map(Team::getParticipations)
+        .flatMap(Collection::stream)
+        .filter(participation -> participation.getUser().getUUID().equals(uuid))
+        .findFirst()
+        .orElse(null);
+  }
+
   public User getUser(UUID uuid) {
     return teams.stream()
         .map(Team::getParticipations)
@@ -109,6 +137,9 @@ public class BoltMatch {
         new StringBuilder()
             .append("Match ID: ")
             .append(getId())
+            .append("\n")
+            .append("Lobby ID: ")
+            .append(getLobbyId())
             .append("\n")
             .append("Series: ")
             .append(getSeries())

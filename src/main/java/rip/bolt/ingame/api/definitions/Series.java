@@ -7,6 +7,7 @@ public class Series {
 
   private Integer id;
   private String name;
+  private Service service;
   private Boolean hideObservers = false;
 
   private BoltKnockback knockback;
@@ -29,6 +30,14 @@ public class Series {
     this.name = name;
   }
 
+  public Service getService() {
+    return service;
+  }
+
+  public void setService(Service service) {
+    this.service = service;
+  }
+
   public boolean getHideObservers() {
     return hideObservers;
   }
@@ -47,6 +56,21 @@ public class Series {
 
   @Override
   public String toString() {
-    return name + " (" + id + "): hideObservers=" + hideObservers;
+    return name
+        + " ("
+        + id
+        + "): "
+        + "hideObservers="
+        + hideObservers
+        + ", "
+        + "service="
+        + service;
+  }
+
+  public enum Service {
+    RANKED,
+    PUG,
+    TM,
+    DRAFT,
   }
 }

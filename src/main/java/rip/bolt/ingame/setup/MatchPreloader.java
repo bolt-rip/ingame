@@ -1,4 +1,4 @@
-package rip.bolt.ingame.ranked;
+package rip.bolt.ingame.setup;
 
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.locks.ReentrantLock;

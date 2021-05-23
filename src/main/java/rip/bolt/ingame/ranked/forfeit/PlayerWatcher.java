@@ -1,4 +1,4 @@
-package rip.bolt.ingame.ranked;
+package rip.bolt.ingame.ranked.forfeit;
 
 import java.time.Duration;
 import java.util.HashMap;
@@ -14,6 +14,7 @@ import org.bukkit.event.player.PlayerLoginEvent;
 import rip.bolt.ingame.Ingame;
 import rip.bolt.ingame.api.definitions.Punishment;
 import rip.bolt.ingame.config.AppData;
+import rip.bolt.ingame.managers.MatchManager;
 import rip.bolt.ingame.utils.CancelReason;
 import rip.bolt.ingame.utils.Messages;
 import tc.oc.pgm.api.match.Match;
@@ -28,20 +29,20 @@ public class PlayerWatcher implements Listener {
 
   public static final Duration ABSENT_MAX = Duration.ofSeconds(AppData.absentSecondsLimit());
 
-  private final RankedManager rankedManager;
+  private final MatchManager matchManager;
   private final ForfeitManager forfeitManager;
   private final CancelManager cancelManager;
 
   private final Map<UUID, MatchParticipation> players = new HashMap<>();
 
-  public PlayerWatcher(RankedManager rankedManager) {
-    this.rankedManager = rankedManager;
+  public PlayerWatcher(MatchManager matchManager) {
+    this.matchManager = matchManager;
     this.forfeitManager = new ForfeitManager(this);
     this.cancelManager = new CancelManager(this);
   }
 
-  public RankedManager getRankedManager() {
-    return rankedManager;
+  public MatchManager getMatchManager() {
+    return matchManager;
   }
 
   public ForfeitManager getForfeitManager() {
@@ -108,7 +109,7 @@ public class PlayerWatcher implements Listener {
   @EventHandler(priority = EventPriority.LOW)
   public void onMatchEnd(MatchFinishEvent event) {
     // If match was cancelled, don't bother with the rest
-    if (rankedManager.getCancelReason() != null) return;
+    if (matchManager.getCancelReason() != null) return;
 
     // Duration less than max absent period no bans to check
     if (event.getMatch().getDuration().compareTo(ABSENT_MAX) > 0) return;
@@ -134,7 +135,7 @@ public class PlayerWatcher implements Listener {
 
     // If a player never joined mark as abandoned
     if (playersAbandoned(getNonJoinedPlayers())) {
-      rankedManager.cancel(event.getMatch(), CancelReason.AUTOMATED_CANCEL);
+      matchManager.cancel(event.getMatch(), CancelReason.AUTOMATED_CANCEL);
       event.getMatch().sendMessage(Messages.matchStartCancelled());
       return;
     }
@@ -169,7 +170,7 @@ public class PlayerWatcher implements Listener {
 
   public boolean playersAbandoned(List<UUID> players) {
     if (players.size() <= 5) {
-      Integer seriesId = Ingame.get().getRankedManager().getMatch().getSeries().getId();
+      Integer seriesId = matchManager.getMatch().getSeries().getId();
       players.forEach(player -> playerAbandoned(player, seriesId));
     }
 

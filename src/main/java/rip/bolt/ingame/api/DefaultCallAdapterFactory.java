@@ -25,7 +25,8 @@ public final class DefaultCallAdapterFactory<T> extends CallAdapter.Factory {
     try (ResponseBody errorBody = response.errorBody()) {
       return Objects.isNull(errorBody) ? response.message() : errorBody.string();
     } catch (IOException e) {
-      throw new RuntimeException("could not read error body", e);
+      e.printStackTrace();
+      return "Failed to read error message";
     }
   }
 
@@ -57,7 +58,7 @@ public final class DefaultCallAdapterFactory<T> extends CallAdapter.Factory {
         if (response.code() == NOT_FOUND) {
           return null;
         }
-        throw new RuntimeException(getErrorMessage(response));
+        throw new APIException(getErrorMessage(response), response.code());
       }
       return response.body();
     }

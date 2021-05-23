@@ -35,6 +35,12 @@ public class AppData {
     }
   }
 
+  public static class Socket {
+    public static String getUrl() {
+      return Ingame.get().getConfig().getString("socket.url");
+    }
+  }
+
   public static long absentSecondsLimit() {
     return Ingame.get().getConfig().getLong("absence-time-seconds", 120);
   }
@@ -69,5 +75,9 @@ public class AppData {
 
   public static boolean customTabEnabled() {
     return Ingame.get().getConfig().getBoolean("custom-tab-enabled", true);
+  }
+
+  public static boolean publiclyLogPugs() {
+    return Ingame.get().getConfig().getBoolean("publicly-log-pugs", false);
   }
 }

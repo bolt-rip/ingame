@@ -7,6 +7,7 @@ public class BoltPGMMap {
 
   private Integer id;
   private String name;
+  private String slug;
 
   public BoltPGMMap() {}
 
@@ -34,8 +35,16 @@ public class BoltPGMMap {
     this.name = name;
   }
 
+  public String getSlug() {
+    return slug;
+  }
+
+  public void setSlug(String slug) {
+    this.slug = slug;
+  }
+
   @Override
   public String toString() {
-    return "{" + " id='" + getId() + "'" + ", name='" + getName() + "'" + "}";
+    return "BoltPGMMap{" + "id=" + id + ", name='" + name + '\'' + ", slug='" + slug + '\'' + '}';
   }
 }

@@ -11,6 +11,10 @@ public class Participation {
 
   public Participation() {}
 
+  public Participation(User user) {
+    this.user = user;
+  }
+
   public User getUser() {
     return user;
   }
