@@ -56,4 +56,8 @@ public class AppData {
   public static Duration matchStartDuration() {
     return parseDuration(Ingame.get().getConfig().getString("match-start-duration", "180s"));
   }
+
+  public static boolean customTabEnabled() {
+    return Ingame.get().getConfig().getBoolean("custom-tab-enabled", true);
+  }
 }

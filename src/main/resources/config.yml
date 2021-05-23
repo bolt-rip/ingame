@@ -17,6 +17,9 @@ forfeit:
 # duration to countdown before starting match
 match-start-duration: "300s"
 
+# if custom tab list should be used
+custom-tab-enabled: true
+
 # website page links (remove section to remove references)
 web:
   match: https://localhost:3000/matches/{matchId}

@@ -38,7 +38,7 @@ public class Ingame extends JavaPlugin {
 
     apiManager = new APIManager();
 
-    rankedManager = new RankedManager();
+    rankedManager = new RankedManager(this);
 
     Bukkit.getPluginManager().registerEvents(rankedManager, this);
     Bukkit.getPluginManager().registerEvents(rankedManager.getPlayerWatcher(), this);
