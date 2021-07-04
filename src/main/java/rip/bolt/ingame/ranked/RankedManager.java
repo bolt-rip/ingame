@@ -21,6 +21,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.plugin.Plugin;
 import rip.bolt.ingame.Ingame;
 import rip.bolt.ingame.api.definitions.BoltMatch;
 import rip.bolt.ingame.api.definitions.Team;
@@ -40,6 +41,7 @@ public class RankedManager implements Listener {
   private final PlayerWatcher playerWatcher;
   private final RankManager rankManager;
   private final StatsManager statsManager;
+  private final TabManager tabManager;
   private final MatchSearch poll;
 
   private TournamentFormat format;
@@ -48,10 +50,11 @@ public class RankedManager implements Listener {
   private Duration cycleTime = Duration.ofSeconds(0);
   private boolean manuallyCanceled;
 
-  public RankedManager() {
+  public RankedManager(Plugin plugin) {
     playerWatcher = new PlayerWatcher(this);
     rankManager = new RankManager(this);
     statsManager = new StatsManager(this);
+    tabManager = new TabManager(plugin);
     MatchPreloader.create();
 
     poll = new MatchSearch(this::setupMatch);
