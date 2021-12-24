@@ -53,14 +53,15 @@ public class APIManager {
   }
 
   public BoltMatch postMatch(BoltMatch match) {
-    for (int i = 0; i < 10; ) {
+    int retries = 40;
+    for (int i = 0; i < retries; ) {
       try {
         return apiService.postMatch(match.getId(), match);
       } catch (Exception ex) {
         i += 1;
 
         System.out.println(
-            "Failed to report match end, retrying in " + (i * 5) + "s (" + i + "/10)");
+            "Failed to report match end, retrying in " + (i * 5) + "s (" + i + "/" + retries + ")");
         ex.printStackTrace();
         try {
           Thread.sleep(i * 5000L);
