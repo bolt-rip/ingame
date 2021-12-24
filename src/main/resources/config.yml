@@ -1,5 +1,9 @@
 # default config
 
+# what ID the server identifies as
+# remove server-name to use system ENV
+server-name:
+
 # how long players can be absent
 absence-time-seconds: 120
 

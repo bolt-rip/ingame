@@ -18,7 +18,9 @@ public class AppData {
     }
 
     public static String getServerName() {
-      return String.valueOf(System.getenv("SERVER_NAME"));
+      return Ingame.get()
+          .getConfig()
+          .getString("server-name", String.valueOf(System.getenv("SERVER_NAME")));
     }
   }
 
