@@ -1,5 +1,6 @@
 package rip.bolt.ingame.api;
 
+import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.UUID;
 import okhttp3.OkHttpClient;
@@ -18,6 +19,9 @@ public class APIManager {
   public APIManager() {
     serverId = AppData.API.getServerName();
 
+    ObjectMapper objectMapper = new ObjectMapper().registerModule(new DateModule());
+    objectMapper.enable(MapperFeature.ACCEPT_CASE_INSENSITIVE_ENUMS);
+
     OkHttpClient.Builder httpClient = new OkHttpClient.Builder();
     httpClient.addInterceptor(
         chain ->
@@ -31,8 +35,7 @@ public class APIManager {
     Retrofit retrofit =
         new Retrofit.Builder()
             .baseUrl(AppData.API.getURL())
-            .addConverterFactory(
-                JacksonConverterFactory.create(new ObjectMapper().registerModule(new DateModule())))
+            .addConverterFactory(JacksonConverterFactory.create(objectMapper))
             .addCallAdapterFactory(new DefaultCallAdapterFactory<>())
             .client(httpClient.build())
             .build();

@@ -105,10 +105,12 @@ public class RankManager implements Listener {
     updatePlayer(player, player.getParty());
 
     Component rank = RANK_PREFIX;
-    if (!old.getRank().equals(user.getRank())) rank = rank.append(getRank(old)).append(ARROW);
+    if (!old.getRanking().getRank().equals(user.getRanking().getRank()))
+      rank = rank.append(getRank(old)).append(ARROW);
     rank = rank.append(getRank(user)).append(text("("));
 
-    if (old.getMmr() != null && old.getMmr() < user.getMmr())
+    if (old.getRanking().getRating() != null
+        && old.getRanking().getRating() < user.getRanking().getRating())
       rank = rank.append(mmr(old)).append(text(" ")).append(ARROW);
     rank = rank.append(mmr(user)).append(text(")"));
 
@@ -152,7 +154,7 @@ public class RankManager implements Listener {
         .filter(g -> g.getId().equals(rank))
         .map(c -> c.getFlair().getComponent(true))
         .findFirst()
-        .orElse(text("Unknown", NamedTextColor.DARK_GRAY));
+        .orElse(text("Unknown ", NamedTextColor.DARK_GRAY));
   }
 
   private TextColor getRankColor(User user) {
@@ -166,7 +168,7 @@ public class RankManager implements Listener {
   }
 
   private Component mmr(User user) {
-    if (user.getMmr() == null) return text(" - ", NamedTextColor.DARK_GRAY);
-    return text(user.getMmr(), getRankColor(user));
+    if (user.getRanking().getRating() == null) return text(" - ", NamedTextColor.DARK_GRAY);
+    return text(user.getRanking().getRating(), getRankColor(user));
   }
 }
