@@ -43,4 +43,11 @@ public class Messages {
     return text("Profile link: ", NamedTextColor.WHITE)
         .append(link(Style.style(NamedTextColor.BLUE, TextDecoration.UNDERLINED), url));
   }
+
+  public static Component[] loadoutEditorTutorial() {
+    return new Component[] {
+      text("Click on two items to swap them.", NamedTextColor.YELLOW),
+      text("Close your inventory to save your changes.", NamedTextColor.YELLOW)
+    };
+  }
 }

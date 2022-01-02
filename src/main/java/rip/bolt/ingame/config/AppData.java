@@ -62,4 +62,8 @@ public class AppData {
   public static boolean customTabEnabled() {
     return Ingame.get().getConfig().getBoolean("custom-tab-enabled", true);
   }
+
+  public static boolean loadoutEditorEnabled() {
+    return Ingame.get().getConfig().getBoolean("loadout-editor-enabled", true);
+  }
 }

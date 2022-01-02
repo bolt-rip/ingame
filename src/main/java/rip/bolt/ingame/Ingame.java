@@ -10,6 +10,8 @@ import rip.bolt.ingame.api.APIManager;
 import rip.bolt.ingame.commands.ForfeitCommands;
 import rip.bolt.ingame.commands.RankedAdminCommands;
 import rip.bolt.ingame.commands.RequeueCommands;
+import rip.bolt.ingame.config.AppData;
+import rip.bolt.ingame.ranked.KitManager;
 import rip.bolt.ingame.ranked.RankedManager;
 import tc.oc.pgm.api.PGM;
 import tc.oc.pgm.api.match.Match;
@@ -43,6 +45,9 @@ public class Ingame extends JavaPlugin {
     Bukkit.getPluginManager().registerEvents(rankedManager, this);
     Bukkit.getPluginManager().registerEvents(rankedManager.getPlayerWatcher(), this);
     Bukkit.getPluginManager().registerEvents(rankedManager.getRankManager(), this);
+
+    if (AppData.loadoutEditorEnabled())
+      Bukkit.getPluginManager().registerEvents(new KitManager(), this);
 
     BasicBukkitCommandGraph g = new BasicBukkitCommandGraph(new CommandModule());
     DispatcherNode node = g.getRootDispatcherNode();
