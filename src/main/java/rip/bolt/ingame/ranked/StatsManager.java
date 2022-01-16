@@ -39,6 +39,7 @@ public class StatsManager implements Listener {
             stats.getDamageDone(),
             stats.getBowDamage(),
             stats.getDamageTaken(),
+            stats.getBowDamageTaken(),
             stats.getShotsHit(),
             stats.getShotsTaken()));
   }
