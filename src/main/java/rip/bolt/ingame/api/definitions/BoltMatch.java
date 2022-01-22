@@ -11,7 +11,7 @@ import rip.bolt.ingame.ranked.MatchStatus;
 public class BoltMatch {
 
   private String id;
-  private String map;
+  private BoltPGMMap map;
   private List<Team> teams;
 
   private Team winner;
@@ -35,11 +35,11 @@ public class BoltMatch {
     this.id = id;
   }
 
-  public String getMap() {
+  public BoltPGMMap getMap() {
     return map;
   }
 
-  public void setMap(String map) {
+  public void setMap(BoltPGMMap map) {
     this.map = map;
   }
 
@@ -101,7 +101,7 @@ public class BoltMatch {
             .append(getId())
             .append("\n")
             .append("Map: ")
-            .append(getMap())
+            .append(getMap().getName())
             .append("\n")
             .append("Status: ")
             .append(getStatus())
