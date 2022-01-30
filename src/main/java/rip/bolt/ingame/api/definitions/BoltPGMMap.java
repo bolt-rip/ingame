@@ -7,7 +7,6 @@ public class BoltPGMMap {
 
   private Integer id;
   private String name;
-  private String image;
 
   public BoltPGMMap() {}
 
@@ -33,14 +32,6 @@ public class BoltPGMMap {
 
   public void setName(String name) {
     this.name = name;
-  }
-
-  public String getImage() {
-    return this.image;
-  }
-
-  public void setImage(String image) {
-    this.image = image;
   }
 
   @Override
