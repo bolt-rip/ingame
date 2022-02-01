@@ -26,7 +26,6 @@ import rip.bolt.ingame.Ingame;
 import rip.bolt.ingame.api.definitions.BoltMatch;
 import rip.bolt.ingame.api.definitions.Team;
 import rip.bolt.ingame.config.AppData;
-import rip.bolt.ingame.utils.Messages;
 import rip.bolt.ingame.utils.PGMMapUtils;
 import tc.oc.pgm.api.PGM;
 import tc.oc.pgm.api.match.Match;
