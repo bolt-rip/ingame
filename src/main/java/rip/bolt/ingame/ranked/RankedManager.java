@@ -26,6 +26,8 @@ import rip.bolt.ingame.Ingame;
 import rip.bolt.ingame.api.definitions.BoltMatch;
 import rip.bolt.ingame.api.definitions.Team;
 import rip.bolt.ingame.config.AppData;
+import rip.bolt.ingame.utils.Messages;
+import rip.bolt.ingame.utils.PGMMapUtils;
 import tc.oc.pgm.api.PGM;
 import tc.oc.pgm.api.match.Match;
 import tc.oc.pgm.api.match.event.MatchFinishEvent;
@@ -94,7 +96,13 @@ public class RankedManager implements Listener {
         new SingleRound(
             format,
             new SingleRoundOptions(
-                "ranked", cycleTime, AppData.matchStartDuration(), match.getMap(), 1, true, true));
+                "ranked",
+                cycleTime,
+                AppData.matchStartDuration(),
+                match.getMap().getName(),
+                1,
+                true,
+                true));
     cycleTime = Duration.ofSeconds(5);
     format.addRound(ranked);
 
@@ -122,7 +130,6 @@ public class RankedManager implements Listener {
         && match.getId() != null
         && !match.getId().isEmpty()
         && match.getMap() != null
-        && !match.getMap().isEmpty()
         && (match.getStatus().equals(MatchStatus.CREATED)
             || match.getStatus().equals(MatchStatus.LOADED))
         && (this.match == null || !Objects.equals(this.match.getId(), match.getId()));
@@ -221,7 +228,7 @@ public class RankedManager implements Listener {
       case LOADED:
         break;
       case STARTED:
-        boltMatch.setMap(match.getMap().getName());
+        boltMatch.setMap(PGMMapUtils.getBoltPGMMap(boltMatch, match));
         boltMatch.setStartedAt(transitionAt);
         break;
       case ENDED:
