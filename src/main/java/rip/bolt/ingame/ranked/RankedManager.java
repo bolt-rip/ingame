@@ -35,11 +35,11 @@ import tc.oc.pgm.api.match.event.MatchLoadEvent;
 import tc.oc.pgm.api.match.event.MatchStartEvent;
 import tc.oc.pgm.api.party.Competitor;
 import tc.oc.pgm.restart.RestartManager;
-import tc.oc.pgm.util.Audience;
 
 public class RankedManager implements Listener {
 
   private final PlayerWatcher playerWatcher;
+  private final RequeueManager requeueManager;
   private final RankManager rankManager;
   private final StatsManager statsManager;
   private final TabManager tabManager;
@@ -53,6 +53,7 @@ public class RankedManager implements Listener {
 
   public RankedManager(Plugin plugin) {
     playerWatcher = new PlayerWatcher(this);
+    requeueManager = new RequeueManager();
     rankManager = new RankManager(this);
     statsManager = new StatsManager(this);
     tabManager = new TabManager(plugin);
@@ -154,6 +155,10 @@ public class RankedManager implements Listener {
     return poll;
   }
 
+  public RequeueManager getRequeueManager() {
+    return requeueManager;
+  }
+
   public void manualPoll(boolean repeat) {
     if (repeat) {
       poll.startIn(0L);
@@ -197,7 +202,11 @@ public class RankedManager implements Listener {
     Bukkit.getScheduler()
         .scheduleSyncDelayedTask(
             Ingame.get(),
-            () -> Audience.get(event.getMatch().getCompetitors()).sendMessage(Messages.requeue()),
+            () ->
+                event.getMatch().getCompetitors().stream()
+                    .map(Competitor::getPlayers)
+                    .flatMap(Collection::stream)
+                    .forEach(requeueManager::sendRequeueMessage),
             20);
   }
 
