@@ -12,6 +12,7 @@ public class Stats {
   private double damageDealt;
   private double damageDealtBow;
   private double damageReceived;
+  private double damageReceivedBow;
   private int arrowsHit;
   private int arrowsShot;
 
@@ -24,6 +25,7 @@ public class Stats {
       double damageDealt,
       double damageDealtBow,
       double damageReceived,
+      double damageReceivedBow,
       int arrowsHit,
       int arrowsShot) {
     this.kills = kills;
@@ -32,6 +34,7 @@ public class Stats {
     this.damageDealt = damageDealt;
     this.damageDealtBow = damageDealtBow;
     this.damageReceived = damageReceived;
+    this.damageReceivedBow = damageReceivedBow;
     this.arrowsHit = arrowsHit;
     this.arrowsShot = arrowsShot;
   }
@@ -82,6 +85,14 @@ public class Stats {
 
   public void setDamageReceived(double damageReceived) {
     this.damageReceived = damageReceived;
+  }
+
+  public double getDamageReceivedBow() {
+    return damageReceivedBow;
+  }
+
+  public void setDamageReceivedBow(double damageReceivedBow) {
+    this.damageReceivedBow = damageReceivedBow;
   }
 
   public int getArrowsHit() {
