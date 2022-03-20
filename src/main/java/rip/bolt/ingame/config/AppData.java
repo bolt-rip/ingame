@@ -55,6 +55,14 @@ public class AppData {
     return parseDuration(Ingame.get().getConfig().getString("forfeit.after", "300s"));
   }
 
+  public static Duration autoCancelBefore() {
+    return parseDuration(Ingame.get().getConfig().getString("auto-cancel.before", "60s"));
+  }
+
+  public static Duration autoCancelCountdown() {
+    return parseDuration(Ingame.get().getConfig().getString("auto-cancel.countdown", "10s"));
+  }
+
   public static Duration matchStartDuration() {
     return parseDuration(Ingame.get().getConfig().getString("match-start-duration", "180s"));
   }

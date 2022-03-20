@@ -10,6 +10,12 @@ absence-time-seconds: 120
 # match will auto end if players missing
 full-teams-required: true
 
+# auto cancel a match if leavers are present
+# (full teams required must be true to apply)
+auto-cancel:
+  before: "60s"
+  countdown: "10s"
+
 # enable the requeue command and prompt
 allow-requeue: true
 

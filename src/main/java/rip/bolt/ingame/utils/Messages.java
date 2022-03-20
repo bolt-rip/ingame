@@ -30,6 +30,16 @@ public class Messages {
                         Style.style(NamedTextColor.YELLOW, TextDecoration.UNDERLINED), "forfeit")));
   }
 
+  public static Component matchStartCancelled() {
+    return text("Match could not be started due to lack of players.", NamedTextColor.RED)
+        .append(newline())
+        .append(text("The offending players have received a temporary ban.", NamedTextColor.GRAY));
+  }
+
+  public static Component participationBan() {
+    return text("Player(s) temporarily banned due to lack of participation.", NamedTextColor.GRAY);
+  }
+
   public static Component matchLink(BoltMatch match) {
     String url = AppData.Web.getMatch().replace("{matchId}", match.getId());
 

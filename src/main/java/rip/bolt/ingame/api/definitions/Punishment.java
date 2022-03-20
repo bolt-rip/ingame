@@ -11,11 +11,14 @@ import org.bukkit.entity.Player;
 public class Punishment {
 
   private final UUID target;
+  private Integer seriesId;
+
   private UUID issuer;
   private String reason;
 
-  public Punishment(UUID target) {
+  public Punishment(UUID target, Integer seriesId) {
     this.target = target;
+    this.seriesId = seriesId;
   }
 
   public Punishment(UUID target, @Nullable CommandSender issuer, @Nullable String reason) {
@@ -26,6 +29,10 @@ public class Punishment {
 
   public UUID getTarget() {
     return target;
+  }
+
+  public Integer getSeriesId() {
+    return seriesId;
   }
 
   public UUID getIssuer() {

@@ -5,10 +5,19 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Series {
 
+  private Integer id;
   private String name;
   private Boolean hideObservers = false;
 
   public Series() {}
+
+  public Integer getId() {
+    return id;
+  }
+
+  public void setId(Integer id) {
+    this.id = id;
+  }
 
   public String getName() {
     return name;
@@ -28,6 +37,6 @@ public class Series {
 
   @Override
   public String toString() {
-    return "Series{" + "name='" + name + '\'' + ", hideObservers=" + hideObservers + '}';
+    return name + " (" + id + "): hideObservers=" + hideObservers;
   }
 }
