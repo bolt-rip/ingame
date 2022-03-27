@@ -26,6 +26,7 @@ import rip.bolt.ingame.Ingame;
 import rip.bolt.ingame.api.definitions.BoltMatch;
 import rip.bolt.ingame.api.definitions.Team;
 import rip.bolt.ingame.config.AppData;
+import rip.bolt.ingame.events.BoltMatchStatusChangeEvent;
 import rip.bolt.ingame.utils.PGMMapUtils;
 import tc.oc.pgm.api.PGM;
 import tc.oc.pgm.api.match.Match;
@@ -41,6 +42,7 @@ public class RankedManager implements Listener {
   private final RequeueManager requeueManager;
   private final RankManager rankManager;
   private final StatsManager statsManager;
+  private final SpectatorManager spectatorManager;
   private final TabManager tabManager;
   private final MatchSearch poll;
 
@@ -55,7 +57,9 @@ public class RankedManager implements Listener {
     requeueManager = new RequeueManager();
     rankManager = new RankManager(this);
     statsManager = new StatsManager(this);
+    spectatorManager = new SpectatorManager(playerWatcher);
     tabManager = new TabManager(plugin);
+
     MatchPreloader.create();
 
     poll = new MatchSearch(this::setupMatch);
@@ -104,6 +108,11 @@ public class RankedManager implements Listener {
                 true));
     cycleTime = Duration.ofSeconds(5);
     format.addRound(ranked);
+
+    Ingame.get()
+        .getServer()
+        .getPluginManager()
+        .callEvent(new BoltMatchStatusChangeEvent(match, null, MatchStatus.CREATED));
 
     Bukkit.broadcastMessage(ChatColor.YELLOW + "A new match is starting on this server!");
     Tournament.get()
@@ -221,7 +230,10 @@ public class RankedManager implements Listener {
 
   public BoltMatch transition(
       Match match, BoltMatch boltMatch, MatchStatus newStatus, Instant transitionAt) {
-    if (boltMatch == null || !boltMatch.getStatus().canTransitionTo(newStatus)) return null;
+    if (boltMatch == null) return null;
+
+    MatchStatus oldStatus = boltMatch.getStatus();
+    if (!oldStatus.canTransitionTo(newStatus)) return null;
 
     switch (newStatus) {
       case LOADED:
@@ -249,7 +261,15 @@ public class RankedManager implements Listener {
     }
 
     boltMatch.setStatus(newStatus);
+    Ingame.get()
+        .getServer()
+        .getPluginManager()
+        .callEvent(new BoltMatchStatusChangeEvent(boltMatch, oldStatus, newStatus));
 
     return boltMatch;
+  }
+
+  public SpectatorManager getSpectatorManager() {
+    return spectatorManager;
   }
 }

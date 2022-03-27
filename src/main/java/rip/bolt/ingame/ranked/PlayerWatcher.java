@@ -161,7 +161,7 @@ public class PlayerWatcher implements Listener {
             () -> Ingame.get().getApiManager().postPlayerPunishment(new Punishment(player)));
   }
 
-  private boolean isPlaying(UUID uuid) {
+  public boolean isPlaying(UUID uuid) {
     return players.containsKey(uuid);
   }
 
