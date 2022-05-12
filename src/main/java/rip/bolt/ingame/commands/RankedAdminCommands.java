@@ -2,7 +2,6 @@ package rip.bolt.ingame.commands;
 
 import static tc.oc.pgm.lib.net.kyori.adventure.text.Component.text;
 
-import java.time.Duration;
 import javax.annotation.Nullable;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
@@ -14,6 +13,7 @@ import rip.bolt.ingame.api.definitions.Punishment;
 import rip.bolt.ingame.config.AppData;
 import rip.bolt.ingame.ranked.MatchStatus;
 import rip.bolt.ingame.ranked.RankedManager;
+import rip.bolt.ingame.utils.CancelReason;
 import rip.bolt.ingame.utils.Messages;
 import tc.oc.pgm.api.match.Match;
 import tc.oc.pgm.api.match.MatchPhase;
@@ -22,7 +22,6 @@ import tc.oc.pgm.lib.app.ashcon.intake.CommandException;
 import tc.oc.pgm.lib.app.ashcon.intake.parametric.annotation.Switch;
 import tc.oc.pgm.lib.app.ashcon.intake.parametric.annotation.Text;
 import tc.oc.pgm.lib.net.kyori.adventure.text.format.NamedTextColor;
-import tc.oc.pgm.result.TieVictoryCondition;
 import tc.oc.pgm.util.Audience;
 
 public class RankedAdminCommands {
@@ -113,17 +112,7 @@ public class RankedAdminCommands {
       throw new CommandException(ChatColor.RED + "Unable to transition to the cancelled state.");
     }
 
-    ranked.manualCancel(match);
-
-    if (match.getPhase().equals(MatchPhase.STARTING)) {
-      match.getCountdown().cancelAll();
-    }
-
-    boolean running = match.getPhase().canTransitionTo(MatchPhase.FINISHED);
-    if (running) {
-      match.addVictoryCondition(new TieVictoryCondition());
-      match.finish();
-    }
+    ranked.cancel(match, CancelReason.MANUAL_CANCEL);
 
     Audience.get(sender)
         .sendMessage(
@@ -131,11 +120,6 @@ public class RankedAdminCommands {
                 "Match " + boltMatch.getId() + " has been reported as cancelled.",
                 NamedTextColor.GRAY));
     match.sendMessage(text("Match has been cancelled by an admin.", NamedTextColor.RED));
-
-    if (!running) {
-      Audience.get(match.getCompetitors()).sendMessage(Messages.requeue());
-      ranked.getPoll().startIn(Duration.ofSeconds(15));
-    }
   }
 
   @Command(aliases = "ban", desc = "Manually queue bans a player", perms = "ingame.staff.ban")

@@ -4,12 +4,14 @@ import static tc.oc.pgm.lib.net.kyori.adventure.text.Component.text;
 
 import com.google.common.collect.Ordering;
 import java.time.Duration;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.UUID;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
-import rip.bolt.ingame.Ingame;
 import rip.bolt.ingame.config.AppData;
+import rip.bolt.ingame.utils.CancelReason;
+import rip.bolt.ingame.utils.Messages;
 import tc.oc.pgm.api.match.Match;
 import tc.oc.pgm.api.match.MatchScope;
 import tc.oc.pgm.api.player.MatchPlayer;
@@ -25,6 +27,12 @@ public class CancelManager {
 
   public CancelManager(PlayerWatcher playerWatcher) {
     this.playerWatcher = playerWatcher;
+  }
+
+  private void cancelMatch(Match match, UUID player) {
+    playerWatcher.playersAbandoned(Collections.singletonList(player));
+    playerWatcher.getRankedManager().cancel(match, CancelReason.AUTOMATED_CANCEL);
+    match.sendMessage(Messages.participationBan());
   }
 
   public void clearCountdown() {
@@ -58,7 +66,7 @@ public class CancelManager {
         Ordering.natural()
             .max(CANCEL_ABSENCE_LENGTH.minus(participation.absentDuration()), Duration.ZERO);
 
-    countdown = new LeaverCountdown(match, participation.getUUID(), duration);
+    countdown = new LeaverCountdown(this, match, participation.getUUID(), duration);
   }
 
   public void playerLeft(MatchPlayer player) {
@@ -74,13 +82,16 @@ public class CancelManager {
 
   public static class LeaverCountdown {
 
+    private CancelManager manager;
     private final Match match;
     private final UUID player;
     private long duration;
 
     private final ScheduledFuture<?> scheduledFuture;
 
-    public LeaverCountdown(Match match, UUID player, Duration duration) {
+    public LeaverCountdown(
+        CancelManager cancelManager, Match match, UUID player, Duration duration) {
+      this.manager = cancelManager;
       this.match = match;
       this.player = player;
       this.duration = (duration.toMillis() + 999) / 1000;
@@ -101,7 +112,7 @@ public class CancelManager {
     private void tick() {
       if (duration <= 0) {
         // Cancel match
-        Ingame.get().getRankedManager().getPlayerWatcher().cancelMatch(match);
+        this.manager.cancelMatch(match, player);
         // Cancel scheduler
         cancelCountdown();
       } else if (duration % 5 == 0 || duration <= 3) broadcast();

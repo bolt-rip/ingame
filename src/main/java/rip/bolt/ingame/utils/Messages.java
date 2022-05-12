@@ -33,7 +33,8 @@ public class Messages {
   public static Component matchStartCancelled() {
     return text("Match could not be started due to lack of players.", NamedTextColor.RED)
         .append(newline())
-        .append(text("The offending players have received a temporary ban.", NamedTextColor.GRAY));
+        .append(
+            text("The offending player(s) have received a temporary ban.", NamedTextColor.GRAY));
   }
 
   public static Component participationBan() {
