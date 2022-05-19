@@ -43,8 +43,13 @@ public class CancelManager {
   }
 
   public void playerJoined(MatchPlayer player) {
-    if (countdown != null && countdown.contains(player.getId())) clearCountdown();
-    if (canCancel(player.getMatch())) startCountdownIfRequired(player.getMatch());
+    if (countdown == null || !countdown.players.contains(player.getId())) return;
+
+    // Remove player from countdown
+    countdown.removePlayer(player.getId());
+    if (countdown.isEmpty()) clearCountdown();
+
+    startCountdownIfRequired(player.getMatch());
   }
 
   public void startCountdown(Match match, List<UUID> players, @Nullable Duration duration) {
@@ -56,6 +61,9 @@ public class CancelManager {
   }
 
   public void startCountdownIfRequired(Match match) {
+    // Check if countdown can be started
+    if (countdown != null || !canCancel(match)) return;
+
     // Check if countdown required for any participants
     PlayerWatcher.MatchParticipation participation =
         playerWatcher.getParticipations().values().stream()
@@ -66,8 +74,8 @@ public class CancelManager {
             .max(Comparator.comparing(PlayerWatcher.MatchParticipation::currentAbsentDuration))
             .orElse(null);
 
-    if (participation == null || (countdown != null && countdown.contains(participation.getUUID())))
-      return;
+    if (participation == null
+        || (countdown != null && countdown.players.contains(participation.getUUID()))) return;
 
     Duration duration =
         Ordering.natural()
@@ -125,8 +133,12 @@ public class CancelManager {
       duration--;
     }
 
-    public boolean contains(UUID player) {
-      return players.contains(player);
+    public boolean isEmpty() {
+      return players.isEmpty();
+    }
+
+    public void removePlayer(UUID player) {
+      if (players.remove(player) && players.isEmpty()) cancelCountdown();
     }
 
     public void cancelCountdown() {
