@@ -129,7 +129,8 @@ public class PlayerWatcher implements Listener {
     if (!AppData.fullTeamsRequired()) return;
 
     // No players are currently missing
-    if (getOfflinePlayers(event.getMatch()).isEmpty()) return;
+    List<UUID> offlinePlayers = getOfflinePlayers(event.getMatch());
+    if (offlinePlayers.isEmpty()) return;
 
     // If a player never joined mark as abandoned
     if (playersAbandoned(getNonJoinedPlayers())) {
@@ -138,12 +139,11 @@ public class PlayerWatcher implements Listener {
     }
 
     // Set everyone who is not online as "absent"
-    players.forEach(
-        (uuid, matchParticipation) -> {
-          if (event.getMatch().getPlayer(uuid) == null) matchParticipation.playerLeft();
-        });
+    players.values().stream()
+        .filter(participation -> offlinePlayers.contains(participation.getUUID()))
+        .forEach(MatchParticipation::playerLeft);
 
-    cancelManager.startCountdownIfRequired(event.getMatch());
+    cancelManager.startCountdown(event.getMatch(), offlinePlayers, null);
   }
 
   public List<UUID> getNonJoinedPlayers() {
@@ -161,7 +161,7 @@ public class PlayerWatcher implements Listener {
 
   private List<UUID> getParticipationsBelowDuration(Duration minimumDuration) {
     return players.values().stream()
-        .filter(participation -> participation.absentDuration().compareTo(minimumDuration) > 0)
+        .filter(participation -> participation.absentDuration().compareTo(minimumDuration) >= 0)
         .map(MatchParticipation::getUUID)
         .collect(Collectors.toList());
   }

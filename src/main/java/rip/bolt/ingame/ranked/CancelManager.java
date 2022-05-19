@@ -6,9 +6,11 @@ import com.google.common.collect.Ordering;
 import java.time.Duration;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import javax.annotation.Nullable;
 import rip.bolt.ingame.config.AppData;
 import rip.bolt.ingame.utils.CancelReason;
 import rip.bolt.ingame.utils.Messages;
@@ -29,8 +31,8 @@ public class CancelManager {
     this.playerWatcher = playerWatcher;
   }
 
-  private void cancelMatch(Match match, UUID player) {
-    playerWatcher.playersAbandoned(Collections.singletonList(player));
+  protected void cancelMatch(Match match, List<UUID> players) {
+    playerWatcher.playersAbandoned(players);
     playerWatcher.getRankedManager().cancel(match, CancelReason.AUTOMATED_CANCEL);
     match.sendMessage(Messages.participationBan());
   }
@@ -41,11 +43,27 @@ public class CancelManager {
   }
 
   public void playerJoined(MatchPlayer player) {
-    if (countdown != null && countdown.player.equals(player.getId())) clearCountdown();
-    if (canCancel(player.getMatch())) startCountdownIfRequired(player.getMatch());
+    if (countdown == null || !countdown.players.contains(player.getId())) return;
+
+    // Remove player from countdown
+    countdown.removePlayer(player.getId());
+    if (countdown.isEmpty()) clearCountdown();
+
+    startCountdownIfRequired(player.getMatch());
+  }
+
+  public void startCountdown(Match match, List<UUID> players, @Nullable Duration duration) {
+    clearCountdown();
+
+    countdown =
+        new LeaverCountdown(
+            this, match, players, duration == null ? CANCEL_ABSENCE_LENGTH : duration);
   }
 
   public void startCountdownIfRequired(Match match) {
+    // Check if countdown can be started
+    if (countdown != null || !canCancel(match)) return;
+
     // Check if countdown required for any participants
     PlayerWatcher.MatchParticipation participation =
         playerWatcher.getParticipations().values().stream()
@@ -56,24 +74,19 @@ public class CancelManager {
             .max(Comparator.comparing(PlayerWatcher.MatchParticipation::currentAbsentDuration))
             .orElse(null);
 
-    if (participation == null || (countdown != null && countdown.player == participation.getUUID()))
-      return;
-
-    // Cancel and clear existing countdown
-    clearCountdown();
+    if (participation == null
+        || (countdown != null && countdown.players.contains(participation.getUUID()))) return;
 
     Duration duration =
         Ordering.natural()
             .max(CANCEL_ABSENCE_LENGTH.minus(participation.absentDuration()), Duration.ZERO);
 
-    countdown = new LeaverCountdown(this, match, participation.getUUID(), duration);
+    // Start countdown with single player
+    startCountdown(match, Collections.singletonList(participation.getUUID()), duration);
   }
 
   public void playerLeft(MatchPlayer player) {
-    Match match = player.getMatch();
-    if (canCancel(match)) {
-      startCountdownIfRequired(match);
-    }
+    startCountdownIfRequired(player.getMatch());
   }
 
   private boolean canCancel(Match match) {
@@ -82,18 +95,18 @@ public class CancelManager {
 
   public static class LeaverCountdown {
 
-    private CancelManager manager;
+    private final CancelManager manager;
     private final Match match;
-    private final UUID player;
+    private final List<UUID> players;
     private long duration;
 
     private final ScheduledFuture<?> scheduledFuture;
 
     public LeaverCountdown(
-        CancelManager cancelManager, Match match, UUID player, Duration duration) {
+        CancelManager cancelManager, Match match, List<UUID> players, Duration duration) {
       this.manager = cancelManager;
       this.match = match;
-      this.player = player;
+      this.players = players;
       this.duration = (duration.toMillis() + 999) / 1000;
 
       scheduledFuture =
@@ -112,12 +125,20 @@ public class CancelManager {
     private void tick() {
       if (duration <= 0) {
         // Cancel match
-        this.manager.cancelMatch(match, player);
+        this.manager.cancelMatch(match, players);
         // Cancel scheduler
         cancelCountdown();
       } else if (duration % 5 == 0 || duration <= 3) broadcast();
 
       duration--;
+    }
+
+    public boolean isEmpty() {
+      return players.isEmpty();
+    }
+
+    public void removePlayer(UUID player) {
+      if (players.remove(player) && players.isEmpty()) cancelCountdown();
     }
 
     public void cancelCountdown() {
@@ -126,7 +147,7 @@ public class CancelManager {
 
     @Override
     public String toString() {
-      return "LeaverCountdown{" + "player=" + player + ", duration=" + duration + '}';
+      return "LeaverCountdown{" + "players=" + players + ", duration=" + duration + '}';
     }
   }
 }

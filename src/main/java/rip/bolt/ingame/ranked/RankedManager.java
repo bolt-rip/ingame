@@ -198,15 +198,13 @@ public class RankedManager implements Listener {
       match.getCountdown().cancelAll();
     }
 
-    // Add tie victory condition if in progress
-    boolean running = match.getPhase().canTransitionTo(MatchPhase.FINISHED);
-    if (running) {
+    // Check if match is in progress
+    if (match.getPhase().equals(MatchPhase.RUNNING)) {
+      // Add tie victory condition if in progress
       match.addVictoryCondition(new TieVictoryCondition());
       match.finish();
-    }
-
-    // Prompt players to requeue and start polling
-    if (!running) {
+    } else {
+      // Prompt players to requeue and start polling
       Audience.get(match.getCompetitors()).sendMessage(Messages.requeue());
       this.getPoll().startIn(Duration.ofSeconds(15));
     }
