@@ -75,8 +75,8 @@ public class CancelManager {
             .max(Comparator.comparing(PlayerWatcher.MatchParticipation::currentAbsentDuration))
             .orElse(null);
 
-    if (participation == null
-        || (countdown != null && countdown.contains(participation.getUUID()))) return;
+    if (participation == null || (countdown != null && countdown.contains(participation.getUUID())))
+      return;
 
     Duration duration =
         Ordering.natural()
