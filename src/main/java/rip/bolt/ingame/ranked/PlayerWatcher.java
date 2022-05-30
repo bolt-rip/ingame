@@ -136,6 +136,7 @@ public class PlayerWatcher implements Listener {
     if (playersAbandoned(getNonJoinedPlayers())) {
       rankedManager.cancel(event.getMatch(), CancelReason.AUTOMATED_CANCEL);
       event.getMatch().sendMessage(Messages.matchStartCancelled());
+      return;
     }
 
     // Set everyone who is not online as "absent"
