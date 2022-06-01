@@ -14,6 +14,7 @@ import org.bukkit.event.player.PlayerLoginEvent;
 import rip.bolt.ingame.Ingame;
 import rip.bolt.ingame.api.definitions.Punishment;
 import rip.bolt.ingame.config.AppData;
+import rip.bolt.ingame.utils.CancelReason;
 import rip.bolt.ingame.utils.Messages;
 import tc.oc.pgm.api.match.Match;
 import tc.oc.pgm.api.match.event.MatchFinishEvent;
@@ -22,7 +23,6 @@ import tc.oc.pgm.api.party.Competitor;
 import tc.oc.pgm.api.player.MatchPlayer;
 import tc.oc.pgm.events.PlayerJoinMatchEvent;
 import tc.oc.pgm.events.PlayerPartyChangeEvent;
-import tc.oc.pgm.result.TieVictoryCondition;
 
 public class PlayerWatcher implements Listener {
 
@@ -33,7 +33,6 @@ public class PlayerWatcher implements Listener {
   private final CancelManager cancelManager;
 
   private final Map<UUID, MatchParticipation> players = new HashMap<>();
-  private boolean automaticallyCancelled;
 
   public PlayerWatcher(RankedManager rankedManager) {
     this.rankedManager = rankedManager;
@@ -41,12 +40,15 @@ public class PlayerWatcher implements Listener {
     this.cancelManager = new CancelManager(this);
   }
 
+  public RankedManager getRankedManager() {
+    return rankedManager;
+  }
+
   public ForfeitManager getForfeitManager() {
     return forfeitManager;
   }
 
   public void addPlayers(List<UUID> uuids) {
-    automaticallyCancelled = false;
     players.clear();
     forfeitManager.clearPolls();
     cancelManager.clearCountdown();
@@ -105,22 +107,13 @@ public class PlayerWatcher implements Listener {
 
   @EventHandler(priority = EventPriority.LOW)
   public void onMatchEnd(MatchFinishEvent event) {
-    if (rankedManager.isManuallyCanceled()) return;
+    // If match was cancelled, don't bother with the rest
+    if (rankedManager.getCancelReason() != null) return;
 
-    // If a regular match end and duration less than max absent period no bans to check
-    if (!automaticallyCancelled && event.getMatch().getDuration().compareTo(ABSENT_MAX) > 0) return;
+    // Duration less than max absent period no bans to check
+    if (event.getMatch().getDuration().compareTo(ABSENT_MAX) > 0) return;
 
-    Duration maxAbsenceDuration =
-        (automaticallyCancelled) ? CancelManager.CANCEL_ABSENCE_LENGTH : ABSENT_MAX;
-
-    List<UUID> abandonedPlayers =
-        players.values().stream()
-            .filter(
-                participation -> participation.absentDuration().compareTo(maxAbsenceDuration) > 0)
-            .map(MatchParticipation::getUUID)
-            .collect(Collectors.toList());
-
-    if (playersAbandoned(abandonedPlayers)) {
+    if (playersAbandoned(getParticipationsBelowDuration(ABSENT_MAX))) {
       event.getMatch().sendMessage(Messages.participationBan());
     }
   }
@@ -136,29 +129,22 @@ public class PlayerWatcher implements Listener {
     if (!AppData.fullTeamsRequired()) return;
 
     // No players are currently missing
-    if (getOfflinePlayers(event.getMatch()).isEmpty()) return;
+    List<UUID> offlinePlayers = getOfflinePlayers(event.getMatch());
+    if (offlinePlayers.isEmpty()) return;
 
     // If a player never joined mark as abandoned
     if (playersAbandoned(getNonJoinedPlayers())) {
-      cancelMatch(event.getMatch());
+      rankedManager.cancel(event.getMatch(), CancelReason.AUTOMATED_CANCEL);
       event.getMatch().sendMessage(Messages.matchStartCancelled());
+      return;
     }
 
     // Set everyone who is not online as "absent"
-    players.forEach(
-        (uuid, matchParticipation) -> {
-          if (event.getMatch().getPlayer(uuid) == null) matchParticipation.playerLeft();
-        });
+    players.values().stream()
+        .filter(participation -> offlinePlayers.contains(participation.getUUID()))
+        .forEach(MatchParticipation::playerLeft);
 
-    cancelManager.startCountdownIfRequired(event.getMatch());
-  }
-
-  public void cancelMatch(Match match) {
-    automaticallyCancelled = true;
-    // the order of these two lines should not be changed
-    rankedManager.postMatchStatus(match, MatchStatus.CANCELLED);
-    match.addVictoryCondition(new TieVictoryCondition());
-    match.finish();
+    cancelManager.startCountdown(event.getMatch(), offlinePlayers, null);
   }
 
   public List<UUID> getNonJoinedPlayers() {
@@ -174,7 +160,14 @@ public class PlayerWatcher implements Listener {
         .collect(Collectors.toList());
   }
 
-  private boolean playersAbandoned(List<UUID> players) {
+  private List<UUID> getParticipationsBelowDuration(Duration minimumDuration) {
+    return players.values().stream()
+        .filter(participation -> participation.absentDuration().compareTo(minimumDuration) >= 0)
+        .map(MatchParticipation::getUUID)
+        .collect(Collectors.toList());
+  }
+
+  public boolean playersAbandoned(List<UUID> players) {
     if (players.size() <= 5) {
       Integer seriesId = Ingame.get().getRankedManager().getMatch().getSeries().getId();
       players.forEach(player -> playerAbandoned(player, seriesId));

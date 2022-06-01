@@ -27,14 +27,19 @@ import rip.bolt.ingame.api.definitions.BoltMatch;
 import rip.bolt.ingame.api.definitions.Team;
 import rip.bolt.ingame.config.AppData;
 import rip.bolt.ingame.events.BoltMatchStatusChangeEvent;
+import rip.bolt.ingame.utils.CancelReason;
+import rip.bolt.ingame.utils.Messages;
 import rip.bolt.ingame.utils.PGMMapUtils;
 import tc.oc.pgm.api.PGM;
 import tc.oc.pgm.api.match.Match;
+import tc.oc.pgm.api.match.MatchPhase;
 import tc.oc.pgm.api.match.event.MatchFinishEvent;
 import tc.oc.pgm.api.match.event.MatchLoadEvent;
 import tc.oc.pgm.api.match.event.MatchStartEvent;
 import tc.oc.pgm.api.party.Competitor;
 import tc.oc.pgm.restart.RestartManager;
+import tc.oc.pgm.result.TieVictoryCondition;
+import tc.oc.pgm.util.Audience;
 
 public class RankedManager implements Listener {
 
@@ -50,7 +55,7 @@ public class RankedManager implements Listener {
   private BoltMatch match;
 
   private Duration cycleTime = Duration.ofSeconds(0);
-  private boolean manuallyCanceled;
+  private CancelReason cancelReason = null;
 
   public RankedManager(Plugin plugin) {
     playerWatcher = new PlayerWatcher(this);
@@ -71,7 +76,7 @@ public class RankedManager implements Listener {
     if (!this.isMatchValid(match)) return;
 
     this.match = match;
-    this.manuallyCanceled = false;
+    this.cancelReason = null;
     poll.stop();
 
     Tournament.get().getTeamManager().clear();
@@ -167,6 +172,10 @@ public class RankedManager implements Listener {
     return requeueManager;
   }
 
+  public CancelReason getCancelReason() {
+    return cancelReason;
+  }
+
   public void manualPoll(boolean repeat) {
     if (repeat) {
       poll.startIn(0L);
@@ -180,13 +189,25 @@ public class RankedManager implements Listener {
     this.match = null;
   }
 
-  public void manualCancel(Match match) {
-    this.manuallyCanceled = true;
+  public void cancel(Match match, CancelReason reason) {
+    this.cancelReason = reason;
     this.postMatchStatus(match, MatchStatus.CANCELLED);
-  }
 
-  public boolean isManuallyCanceled() {
-    return manuallyCanceled;
+    // Cancel countdowns if match has not started
+    if (match.getPhase().equals(MatchPhase.STARTING)) {
+      match.getCountdown().cancelAll();
+    }
+
+    // Check if match is in progress
+    if (match.getPhase().equals(MatchPhase.RUNNING)) {
+      // Add tie victory condition if in progress
+      match.addVictoryCondition(new TieVictoryCondition());
+      match.finish();
+    } else {
+      // Prompt players to requeue and start polling
+      Audience.get(match.getCompetitors()).sendMessage(Messages.requeue());
+      this.getPoll().startIn(Duration.ofSeconds(15));
+    }
   }
 
   @EventHandler
