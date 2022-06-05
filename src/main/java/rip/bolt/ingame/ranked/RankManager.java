@@ -1,7 +1,7 @@
 package rip.bolt.ingame.ranked;
 
-import static tc.oc.pgm.lib.net.kyori.adventure.text.Component.empty;
-import static tc.oc.pgm.lib.net.kyori.adventure.text.Component.text;
+import static net.kyori.adventure.text.Component.empty;
+import static net.kyori.adventure.text.Component.text;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -10,6 +10,10 @@ import java.util.List;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextColor;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -33,10 +37,6 @@ import tc.oc.pgm.api.party.Competitor;
 import tc.oc.pgm.api.party.Party;
 import tc.oc.pgm.api.player.MatchPlayer;
 import tc.oc.pgm.events.PlayerPartyChangeEvent;
-import tc.oc.pgm.lib.net.kyori.adventure.text.Component;
-import tc.oc.pgm.lib.net.kyori.adventure.text.format.NamedTextColor;
-import tc.oc.pgm.lib.net.kyori.adventure.text.format.TextColor;
-import tc.oc.pgm.lib.net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import tc.oc.pgm.util.bukkit.OnlinePlayerMapAdapter;
 
 public class RankManager implements Listener {

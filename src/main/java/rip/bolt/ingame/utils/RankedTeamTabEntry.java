@@ -4,10 +4,10 @@ import dev.pgm.events.Tournament;
 import dev.pgm.events.team.TournamentTeam;
 import java.util.Optional;
 import javax.annotation.Nullable;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextDecoration;
 import rip.bolt.ingame.api.definitions.Team;
-import tc.oc.pgm.lib.net.kyori.adventure.text.Component;
-import tc.oc.pgm.lib.net.kyori.adventure.text.format.NamedTextColor;
-import tc.oc.pgm.lib.net.kyori.adventure.text.format.TextDecoration;
 import tc.oc.pgm.tablist.TeamTabEntry;
 import tc.oc.pgm.util.tablist.TabView;
 

@@ -1,6 +1,6 @@
 package rip.bolt.ingame.ranked;
 
-import static tc.oc.pgm.lib.net.kyori.adventure.text.Component.text;
+import static net.kyori.adventure.text.Component.text;
 
 import dev.pgm.events.Tournament;
 import dev.pgm.events.team.TournamentPlayer;
@@ -15,6 +15,7 @@ import java.util.UUID;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
+import net.kyori.adventure.text.format.NamedTextColor;
 import rip.bolt.ingame.config.AppData;
 import rip.bolt.ingame.utils.Messages;
 import tc.oc.pgm.api.match.Match;
@@ -23,7 +24,6 @@ import tc.oc.pgm.api.party.Competitor;
 import tc.oc.pgm.api.party.Party;
 import tc.oc.pgm.api.party.VictoryCondition;
 import tc.oc.pgm.api.player.MatchPlayer;
-import tc.oc.pgm.lib.net.kyori.adventure.text.format.NamedTextColor;
 import tc.oc.pgm.result.CompetitorVictoryCondition;
 import tc.oc.pgm.result.TieVictoryCondition;
 import tc.oc.pgm.teams.Team;

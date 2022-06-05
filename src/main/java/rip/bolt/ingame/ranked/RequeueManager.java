@@ -1,8 +1,9 @@
 package rip.bolt.ingame.ranked;
 
-import static tc.oc.pgm.lib.net.kyori.adventure.text.Component.text;
+import static net.kyori.adventure.text.Component.text;
 
 import java.util.Map;
+import net.kyori.adventure.text.format.NamedTextColor;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -16,7 +17,6 @@ import rip.bolt.ingame.api.definitions.BoltResponse;
 import rip.bolt.ingame.utils.Messages;
 import tc.oc.pgm.api.player.MatchPlayer;
 import tc.oc.pgm.api.player.event.ObserverInteractEvent;
-import tc.oc.pgm.lib.net.kyori.adventure.text.format.NamedTextColor;
 import tc.oc.pgm.util.bukkit.OnlinePlayerMapAdapter;
 
 public class RequeueManager implements Listener {

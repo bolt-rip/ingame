@@ -1,6 +1,6 @@
 package rip.bolt.ingame.ranked;
 
-import static tc.oc.pgm.lib.net.kyori.adventure.text.Component.text;
+import static net.kyori.adventure.text.Component.text;
 
 import com.google.common.collect.Ordering;
 import java.time.Duration;
@@ -12,13 +12,13 @@ import java.util.UUID;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import javax.annotation.Nullable;
+import net.kyori.adventure.text.format.NamedTextColor;
 import rip.bolt.ingame.config.AppData;
 import rip.bolt.ingame.utils.CancelReason;
 import rip.bolt.ingame.utils.Messages;
 import tc.oc.pgm.api.match.Match;
 import tc.oc.pgm.api.match.MatchScope;
 import tc.oc.pgm.api.player.MatchPlayer;
-import tc.oc.pgm.lib.net.kyori.adventure.text.format.NamedTextColor;
 
 public class CancelManager {
 
