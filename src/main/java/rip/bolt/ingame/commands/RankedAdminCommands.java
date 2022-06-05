@@ -1,8 +1,9 @@
 package rip.bolt.ingame.commands;
 
-import static tc.oc.pgm.lib.net.kyori.adventure.text.Component.text;
+import static net.kyori.adventure.text.Component.text;
 
 import javax.annotation.Nullable;
+import net.kyori.adventure.text.format.NamedTextColor;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
@@ -21,7 +22,6 @@ import tc.oc.pgm.lib.app.ashcon.intake.Command;
 import tc.oc.pgm.lib.app.ashcon.intake.CommandException;
 import tc.oc.pgm.lib.app.ashcon.intake.parametric.annotation.Switch;
 import tc.oc.pgm.lib.app.ashcon.intake.parametric.annotation.Text;
-import tc.oc.pgm.lib.net.kyori.adventure.text.format.NamedTextColor;
 import tc.oc.pgm.util.Audience;
 
 public class RankedAdminCommands {

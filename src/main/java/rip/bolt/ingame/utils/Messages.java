@@ -1,17 +1,17 @@
 package rip.bolt.ingame.utils;
 
+import static net.kyori.adventure.text.Component.newline;
+import static net.kyori.adventure.text.Component.text;
 import static rip.bolt.ingame.utils.Components.command;
 import static rip.bolt.ingame.utils.Components.link;
-import static tc.oc.pgm.lib.net.kyori.adventure.text.Component.newline;
-import static tc.oc.pgm.lib.net.kyori.adventure.text.Component.text;
 
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.Style;
+import net.kyori.adventure.text.format.TextDecoration;
 import rip.bolt.ingame.api.definitions.BoltMatch;
 import rip.bolt.ingame.config.AppData;
 import tc.oc.pgm.api.player.MatchPlayer;
-import tc.oc.pgm.lib.net.kyori.adventure.text.Component;
-import tc.oc.pgm.lib.net.kyori.adventure.text.format.NamedTextColor;
-import tc.oc.pgm.lib.net.kyori.adventure.text.format.Style;
-import tc.oc.pgm.lib.net.kyori.adventure.text.format.TextDecoration;
 
 public class Messages {
 

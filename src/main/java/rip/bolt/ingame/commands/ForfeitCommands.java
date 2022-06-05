@@ -1,6 +1,6 @@
 package rip.bolt.ingame.commands;
 
-import static tc.oc.pgm.lib.net.kyori.adventure.text.Component.text;
+import static net.kyori.adventure.text.Component.text;
 
 import net.md_5.bungee.api.ChatColor;
 import rip.bolt.ingame.config.AppData;
