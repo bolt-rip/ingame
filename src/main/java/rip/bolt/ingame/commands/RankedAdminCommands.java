@@ -2,7 +2,17 @@ package rip.bolt.ingame.commands;
 
 import static net.kyori.adventure.text.Component.text;
 
-import javax.annotation.Nullable;
+import app.ashcon.intake.Command;
+import co.aikar.commands.BaseCommand;
+import co.aikar.commands.InvalidCommandArgument;
+import co.aikar.commands.annotation.CommandAlias;
+import co.aikar.commands.annotation.CommandPermission;
+import co.aikar.commands.annotation.Default;
+import co.aikar.commands.annotation.Dependency;
+import co.aikar.commands.annotation.Description;
+import co.aikar.commands.annotation.Flags;
+import co.aikar.commands.annotation.Optional;
+import co.aikar.commands.annotation.Subcommand;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
@@ -18,30 +28,20 @@ import rip.bolt.ingame.utils.CancelReason;
 import rip.bolt.ingame.utils.Messages;
 import tc.oc.pgm.api.match.Match;
 import tc.oc.pgm.api.match.MatchPhase;
-import tc.oc.pgm.lib.app.ashcon.intake.Command;
-import tc.oc.pgm.lib.app.ashcon.intake.CommandException;
-import tc.oc.pgm.lib.app.ashcon.intake.parametric.annotation.Switch;
-import tc.oc.pgm.lib.app.ashcon.intake.parametric.annotation.Text;
 import tc.oc.pgm.util.Audience;
 
-public class RankedAdminCommands {
+@CommandAlias("ingame")
+public class RankedAdminCommands extends BaseCommand {
 
-  private final RankedManager ranked;
+  @Dependency private RankedManager ranked;
 
-  public RankedAdminCommands(RankedManager ranked) {
-    this.ranked = ranked;
-  }
-
-  @Command(
-      aliases = "poll",
-      desc = "Poll the API once for a new Bolt match",
-      perms = "ingame.staff.poll",
-      flags = "r")
-  public void poll(CommandSender sender, Match match, @Switch('r') boolean repeat)
-      throws CommandException {
+  @Subcommand("poll")
+  @Description("Poll the API once for a new Bolt match")
+  @CommandPermission("ingame.staff.poll")
+  public void poll(CommandSender sender, Match match, @Default("false") boolean repeat) {
     if (match.getPhase() == MatchPhase.RUNNING)
-      throw new CommandException(
-          ChatColor.RED + "You may not run this command while a game is running!");
+      throw new InvalidCommandArgument(
+          ChatColor.RED + "You may not run this command while a game is running!", false);
 
     ranked.manualPoll(repeat);
 
@@ -50,15 +50,14 @@ public class RankedAdminCommands {
             text("Manual poll has been triggered, checking API for match.", NamedTextColor.GRAY));
   }
 
-  @Command(
-      aliases = {"clear", "reset"},
-      desc = "Clear the currently stored Bolt match",
-      perms = "ingame.staff.clear")
-  public void clear(CommandSender sender) throws CommandException {
+  @Subcommand("clear|reset")
+  @Description("Clear the currently stored Bolt match")
+  @CommandPermission("ingame.staff.clear")
+  public void clear(CommandSender sender) {
     BoltMatch match = ranked.getMatch();
     if (match == null)
-      throw new CommandException(
-          ChatColor.RED + "Unable to clear as no ranked match currently stored.");
+      throw new InvalidCommandArgument(
+          ChatColor.RED + "Unable to clear as no ranked match currently stored.", false);
 
     ranked.manualReset();
 
@@ -69,14 +68,13 @@ public class RankedAdminCommands {
                 NamedTextColor.GRAY));
   }
 
-  @Command(
-      aliases = "match",
-      desc = "View info about the current Bolt match",
-      perms = "ingame.staff.match")
-  public void match(CommandSender sender) throws CommandException {
+  @Subcommand("match")
+  @Description("View info about the current Bolt match")
+  @CommandPermission("ingame.staff.match")
+  public void match(CommandSender sender) {
     BoltMatch boltMatch = ranked.getMatch();
     if (boltMatch == null)
-      throw new CommandException(ChatColor.RED + "No Bolt match currently loaded.");
+      throw new InvalidCommandArgument(ChatColor.RED + "No Bolt match currently loaded.", false);
 
     Audience audience = Audience.get(sender);
     audience.sendMessage(text(boltMatch.toString(), NamedTextColor.GRAY));
@@ -87,7 +85,10 @@ public class RankedAdminCommands {
       aliases = "status",
       desc = "View the status of the API polling",
       perms = "ingame.staff.status")
-  public void status(CommandSender sender) throws CommandException {
+  @Subcommand("status")
+  @Description("View the status of the API polling")
+  @CommandPermission("ingame.staff.status")
+  public void status(CommandSender sender) {
     boolean polling = ranked.getPoll().isSyncTaskRunning();
 
     Audience.get(sender)
@@ -103,13 +104,17 @@ public class RankedAdminCommands {
       aliases = "cancel",
       desc = "Report the current Bolt match as cancelled",
       perms = "ingame.staff.cancel")
-  public void cancel(CommandSender sender, Match match) throws CommandException {
+  @Subcommand("cancel")
+  @Description("Report the current Bolt match as cancelled")
+  @CommandPermission("ingame.staff.cancel")
+  public void cancel(CommandSender sender, Match match) {
     BoltMatch boltMatch = ranked.getMatch();
     if (boltMatch == null)
-      throw new CommandException(ChatColor.RED + "No Bolt match currently loaded.");
+      throw new InvalidCommandArgument(ChatColor.RED + "No Bolt match currently loaded.", false);
 
     if (!boltMatch.getStatus().canTransitionTo(MatchStatus.CANCELLED)) {
-      throw new CommandException(ChatColor.RED + "Unable to transition to the cancelled state.");
+      throw new InvalidCommandArgument(
+          ChatColor.RED + "Unable to transition to the cancelled state.", false);
     }
 
     ranked.cancel(match, CancelReason.MANUAL_CANCEL);
@@ -122,8 +127,10 @@ public class RankedAdminCommands {
     match.sendMessage(text("Match has been cancelled by an admin.", NamedTextColor.RED));
   }
 
-  @Command(aliases = "ban", desc = "Manually queue bans a player", perms = "ingame.staff.ban")
-  public void ban(CommandSender sender, Player target, @Text @Nullable String reason) {
+  @Subcommand("ban")
+  @Description("Manually queue bans a player")
+  @CommandPermission("ingame.staff.ban")
+  public void ban(CommandSender sender, @Flags("other") Player target, @Optional String reason) {
     Audience.get(sender)
         .sendMessage(text(target.getName() + " has been queue banned.", NamedTextColor.GRAY));
 

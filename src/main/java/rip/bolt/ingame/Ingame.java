@@ -1,5 +1,7 @@
 package rip.bolt.ingame;
 
+import co.aikar.commands.BukkitCommandManager;
+import co.aikar.commands.InvalidCommandArgument;
 import co.aikar.taskchain.BukkitTaskChainFactory;
 import co.aikar.taskchain.TaskChain;
 import co.aikar.taskchain.TaskChainFactory;
@@ -10,22 +12,19 @@ import rip.bolt.ingame.api.APIManager;
 import rip.bolt.ingame.commands.ForfeitCommands;
 import rip.bolt.ingame.commands.RankedAdminCommands;
 import rip.bolt.ingame.commands.RequeueCommands;
+import rip.bolt.ingame.ranked.ForfeitManager;
 import rip.bolt.ingame.ranked.RankedManager;
+import rip.bolt.ingame.ranked.RequeueManager;
 import tc.oc.pgm.api.PGM;
 import tc.oc.pgm.api.match.Match;
 import tc.oc.pgm.api.player.MatchPlayer;
-import tc.oc.pgm.command.graph.CommandExecutor;
-import tc.oc.pgm.command.graph.MatchPlayerProvider;
-import tc.oc.pgm.command.graph.MatchProvider;
-import tc.oc.pgm.lib.app.ashcon.intake.bukkit.graph.BasicBukkitCommandGraph;
-import tc.oc.pgm.lib.app.ashcon.intake.fluent.DispatcherNode;
-import tc.oc.pgm.lib.app.ashcon.intake.parametric.AbstractModule;
 
 public class Ingame extends JavaPlugin {
 
   private static TaskChainFactory taskChainFactory;
   private RankedManager rankedManager;
   private APIManager apiManager;
+  private BukkitCommandManager commands;
 
   private static Ingame plugin;
 
@@ -37,8 +36,8 @@ public class Ingame extends JavaPlugin {
     taskChainFactory = BukkitTaskChainFactory.create(this);
 
     apiManager = new APIManager();
-
     rankedManager = new RankedManager(this);
+    commands = new BukkitCommandManager(this);
 
     Bukkit.getPluginManager().registerEvents(rankedManager, this);
     Bukkit.getPluginManager().registerEvents(rankedManager.getPlayerWatcher(), this);
@@ -46,16 +45,9 @@ public class Ingame extends JavaPlugin {
     Bukkit.getPluginManager().registerEvents(rankedManager.getRequeueManager(), this);
     Bukkit.getPluginManager().registerEvents(rankedManager.getSpectatorManager(), this);
 
-    BasicBukkitCommandGraph g = new BasicBukkitCommandGraph(new CommandModule());
-    DispatcherNode node = g.getRootDispatcherNode();
-    node.registerCommands(new RequeueCommands(rankedManager));
-    node.registerCommands(new ForfeitCommands(rankedManager));
+    registerCommands();
 
-    DispatcherNode subNode = node.registerNode("ingame");
-    subNode.registerCommands(new RankedAdminCommands(rankedManager));
-    new CommandExecutor(this, g).register();
-
-    System.out.println("[Ingame] Ingame is now enabled!");
+    getLogger().info("[Ingame] Ingame is now enabled!");
   }
 
   public static <T> TaskChain<T> newChain() {
@@ -69,7 +61,7 @@ public class Ingame extends JavaPlugin {
   @Override
   public void onDisable() {
     plugin = null;
-    System.out.println("[Ingame] Ingame is now disabled!");
+    getLogger().info("[Ingame] Ingame is now disabled!");
   }
 
   public APIManager getApiManager() {
@@ -84,22 +76,36 @@ public class Ingame extends JavaPlugin {
     return plugin;
   }
 
-  private static class CommandModule extends AbstractModule {
+  private void registerCommands() {
+    commands.registerDependency(Tournament.class, Tournament.get());
+    commands.registerDependency(RankedManager.class, rankedManager);
+    commands.registerDependency(
+        ForfeitManager.class, rankedManager.getPlayerWatcher().getForfeitManager());
+    commands.registerDependency(RequeueManager.class, rankedManager.getRequeueManager());
 
-    @Override
-    protected void configure() {
-      configureInstances();
-      configureProviders();
-    }
+    commands
+        .getCommandContexts()
+        .registerIssuerOnlyContext(
+            Match.class, c -> PGM.get().getMatchManager().getMatch(c.getSender()));
 
-    private void configureInstances() {
-      bind(PGM.class).toInstance(PGM.get());
-      bind(Tournament.class).toInstance(Tournament.get());
-    }
+    commands
+        .getCommandContexts()
+        .registerIssuerOnlyContext(
+            MatchPlayer.class,
+            c -> {
+              if (!c.getIssuer().isPlayer()) {
+                throw new InvalidCommandArgument("You are unable to run this command");
+              }
+              final MatchPlayer player = PGM.get().getMatchManager().getPlayer(c.getPlayer());
+              if (player != null) {
+                return player;
+              }
+              throw new InvalidCommandArgument(
+                  "Sorry, an error occured while resolving your player");
+            });
 
-    private void configureProviders() {
-      bind(MatchPlayer.class).toProvider(new MatchPlayerProvider());
-      bind(Match.class).toProvider(new MatchProvider());
-    }
+    commands.registerCommand(new RequeueCommands());
+    commands.registerCommand(new ForfeitCommands());
+    commands.registerCommand(new RankedAdminCommands());
   }
 }
