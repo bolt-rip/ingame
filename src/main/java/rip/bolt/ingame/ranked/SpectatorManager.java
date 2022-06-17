@@ -13,23 +13,20 @@ import org.bukkit.permissions.PermissionAttachment;
 import rip.bolt.ingame.Ingame;
 import rip.bolt.ingame.events.BoltMatchStatusChangeEvent;
 import tc.oc.pgm.api.PGM;
+import tc.oc.pgm.api.integration.Integration;
 import tc.oc.pgm.api.player.MatchPlayer;
-import tc.oc.pgm.api.player.VanishManager;
 import tc.oc.pgm.events.PlayerJoinMatchEvent;
 
 public class SpectatorManager implements Listener {
 
   private static final String SPECTATE_VANISH = "events.spectate.vanish";
   private static final String PGM_VANISH = "pgm.vanish";
-
-  private final VanishManager vanishManager;
   private final PlayerWatcher watcher;
 
   private final HashMap<UUID, PermissionAttachment> permissions = new HashMap<>();
 
   public SpectatorManager(PlayerWatcher playerWatcher) {
     this.watcher = playerWatcher;
-    vanishManager = PGM.get().getVanishManager();
   }
 
   @EventHandler(priority = EventPriority.MONITOR)
@@ -71,10 +68,10 @@ public class SpectatorManager implements Listener {
         player.getUniqueId(), uuid -> player.addAttachment(Ingame.get(), SPECTATE_VANISH, true));
 
     // Set vanish if not already
-    if (vanishManager.isVanished(player.getUniqueId())) return;
+    if (Integration.isVanished(player)) return;
 
     MatchPlayer matchPlayer = PGM.get().getMatchManager().getPlayer(player);
-    vanishManager.setVanished(matchPlayer, true, true);
+    Integration.setVanished(matchPlayer, true, true);
   }
 
   private void unvanish(Player player) {
@@ -82,9 +79,9 @@ public class SpectatorManager implements Listener {
     if (attachment != null) attachment.remove();
 
     // Remove vanish if not already
-    if (!vanishManager.isVanished(player.getUniqueId())) return;
+    if (!Integration.isVanished(player)) return;
 
     MatchPlayer matchPlayer = PGM.get().getMatchManager().getPlayer(player);
-    vanishManager.setVanished(matchPlayer, false, true);
+    Integration.setVanished(matchPlayer, false, true);
   }
 }

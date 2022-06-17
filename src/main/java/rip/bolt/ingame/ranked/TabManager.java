@@ -7,7 +7,7 @@ import tc.oc.pgm.tablist.FreeForAllTabEntry;
 import tc.oc.pgm.tablist.MapTabEntry;
 import tc.oc.pgm.tablist.MatchFooterTabEntry;
 import tc.oc.pgm.tablist.MatchTabManager;
-import tc.oc.pgm.util.tablist.PlayerTabEntry;
+import tc.oc.pgm.tablist.PlayerTabEntry;
 
 public class TabManager {
 

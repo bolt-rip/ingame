@@ -6,7 +6,10 @@ import static net.kyori.adventure.text.Component.text;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -37,6 +40,7 @@ import tc.oc.pgm.api.party.Competitor;
 import tc.oc.pgm.api.party.Party;
 import tc.oc.pgm.api.player.MatchPlayer;
 import tc.oc.pgm.events.PlayerPartyChangeEvent;
+import tc.oc.pgm.stats.PlayerStats;
 import tc.oc.pgm.util.bukkit.OnlinePlayerMapAdapter;
 
 public class RankManager implements Listener {
@@ -91,7 +95,8 @@ public class RankManager implements Listener {
     if (updates.isEmpty()) return;
 
     Match match = updates.get(0).player.getMatch();
-    Bukkit.getServer().getPluginManager().callEvent(new MatchStatsEvent(match, true, true));
+    Map<UUID, PlayerStats> stats = new HashMap<>();
+    Bukkit.getServer().getPluginManager().callEvent(new MatchStatsEvent(match, true, true, stats));
 
     if (AppData.Web.getMatch() != null) {
       match.sendMessage(Messages.matchLink(newMatch));

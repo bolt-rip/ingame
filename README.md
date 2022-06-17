@@ -1,8 +1,10 @@
 # Ingame
 
+> **WARNING**: Ingame only works with the community branch of [PGM](https://github.com/applenick/PGM/tree/community) and [Events](https://github.com/bolt-rip/events). 
+
 Plugin used to manage competitive matches on bolt.rip.
 
-Used alongside [Events](https://github.com/PGMDev/Events) which handles teams and matches.
+Used alongside [Events](https://github.com/bolt-rip/Events) which handles teams and matches.
 
 ### Permissions
 
