@@ -47,9 +47,9 @@
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
-			<groupId>tc.oc.pgm</groupId>
-			<artifactId>core</artifactId>
-			<version>0.14-SNAPSHOT</version>
+			<groupId>com.github.applenick</groupId>
+			<artifactId>PGM</artifactId>
+			<version>community-SNAPSHOT</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
