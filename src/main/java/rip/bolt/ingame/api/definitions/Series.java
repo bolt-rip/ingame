@@ -9,6 +9,8 @@ public class Series {
   private String name;
   private Boolean hideObservers = false;
 
+  private BoltKnockback knockback;
+
   public Series() {}
 
   public Integer getId() {
@@ -33,6 +35,14 @@ public class Series {
 
   public void setHideObservers(boolean hideObservers) {
     this.hideObservers = hideObservers;
+  }
+
+  public BoltKnockback getKnockback() {
+    return knockback;
+  }
+
+  public void setKnockback(BoltKnockback knockback) {
+    this.knockback = knockback;
   }
 
   @Override

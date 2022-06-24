@@ -16,13 +16,16 @@ import java.time.Instant;
 import java.util.Collection;
 import java.util.Objects;
 import java.util.stream.Collectors;
+import javax.annotation.Nullable;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.Plugin;
+import org.github.paperspigot.PaperSpigotConfig;
 import rip.bolt.ingame.Ingame;
+import rip.bolt.ingame.api.definitions.BoltKnockback;
 import rip.bolt.ingame.api.definitions.BoltMatch;
 import rip.bolt.ingame.api.definitions.Team;
 import rip.bolt.ingame.config.AppData;
@@ -119,10 +122,24 @@ public class RankedManager implements Listener {
         .getPluginManager()
         .callEvent(new BoltMatchStatusChangeEvent(match, null, MatchStatus.CREATED));
 
+    BoltKnockback knockback = match.getSeries().getKnockback();
+    setupKnockback(knockback);
+
     Bukkit.broadcastMessage(ChatColor.YELLOW + "A new match is starting on this server!");
     Tournament.get()
         .getTournamentManager()
         .createTournament(PGM.get().getMatchManager().getMatches().next(), format);
+  }
+
+  private void setupKnockback(@Nullable BoltKnockback knockback) {
+    if (knockback == null) knockback = BoltKnockback.defaults();
+
+    PaperSpigotConfig.knockbackFriction = knockback.getFriction();
+    PaperSpigotConfig.knockbackHorizontal = knockback.getHorizontal();
+    PaperSpigotConfig.knockbackVertical = knockback.getVertical();
+    PaperSpigotConfig.knockbackVerticalLimit = knockback.getVerticalLimit();
+    PaperSpigotConfig.knockbackExtraHorizontal = knockback.getExtraHorizontal();
+    PaperSpigotConfig.knockbackExtraVertical = knockback.getExtraVertical();
   }
 
   private void updateMatch(BoltMatch newMatch) {
