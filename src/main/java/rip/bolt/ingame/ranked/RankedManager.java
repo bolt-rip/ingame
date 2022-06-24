@@ -122,8 +122,7 @@ public class RankedManager implements Listener {
         .getPluginManager()
         .callEvent(new BoltMatchStatusChangeEvent(match, null, MatchStatus.CREATED));
 
-    BoltKnockback knockback = match.getSeries().getKnockback();
-    setupKnockback(knockback);
+    setupKnockback(match.getSeries().getKnockback());
 
     Bukkit.broadcastMessage(ChatColor.YELLOW + "A new match is starting on this server!");
     Tournament.get()
