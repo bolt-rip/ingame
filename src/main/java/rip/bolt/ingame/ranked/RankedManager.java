@@ -48,8 +48,8 @@ public class RankedManager implements Listener {
   private final RankManager rankManager;
   private final StatsManager statsManager;
   private final SpectatorManager spectatorManager;
-  private final TabManager tabManager;
   private final KnockbackManager knockbackManager;
+  private final TabManager tabManager;
   private final MatchSearch poll;
 
   private TournamentFormat format;
@@ -64,8 +64,8 @@ public class RankedManager implements Listener {
     rankManager = new RankManager(this);
     statsManager = new StatsManager(this);
     spectatorManager = new SpectatorManager(playerWatcher);
-    tabManager = new TabManager(plugin);
     knockbackManager = new KnockbackManager();
+    tabManager = new TabManager(plugin);
 
     MatchPreloader.create();
 
@@ -120,8 +120,6 @@ public class RankedManager implements Listener {
         .getServer()
         .getPluginManager()
         .callEvent(new BoltMatchStatusChangeEvent(match, null, MatchStatus.CREATED));
-
-    knockbackManager.setupKnockback(match.getSeries().getKnockback());
 
     Bukkit.broadcastMessage(ChatColor.YELLOW + "A new match is starting on this server!");
     Tournament.get()
@@ -296,5 +294,9 @@ public class RankedManager implements Listener {
 
   public SpectatorManager getSpectatorManager() {
     return spectatorManager;
+  }
+
+  public KnockbackManager getKnockbackManager() {
+    return knockbackManager;
   }
 }
