@@ -48,6 +48,7 @@ public class RankedManager implements Listener {
   private final RankManager rankManager;
   private final StatsManager statsManager;
   private final SpectatorManager spectatorManager;
+  private final KnockbackManager knockbackManager;
   private final TabManager tabManager;
   private final MatchSearch poll;
 
@@ -63,6 +64,7 @@ public class RankedManager implements Listener {
     rankManager = new RankManager(this);
     statsManager = new StatsManager(this);
     spectatorManager = new SpectatorManager(playerWatcher);
+    knockbackManager = new KnockbackManager();
     tabManager = new TabManager(plugin);
 
     MatchPreloader.create();
@@ -292,5 +294,9 @@ public class RankedManager implements Listener {
 
   public SpectatorManager getSpectatorManager() {
     return spectatorManager;
+  }
+
+  public KnockbackManager getKnockbackManager() {
+    return knockbackManager;
   }
 }
