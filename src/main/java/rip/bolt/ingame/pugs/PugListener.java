@@ -109,7 +109,7 @@ public class PugListener implements Listener {
     pugManager.write(PugCommand.setTeamName(null, pugTeam, newName));
   }
 
-  @EventHandler(priority = EventPriority.MONITOR)
+  @EventHandler(priority = EventPriority.HIGHEST)
   public void onParticipate(PlayerParticipationStartEvent event) {
     if (!event.isCancelled()) return;
 
@@ -122,14 +122,18 @@ public class PugListener implements Listener {
     if (team != null) pugManager.write(PugCommand.joinTeam(event.getPlayer().getBukkit(), team));
   }
 
-  @EventHandler(priority = EventPriority.MONITOR)
+  @EventHandler(priority = EventPriority.HIGHEST)
   public void onLeaveParticipate(PlayerParticipationStopEvent event) {
-    if (!event.isCancelled()) return;
+    // Can't ignore not-cancelled, as blitz is not cancelled but still should move to obs on ws.
+    // However, events still sets a cancel reason which is convenient.
 
     // Events should expose this constant. It'll still be dirty, but will survive updates.
-    if (!isMessage(event.getCancelReason(), "You may not leave in a tournament setting!")) return;
-    event.cancel(Component.empty());
-    pugManager.write(PugCommand.joinObs(event.getPlayer().getBukkit()));
+    if (isMessage(event.getCancelReason(), "You may not leave in a tournament setting!")) {
+      pugManager.write(PugCommand.joinObs(event.getPlayer().getBukkit()));
+
+      // If event was cancelled, clear the component
+      if (event.isCancelled()) event.cancel(Component.empty());
+    }
   }
 
   private boolean isMessage(Component component, String msg) {
