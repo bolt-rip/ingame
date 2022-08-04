@@ -21,6 +21,7 @@ import rip.bolt.ingame.api.definitions.pug.PugResponse;
 import rip.bolt.ingame.config.AppData;
 import tc.oc.pgm.api.match.Match;
 import tc.oc.pgm.api.player.MatchPlayer;
+import tc.oc.pgm.util.Audience;
 import tc.oc.pgm.util.named.NameStyle;
 import tc.oc.pgm.util.text.PlayerComponent;
 
@@ -118,12 +119,14 @@ public class BoltWebSocket extends WebSocketClient {
                 .append(body)
                 .build();
 
-        if (AppData.publiclyLogPugs()) {
+        if (AppData.publiclyLogPugs() && chat.getType() == PugMessage.Type.SYSTEM) {
           pgmMatch.sendMessage(message);
         } else {
+          // SYSTEM_KO messages not from a player fall in here too
           for (MatchPlayer player : pgmMatch.getPlayers()) {
             if (player.getBukkit().isOp()) player.sendMessage(message);
           }
+          Audience.console().sendMessage(message);
         }
 
         break;

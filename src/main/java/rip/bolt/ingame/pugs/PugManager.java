@@ -17,6 +17,7 @@ import java.util.stream.Collectors;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
+import org.java_websocket.exceptions.WebsocketNotConnectedException;
 import org.java_websocket.framing.CloseFrame;
 import org.jetbrains.annotations.Nullable;
 import rip.bolt.ingame.Ingame;
@@ -131,7 +132,7 @@ public class PugManager extends GameManager {
   public void write(PugCommand command) {
     try {
       this.boltWebSocket.send(objectMapper.writeValueAsString(command));
-    } catch (JsonProcessingException e) {
+    } catch (JsonProcessingException | WebsocketNotConnectedException e) {
       e.printStackTrace();
     }
   }
