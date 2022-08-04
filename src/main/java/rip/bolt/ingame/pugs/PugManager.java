@@ -168,7 +168,13 @@ public class PugManager extends GameManager {
     }
 
     // Avoid updating status if there is no match
-    if (pugMatch == null) return;
+    if (pugMatch == null || this.pugLobby.getState() == PugState.FINISHED) {
+      if (matchManager.getMatch() != null && !matchManager.getMatch().getStatus().isFinished())
+        matchManager.cancel(matchManager.getPGMMatch(), CancelReason.MANUAL_CANCEL);
+
+      this.boltWebSocket.close(CloseFrame.NORMAL, "Pug is in finished status");
+      return;
+    }
 
     if (!Objects.equals(matchManager.getMatch().getId(), pugMatch.getId())) {
       if (!matchManager.getMatch().getStatus().isFinished())
@@ -186,11 +192,6 @@ public class PugManager extends GameManager {
     if (pugMatch.getStatus().equals(MatchStatus.CANCELLED)) {
       if (!matchManager.getMatch().getStatus().isFinished())
         matchManager.cancel(matchManager.getPGMMatch(), CancelReason.MANUAL_CANCEL);
-    }
-
-    if (this.pugLobby.getState() == PugState.FINISHED) {
-      this.boltWebSocket.close(CloseFrame.NORMAL, "Pug is in finished status");
-      return;
     }
 
     // Stop processing 'reactive' components
