@@ -3,7 +3,6 @@ package rip.bolt.ingame.managers;
 import dev.pgm.events.EventsPlugin;
 import java.util.Collection;
 import java.util.UUID;
-import org.bukkit.event.Listener;
 import rip.bolt.ingame.api.definitions.BoltMatch;
 import rip.bolt.ingame.api.definitions.Participation;
 import rip.bolt.ingame.api.definitions.Stats;
@@ -13,13 +12,9 @@ import tc.oc.pgm.score.ScoreMatchModule;
 import tc.oc.pgm.stats.PlayerStats;
 import tc.oc.pgm.stats.StatsMatchModule;
 
-public class StatsManager implements Listener {
+public class StatsManager {
 
-  private final MatchManager manager;
-
-  public StatsManager(MatchManager manager) {
-    this.manager = manager;
-  }
+  public StatsManager() {}
 
   public void handleMatchUpdate(BoltMatch boltMatch, Match match) {
     StatsMatchModule statsModule = match.getModule(StatsMatchModule.class);

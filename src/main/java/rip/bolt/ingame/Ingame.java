@@ -4,7 +4,6 @@ import co.aikar.taskchain.BukkitTaskChainFactory;
 import co.aikar.taskchain.TaskChain;
 import co.aikar.taskchain.TaskChainFactory;
 import dev.pgm.events.EventsPlugin;
-import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 import rip.bolt.ingame.api.APIManager;
 import rip.bolt.ingame.commands.AdminCommands;
@@ -51,9 +50,6 @@ public class Ingame extends JavaPlugin {
     apiManager = new APIManager();
 
     matchManager = new MatchManager(this);
-
-    Bukkit.getPluginManager().registerEvents(matchManager, this);
-    Bukkit.getPluginManager().registerEvents(matchManager.getRankManager(), this);
 
     BasicBukkitCommandGraph g = new BasicBukkitCommandGraph(new CommandModule());
     DispatcherNode node = g.getRootDispatcherNode();

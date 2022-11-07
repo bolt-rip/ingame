@@ -29,6 +29,7 @@ import rip.bolt.ingame.events.BoltMatchStatusChangeEvent;
 import rip.bolt.ingame.pugs.ManagedTeam;
 import rip.bolt.ingame.setup.MatchPreloader;
 import rip.bolt.ingame.setup.MatchSearch;
+import rip.bolt.ingame.utils.BattlepassUtils;
 import rip.bolt.ingame.utils.CancelReason;
 import rip.bolt.ingame.utils.PGMMapUtils;
 import tc.oc.pgm.api.PGM;
@@ -47,6 +48,8 @@ public class MatchManager implements Listener {
   private final RankManager rankManager;
   private final StatsManager statsManager;
   private final TabManager tabManager;
+  private final KnockbackManager knockbackManager;
+  private final BattlepassManager battlepassManager;
 
   private final MatchSearch poll;
 
@@ -66,8 +69,14 @@ public class MatchManager implements Listener {
   public MatchManager(Plugin plugin) {
     gameManager = new GameManager.NoopManager(this);
     rankManager = new RankManager(this);
-    statsManager = new StatsManager(this);
+    statsManager = new StatsManager();
     tabManager = new TabManager(plugin);
+    knockbackManager = new KnockbackManager();
+    battlepassManager = BattlepassUtils.createManager();
+
+    Bukkit.getPluginManager().registerEvents(this, plugin);
+    Bukkit.getPluginManager().registerEvents(rankManager, plugin);
+    Bukkit.getPluginManager().registerEvents(knockbackManager, plugin);
 
     MatchPreloader.create();
 
@@ -155,10 +164,6 @@ public class MatchManager implements Listener {
 
   public BoltMatch getMatch() {
     return match;
-  }
-
-  public RankManager getRankManager() {
-    return rankManager;
   }
 
   public MatchSearch getPoll() {
