@@ -39,8 +39,9 @@ import tc.oc.pgm.api.match.event.MatchFinishEvent;
 import tc.oc.pgm.api.match.event.MatchLoadEvent;
 import tc.oc.pgm.api.match.event.MatchStartEvent;
 import tc.oc.pgm.api.party.Competitor;
-import tc.oc.pgm.restart.CancelRestartEvent;
-import tc.oc.pgm.restart.StartRestartCountdownEvent;
+import tc.oc.pgm.events.CountdownCancelEvent;
+import tc.oc.pgm.events.CountdownStartEvent;
+import tc.oc.pgm.restart.RestartCountdown;
 import tc.oc.pgm.result.TieVictoryCondition;
 
 public class MatchManager implements Listener {
@@ -299,12 +300,15 @@ public class MatchManager implements Listener {
   }
 
   @EventHandler
-  public void onRestartStart(StartRestartCountdownEvent event) {
+  public void onRestartStart(CountdownStartEvent event) {
+    if (!(event.getCountdown() instanceof RestartCountdown)) return;
     this.isRestarting = true;
   }
 
   @EventHandler
-  public void onRestartCancel(CancelRestartEvent event) {
+  public void onRestartCancel(CountdownCancelEvent event) {
+    if (!(event.getCountdown() instanceof RestartCountdown)) return;
+
     this.isRestarting = false;
     if (deferredMatch != null) {
       setupMatch(deferredMatch);

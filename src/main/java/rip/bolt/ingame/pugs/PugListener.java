@@ -14,15 +14,15 @@ import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
-import rip.bolt.ingame.Ingame;
 import rip.bolt.ingame.api.definitions.BoltMatch;
 import rip.bolt.ingame.api.definitions.pug.PugCommand;
 import rip.bolt.ingame.api.definitions.pug.PugTeam;
+import rip.bolt.ingame.commands.PugCommands;
 import rip.bolt.ingame.events.BoltMatchStatusChangeEvent;
-import tc.oc.pgm.api.event.PlayerVanishEvent;
 import tc.oc.pgm.api.match.event.MatchLoadEvent;
 import tc.oc.pgm.api.party.Competitor;
 import tc.oc.pgm.api.party.event.PartyRenameEvent;
+import tc.oc.pgm.api.player.event.PlayerVanishEvent;
 import tc.oc.pgm.events.PlayerParticipationStartEvent;
 import tc.oc.pgm.events.PlayerParticipationStopEvent;
 import tc.oc.pgm.teams.events.TeamResizeEvent;
@@ -146,7 +146,7 @@ public class PugListener implements Listener {
   public void onPlayerPGMCommand(PlayerCommandPreprocessEvent event) {
     String cmd = event.getMessage().substring(1).toLowerCase(Locale.ROOT);
 
-    for (String command : Ingame.get().getPugCommands().getCommandList()) {
+    for (String command : PugCommands.getCommandList()) {
       if (cmd.startsWith(command)) {
         event.setMessage("/pug " + event.getMessage().substring(1));
         return;

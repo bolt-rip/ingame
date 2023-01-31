@@ -7,7 +7,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.net.URI;
-import java.util.UUID;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
@@ -23,7 +22,7 @@ import tc.oc.pgm.api.match.Match;
 import tc.oc.pgm.api.player.MatchPlayer;
 import tc.oc.pgm.util.Audience;
 import tc.oc.pgm.util.named.NameStyle;
-import tc.oc.pgm.util.text.PlayerComponent;
+import tc.oc.pgm.util.player.PlayerComponent;
 
 public class BoltWebSocket extends WebSocketClient {
 
@@ -84,8 +83,7 @@ public class BoltWebSocket extends WebSocketClient {
         sender != null
             ? sender.getName(NameStyle.VERBOSE)
             : chat.getPlayer() != null && chat.getPlayer().getUsername() != null
-                ? PlayerComponent.player(
-                    (UUID) null, chat.getPlayer().getUsername(), NameStyle.VERBOSE)
+                ? PlayerComponent.player(null, chat.getPlayer().getUsername(), NameStyle.VERBOSE)
                 : CONSOLE_NAME;
 
     Component body = text(Strings.join(chat.getMessage(), ", "));

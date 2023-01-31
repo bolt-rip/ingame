@@ -10,19 +10,15 @@ import rip.bolt.ingame.ranked.RankedManager;
 import tc.oc.pgm.api.match.Match;
 import tc.oc.pgm.api.match.MatchPhase;
 import tc.oc.pgm.api.player.MatchPlayer;
-import tc.oc.pgm.lib.app.ashcon.intake.Command;
-import tc.oc.pgm.lib.app.ashcon.intake.CommandException;
+import tc.oc.pgm.lib.cloud.commandframework.annotations.CommandDescription;
+import tc.oc.pgm.lib.cloud.commandframework.annotations.CommandMethod;
 
 public class RequeueCommands {
 
-  private final MatchManager matchManager;
-
-  public RequeueCommands(MatchManager matchManager) {
-    this.matchManager = matchManager;
-  }
-
-  @Command(aliases = "requeue", desc = "Requeue for another ranked match")
-  public void requeue(MatchPlayer sender, Match match) throws CommandException {
+  @CommandMethod("requeue")
+  @CommandDescription("Requeue for another ranked match")
+  public void requeue(MatchManager matchManager, MatchPlayer sender, Match match)
+      throws CommandException {
     if (!AppData.allowRequeue()) {
       throw new CommandException(
           ChatColor.RED + "The requeue command is not enabled on this server.");

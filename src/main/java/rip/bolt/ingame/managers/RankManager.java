@@ -95,9 +95,7 @@ public class RankManager implements Listener {
             .filter(RankUpdate::isValid)
             .collect(Collectors.toList());
 
-    // FIXME: stats passed in are null. they should not be required in the event, but this is a
-    // community PGM thing.
-    Bukkit.getServer().getPluginManager().callEvent(new MatchStatsEvent(match, true, true, null));
+    Bukkit.getServer().getPluginManager().callEvent(new MatchStatsEvent(match, true, true));
 
     if (AppData.Web.getMatch() != null) {
       match.sendMessage(Messages.matchLink(newMatch));

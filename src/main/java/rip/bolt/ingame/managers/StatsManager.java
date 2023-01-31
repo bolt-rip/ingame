@@ -55,6 +55,6 @@ public class StatsManager {
             stats.getBowDamageTaken(),
             stats.getShotsHit(),
             stats.getShotsTaken(),
-            scoreModule != null ? scoreModule.getContributions().get(uuid) : 0));
+            scoreModule != null ? scoreModule.getContribution(uuid) : 0));
   }
 }

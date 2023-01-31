@@ -106,15 +106,15 @@ public class PugCommand {
   }
 
   public static PugCommand shuffle(Player sender) {
-    return PugCommand.of(MANAGE_TEAMS, sender, "action", "shuffle");
+    return PugCommand.of(MANAGE_TEAMS, sender, "action", ManageTeamOption.SHUFFLE);
   }
 
   public static PugCommand balance(Player sender) {
-    return PugCommand.of(MANAGE_TEAMS, sender, "action", "balance");
+    return PugCommand.of(MANAGE_TEAMS, sender, "action", ManageTeamOption.BALANCE);
   }
 
   public static PugCommand clear(Player sender) {
-    return PugCommand.of(MANAGE_TEAMS, sender, "action", "clear");
+    return PugCommand.of(MANAGE_TEAMS, sender, "action", ManageTeamOption.CLEAR);
   }
 
   public static PugCommand setPugName(Player sender, String name) {
@@ -154,6 +154,12 @@ public class PugCommand {
         .set("server", AppData.API.getServerName())
         .set("status", match.getStatus().name())
         .build();
+  }
+
+  private enum ManageTeamOption {
+    CLEAR,
+    SHUFFLE,
+    BALANCE
   }
 
   // Helper methods
