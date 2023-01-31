@@ -8,6 +8,7 @@ public class Participation {
 
   private User user;
   private Stats stats;
+  private Integer deafenPenalty;
 
   public Participation() {}
 
@@ -29,5 +30,13 @@ public class Participation {
 
   public void setStats(Stats stats) {
     this.stats = stats;
+  }
+
+  public Integer getDeafenPenalty() {
+    return deafenPenalty;
+  }
+
+  public void setDeafenPenalty(Integer deafenPenalty) {
+    this.deafenPenalty = deafenPenalty;
   }
 }

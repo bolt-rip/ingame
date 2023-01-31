@@ -2,14 +2,18 @@ package rip.bolt.ingame.managers;
 
 import static net.kyori.adventure.text.Component.empty;
 import static net.kyori.adventure.text.Component.text;
+import static net.kyori.adventure.text.event.HoverEvent.showText;
 
 import java.util.*;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.Style;
 import net.kyori.adventure.text.format.TextColor;
+import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -55,25 +59,16 @@ public class RankManager implements Listener {
     this.permissions = new OnlinePlayerMapAdapter<>(Ingame.get());
   }
 
-  public void updatePlayer(@Nonnull MatchPlayer mp, @Nullable Party party) {
-    Player player = mp.getBukkit();
-    PermissionAttachment perm = permissions.remove(player);
-    BoltMatch match = manager.getMatch();
-    User user = match == null ? null : match.getUser(mp.getId());
-
-    if (perm != null) mp.getBukkit().removeAttachment(perm);
-    if (user != null && user.getRank() != null && party instanceof Competitor)
-      permissions.put(
-          player, player.addAttachment(Ingame.get(), "pgm.group." + user.getRank(), true));
-
-    Bukkit.getPluginManager().callEvent(new NameDecorationChangeEvent(mp.getId()));
-  }
-
   @EventHandler(priority = EventPriority.NORMAL)
   public void onBoltMatchResponse(BoltMatchResponseEvent event) {
     if (event.hasMatchFinished() && event.getResponseMatch().getStatus() == MatchStatus.ENDED) {
       handleMatchUpdate(event.getBoltMatch(), event.getResponseMatch(), event.getPgmMatch());
     }
+  }
+
+  @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+  public void onPartyChange(PlayerPartyChangeEvent event) {
+    updatePlayer(event.getPlayer(), event.getNewParty());
   }
 
   public void handleMatchUpdate(
@@ -84,14 +79,13 @@ public class RankManager implements Listener {
         newMatch.getTeams().stream()
             .map(Team::getParticipations)
             .flatMap(Collection::stream)
-            .map(Participation::getUser)
             .filter(Objects::nonNull)
             .map(
-                user ->
+                participation ->
                     new RankUpdate(
-                        oldMatch.getUser(user.getUuid()),
-                        user,
-                        matchManager.getPlayer(user.getUuid())))
+                        oldMatch.getUser(participation.getUser().getUuid()),
+                        participation,
+                        matchManager.getPlayer(participation.getUser().getUuid())))
             .filter(RankUpdate::isValid)
             .collect(Collectors.toList());
 
@@ -105,18 +99,15 @@ public class RankManager implements Listener {
     updates.forEach(update -> notifyUpdate(update.old, update.updated, update.player));
   }
 
-  public void notifyUpdate(@Nonnull User old, @Nonnull User user, @Nonnull MatchPlayer player) {
+  public void notifyUpdate(
+      @Nonnull User old, @Nonnull Participation participation, @Nonnull MatchPlayer player) {
     updatePlayer(player, player.getParty());
+    User user = participation.getUser();
 
     Component rank = RANK_PREFIX;
-    if (!old.getRanking().getRank().equals(user.getRanking().getRank()))
-      rank = rank.append(getRank(old)).append(ARROW);
-    rank = rank.append(getRank(user)).append(text("("));
 
-    if (old.getRanking().getRating() != null
-        && old.getRanking().getRating() < user.getRanking().getRating())
-      rank = rank.append(mmr(old)).append(text(" ")).append(ARROW);
-    rank = rank.append(mmr(user)).append(text(")"));
+    rank = rank.append(getRankChange(old, user));
+    rank = rank.append(getRatingChange(old, user, participation));
 
     player.sendMessage(rank);
 
@@ -133,11 +124,26 @@ public class RankManager implements Listener {
     }
   }
 
+  public void updatePlayer(@Nonnull MatchPlayer mp, @Nullable Party party) {
+    Player player = mp.getBukkit();
+    PermissionAttachment perm = permissions.remove(player);
+    BoltMatch match = manager.getMatch();
+    User user = match == null ? null : match.getUser(mp.getId());
+
+    if (perm != null) mp.getBukkit().removeAttachment(perm);
+    if (user != null && user.getRank() != null && party instanceof Competitor)
+      permissions.put(
+          player, player.addAttachment(Ingame.get(), "pgm.group." + user.getRank(), true));
+
+    Bukkit.getPluginManager().callEvent(new NameDecorationChangeEvent(mp.getId()));
+  }
+
   private static class RankUpdate {
-    private final User old, updated;
+    private final User old;
+    private final Participation updated;
     private final MatchPlayer player;
 
-    public RankUpdate(User old, User updated, MatchPlayer player) {
+    public RankUpdate(User old, Participation updated, MatchPlayer player) {
       this.old = old;
       this.updated = updated;
       this.player = player;
@@ -146,11 +152,6 @@ public class RankManager implements Listener {
     public boolean isValid() {
       return old != null && updated != null && player != null;
     }
-  }
-
-  @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-  public void onPartyChange(PlayerPartyChangeEvent event) {
-    updatePlayer(event.getPlayer(), event.getNewParty());
   }
 
   private Component getRank(User user) {
@@ -175,5 +176,50 @@ public class RankManager implements Listener {
   private Component mmr(User user) {
     if (user.getRanking().getRating() == null) return text(" - ", NamedTextColor.DARK_GRAY);
     return text(user.getRanking().getRating(), getRankColor(user));
+  }
+
+  private Component getRankChange(User old, User user) {
+    TextComponent.Builder text = text();
+
+    if (!old.getRanking().getRank().equals(user.getRanking().getRank())) {
+      text.append(getRank(old)).append(ARROW);
+    }
+
+    text.append(getRank(user));
+
+    return text.build();
+  }
+
+  private Component getRatingChange(User old, User user, Participation participation) {
+    Integer rating = user.getRanking().getRating();
+    Integer deafenPenalty =
+        participation.getDeafenPenalty() != null ? participation.getDeafenPenalty() : 0;
+    TextComponent.Builder text = text();
+
+    text.append(text("("));
+
+    if (old.getRanking().getRating() != null
+        && old.getRanking().getRating() < user.getRanking().getRating()) {
+      text.append(mmr(old)).append(text(" ")).append(ARROW);
+    }
+
+    if (deafenPenalty != 0) {
+      text.append(text(rating + deafenPenalty, Style.style(TextDecoration.STRIKETHROUGH)))
+          .append(text(" "));
+    }
+
+    text.append(mmr(user)).append(text(") "));
+
+    if (deafenPenalty != 0) {
+      text.append(
+          text("-" + deafenPenalty + " deafen penalty", NamedTextColor.RED)
+              .hoverEvent(
+                  showText(
+                      text(
+                          "Significant amount of time deafened in voice chat",
+                          NamedTextColor.GRAY))));
+    }
+
+    return text.build();
   }
 }
