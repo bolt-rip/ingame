@@ -18,6 +18,7 @@ import tc.oc.pgm.api.match.Match;
 import tc.oc.pgm.api.party.Competitor;
 import tc.oc.pgm.api.party.Party;
 import tc.oc.pgm.api.player.MatchPlayer;
+import tc.oc.pgm.join.JoinRequest;
 import tc.oc.pgm.lib.cloud.commandframework.CommandTree;
 import tc.oc.pgm.lib.cloud.commandframework.annotations.Argument;
 import tc.oc.pgm.lib.cloud.commandframework.annotations.CommandDescription;
@@ -86,7 +87,8 @@ public class PugCommands {
     // If no team is specified, find emptiest
     if (team == null) {
       final TeamMatchModule tmm = match.getModule(TeamMatchModule.class);
-      if (tmm != null) team = tmm.getEmptiestJoinableTeam(player, false).getTeam();
+      if (tmm != null)
+        team = tmm.getEmptiestJoinableTeam(null, JoinRequest.fromPlayer(player, null)).getTeam();
     }
 
     PugTeam pugTeam = pm.findPugTeam(team);
