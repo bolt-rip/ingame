@@ -22,6 +22,7 @@ import tc.oc.pgm.api.party.Competitor;
 public class RankedManager extends GameManager {
 
   private final PlayerWatcher playerWatcher;
+  private final RankManager rankManager;
   private final SpectatorManager spectatorManager;
   private final RequeueManager requeueManager;
 
@@ -29,6 +30,7 @@ public class RankedManager extends GameManager {
     super(matchManager);
 
     this.playerWatcher = new PlayerWatcher(matchManager);
+    this.rankManager = new RankManager(matchManager);
     this.spectatorManager = new SpectatorManager(playerWatcher);
     this.requeueManager = new RequeueManager();
   }
@@ -38,6 +40,7 @@ public class RankedManager extends GameManager {
     super.enable(manager);
 
     Bukkit.getPluginManager().registerEvents(this.playerWatcher, Ingame.get());
+    Bukkit.getPluginManager().registerEvents(this.rankManager, Ingame.get());
     Bukkit.getPluginManager().registerEvents(this.spectatorManager, Ingame.get());
     Bukkit.getPluginManager().registerEvents(this.requeueManager, Ingame.get());
   }
@@ -57,6 +60,7 @@ public class RankedManager extends GameManager {
   public void disable() {
     super.disable();
     HandlerList.unregisterAll(this.playerWatcher);
+    HandlerList.unregisterAll(this.rankManager);
     HandlerList.unregisterAll(this.spectatorManager);
     HandlerList.unregisterAll(this.requeueManager);
   }

@@ -1,6 +1,7 @@
 package rip.bolt.ingame.api.definitions;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import org.jetbrains.annotations.Nullable;
 
 /** The participation of a user in a team */
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -32,7 +33,7 @@ public class Participation {
     this.stats = stats;
   }
 
-  public Integer getDeafenPenalty() {
+  public @Nullable Integer getDeafenPenalty() {
     return deafenPenalty;
   }
 

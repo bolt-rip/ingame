@@ -1,4 +1,4 @@
-package rip.bolt.ingame.managers;
+package rip.bolt.ingame.ranked;
 
 import static net.kyori.adventure.text.Component.empty;
 import static net.kyori.adventure.text.Component.text;
@@ -30,6 +30,7 @@ import rip.bolt.ingame.api.definitions.Team;
 import rip.bolt.ingame.api.definitions.User;
 import rip.bolt.ingame.config.AppData;
 import rip.bolt.ingame.events.BoltMatchResponseEvent;
+import rip.bolt.ingame.managers.MatchManager;
 import rip.bolt.ingame.utils.Messages;
 import tc.oc.pgm.api.PGM;
 import tc.oc.pgm.api.event.NameDecorationChangeEvent;
@@ -191,20 +192,23 @@ public class RankManager implements Listener {
   }
 
   private Component getRatingChange(User old, User user, Participation participation) {
-    Integer rating = user.getRanking().getRating();
-    Integer deafenPenalty =
-        participation.getDeafenPenalty() != null ? participation.getDeafenPenalty() : 0;
+    Integer oldRating = old.getRanking().getRating();
+    Integer newRating = user.getRanking().getRating();
+
+    boolean hasRatings = (oldRating != null && newRating != null);
+
+    int deafenPenalty =
+        participation.getDeafenPenalty() != null ? Math.abs(participation.getDeafenPenalty()) : 0;
     TextComponent.Builder text = text();
 
     text.append(text("("));
 
-    if (old.getRanking().getRating() != null
-        && old.getRanking().getRating() < user.getRanking().getRating()) {
+    if (hasRatings && oldRating < newRating) {
       text.append(mmr(old)).append(text(" ")).append(ARROW);
     }
 
-    if (deafenPenalty != 0) {
-      text.append(text(rating + deafenPenalty, Style.style(TextDecoration.STRIKETHROUGH)))
+    if (newRating != null && deafenPenalty != 0) {
+      text.append(text(newRating + deafenPenalty, Style.style(TextDecoration.STRIKETHROUGH)))
           .append(text(" "));
     }
 

@@ -1,6 +1,7 @@
 package rip.bolt.ingame.api.definitions;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import org.jetbrains.annotations.Nullable;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Ranking {
@@ -11,7 +12,7 @@ public class Ranking {
 
   private BoltRank rank;
 
-  public Integer getRating() {
+  public @Nullable Integer getRating() {
     return rating;
   }
 
