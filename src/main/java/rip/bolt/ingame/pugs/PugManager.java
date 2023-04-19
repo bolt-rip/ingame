@@ -174,6 +174,10 @@ public class PugManager extends GameManager {
         matchManager.cancel(matchManager.getPGMMatch(), CancelReason.MANUAL_CANCEL);
 
       this.boltWebSocket.close(CloseFrame.NORMAL, "Pug is in finished status");
+
+      // Set the game manager to Noop when pug is closed
+      matchManager.setGameManager(GameManager.of(matchManager, null));
+
       return;
     }
 

@@ -46,7 +46,6 @@ import tc.oc.pgm.result.TieVictoryCondition;
 
 public class MatchManager implements Listener {
 
-  private final RankManager rankManager;
   private final StatsManager statsManager;
   private final TabManager tabManager;
   private final KnockbackManager knockbackManager;
@@ -69,14 +68,12 @@ public class MatchManager implements Listener {
 
   public MatchManager(Plugin plugin) {
     gameManager = new GameManager.NoopManager(this);
-    rankManager = new RankManager(this);
     statsManager = new StatsManager();
     tabManager = new TabManager(plugin);
     knockbackManager = new KnockbackManager();
     battlepassManager = BattlepassUtils.createManager();
 
     Bukkit.getPluginManager().registerEvents(this, plugin);
-    Bukkit.getPluginManager().registerEvents(rankManager, plugin);
     Bukkit.getPluginManager().registerEvents(knockbackManager, plugin);
 
     MatchPreloader.create();
@@ -173,6 +170,10 @@ public class MatchManager implements Listener {
 
   public GameManager getGameManager() {
     return gameManager;
+  }
+
+  public void setGameManager(GameManager gameManager) {
+    this.gameManager = gameManager;
   }
 
   public Match getPGMMatch() {

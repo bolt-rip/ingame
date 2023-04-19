@@ -1,9 +1,11 @@
 package rip.bolt.ingame.managers;
 
+import dev.pgm.events.EventsPlugin;
 import java.util.function.Function;
 import org.bukkit.Bukkit;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
+import org.jetbrains.annotations.Nullable;
 import rip.bolt.ingame.Ingame;
 import rip.bolt.ingame.api.definitions.BoltMatch;
 import rip.bolt.ingame.pugs.PugManager;
@@ -17,7 +19,7 @@ public abstract class GameManager implements Listener {
     this.matchManager = matchManager;
   }
 
-  public static GameManager of(MatchManager matchManager, BoltMatch match) {
+  public static GameManager of(MatchManager matchManager, @Nullable BoltMatch match) {
     GameManager old = matchManager.getGameManager();
     GameManager newManager = of(match).apply(matchManager);
 
@@ -29,7 +31,9 @@ public abstract class GameManager implements Listener {
     return newManager;
   }
 
-  private static Function<MatchManager, GameManager> of(BoltMatch match) {
+  private static Function<MatchManager, GameManager> of(@Nullable BoltMatch match) {
+    if (match == null) return NoopManager::new;
+
     switch (match.getSeries().getService()) {
       case PUG:
       case TM:
@@ -62,7 +66,10 @@ public abstract class GameManager implements Listener {
     public void enable(MatchManager manager) {}
 
     @Override
-    public void setup(BoltMatch match) {}
+    public void setup(BoltMatch match) {
+      EventsPlugin.get().getTeamManager().clear();
+      EventsPlugin.get().getTournamentManager().deleteTournament();
+    }
 
     @Override
     public void disable() {}
