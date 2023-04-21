@@ -2,13 +2,11 @@ package rip.bolt.ingame.pugs;
 
 import dev.pgm.events.EventsPlugin;
 import dev.pgm.events.team.TournamentTeamManager;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -38,7 +36,7 @@ public class PugTeamManager implements Listener {
     this.pugManager = pugManager;
     this.teamManager = EventsPlugin.get().getTeamManager();
 
-    this.pugTeams = new HashMap<>();
+    this.pugTeams = new LinkedHashMap<>();
   }
 
   private PugLobby getLobby() {
@@ -54,14 +52,10 @@ public class PugTeamManager implements Listener {
   }
 
   public ManagedTeam getTeam(Integer boltTeamId) {
-    for (ManagedTeam managedTeam : pugTeams.values()) {
-      if (managedTeam.getBoltTeam() == null) continue;
-
-      if (managedTeam.getBoltTeam().getId().equals(boltTeamId)) {
-        return managedTeam;
-      }
+    for (ManagedTeam team : pugTeams.values()) {
+      Team boltTeam = team.getBoltTeam();
+      if (boltTeam != null && boltTeam.getId().equals(boltTeamId)) return team;
     }
-
     return null;
   }
 
@@ -77,30 +71,43 @@ public class PugTeamManager implements Listener {
    * unregister or register teams from events.
    */
   public void setupTeams(BoltMatch match) {
-    Map<String, PugTeam> teams =
-        getTeams().stream().collect(Collectors.toMap(PugTeam::getId, Function.identity()));
+    if (attemptDirectSetup(match)) return;
 
-    List<String> toRemoveIds = new ArrayList<>(pugTeams.keySet());
-    toRemoveIds.retainAll(teams.keySet());
-
-    // Pain. EventsPlugin doesn't allow removing just one team, gotta remove them all and re-add.
-    if (!toRemoveIds.isEmpty()) {
-      teamManager.clear();
-      for (String toRemoveId : toRemoveIds) {
-        ManagedTeam mt = pugTeams.remove(toRemoveId);
-        mt.clean();
-      }
-    }
+    pugTeams.values().forEach(ManagedTeam::clean);
+    pugTeams.clear();
+    teamManager.clear();
 
     Iterator<Team> boltTeamsIt = match.getTeams().iterator();
-    teams.forEach(
-        (id, team) -> {
-          ManagedTeam mt = pugTeams.computeIfAbsent(id, ManagedTeam::new);
-          mt.clean();
-          mt.setPugTeam(team);
-          mt.setBoltTeam(boltTeamsIt.next());
-          teamManager.addTeam(mt);
-        });
+    for (PugTeam team : getTeams()) {
+      if (!boltTeamsIt.hasNext()) {
+        System.out.println("[Ingame] No more teams are available to assign");
+        break;
+      }
+
+      ManagedTeam mt = pugTeams.computeIfAbsent(team.getId(), ManagedTeam::new);
+      mt.clean();
+      mt.setPugTeam(team);
+      mt.setBoltTeam(boltTeamsIt.next());
+      teamManager.addTeam(mt);
+    }
+    if (boltTeamsIt.hasNext()) {
+      System.out.println("[Ingame] Leftover match teams were not assigned");
+    }
+  }
+
+  private boolean attemptDirectSetup(BoltMatch match) {
+    if (pugTeams.size() != getTeams().size()) return false;
+
+    Iterator<Team> matchTeamsIt = match.getTeams().iterator();
+    for (PugTeam lobbyTeam : getTeams()) {
+      ManagedTeam mt = pugTeams.get(lobbyTeam.getId());
+      if (mt == null || !matchTeamsIt.hasNext()) return false;
+      mt.clean();
+      mt.setPugTeam(lobbyTeam);
+      mt.setBoltTeam(matchTeamsIt.next());
+    }
+    // True if it has been fully consumed
+    return !matchTeamsIt.hasNext();
   }
 
   public void syncMatchTeams() {
