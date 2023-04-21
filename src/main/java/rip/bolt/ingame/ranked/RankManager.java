@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.JoinConfiguration;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.Style;
@@ -47,17 +48,18 @@ public class RankManager implements Listener {
   private static final Component RANK_PREFIX = text("Bolt rank: ");
   private static final Component PLACEMENT_MATCHES = text("Placement matches: ");
   private static final Component ARROW = text("➔ ", NamedTextColor.WHITE);
-  private static final Component MATCH_SEPARATOR = text("-", NamedTextColor.DARK_GRAY);
+  private static final JoinConfiguration MATCH_SEPARATOR =
+      JoinConfiguration.separator(text("-", NamedTextColor.DARK_GRAY));
 
   private static final LegacyComponentSerializer SERIALIZER =
       LegacyComponentSerializer.legacySection();
+  private static final OnlinePlayerMapAdapter<PermissionAttachment> PERMISSIONS =
+      new OnlinePlayerMapAdapter<>(Ingame.get());
 
   private final MatchManager manager;
-  private final OnlinePlayerMapAdapter<PermissionAttachment> permissions;
 
   public RankManager(MatchManager manager) {
     this.manager = manager;
-    this.permissions = new OnlinePlayerMapAdapter<>(Ingame.get());
   }
 
   @EventHandler(priority = EventPriority.NORMAL)
@@ -120,20 +122,19 @@ public class RankManager implements Listener {
 
       player.sendMessage(PLACEMENT_MATCHES);
       for (int i = 0; i < results.size(); )
-        //noinspection UnstableApiUsage
         player.sendMessage(Component.join(MATCH_SEPARATOR, results.subList(i, i += 15)));
     }
   }
 
   public void updatePlayer(@Nonnull MatchPlayer mp, @Nullable Party party) {
     Player player = mp.getBukkit();
-    PermissionAttachment perm = permissions.remove(player);
+    PermissionAttachment perm = PERMISSIONS.remove(player);
     BoltMatch match = manager.getMatch();
     User user = match == null ? null : match.getUser(mp.getId());
 
     if (perm != null) mp.getBukkit().removeAttachment(perm);
     if (user != null && user.getRank() != null && party instanceof Competitor)
-      permissions.put(
+      PERMISSIONS.put(
           player, player.addAttachment(Ingame.get(), "pgm.group." + user.getRank(), true));
 
     Bukkit.getPluginManager().callEvent(new NameDecorationChangeEvent(mp.getId()));
