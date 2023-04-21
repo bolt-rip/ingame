@@ -2,15 +2,11 @@ package rip.bolt.ingame.pugs;
 
 import dev.pgm.events.EventsPlugin;
 import dev.pgm.events.team.TournamentTeamManager;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Set;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
