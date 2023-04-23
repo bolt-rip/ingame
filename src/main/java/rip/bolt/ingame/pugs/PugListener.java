@@ -21,6 +21,7 @@ import rip.bolt.ingame.commands.PugCommands;
 import rip.bolt.ingame.events.BoltMatchStatusChangeEvent;
 import tc.oc.pgm.api.match.event.MatchLoadEvent;
 import tc.oc.pgm.api.party.Competitor;
+import tc.oc.pgm.api.party.Party;
 import tc.oc.pgm.api.party.event.PartyRenameEvent;
 import tc.oc.pgm.api.player.event.PlayerVanishEvent;
 import tc.oc.pgm.events.PlayerParticipationStartEvent;
@@ -124,15 +125,19 @@ public class PugListener implements Listener {
 
   @EventHandler(priority = EventPriority.HIGHEST)
   public void onLeaveParticipate(PlayerParticipationStopEvent event) {
-    // Can't ignore not-cancelled, as blitz is not cancelled but still should move to obs on ws.
-    // However, events still sets a cancel reason which is convenient.
+    if (!event.isCancelled()) return;
 
     // Events should expose this constant. It'll still be dirty, but will survive updates.
-    if (isMessage(event.getCancelReason(), "You may not leave in a tournament setting!")) {
-      pugManager.write(PugCommand.joinObs(event.getPlayer().getBukkit()));
+    if (!isMessage(event.getCancelReason(), "You may not leave in a tournament setting!")) return;
+    event.cancel(Component.empty());
 
-      // If event was cancelled, clear the component
-      if (event.isCancelled()) event.cancel(Component.empty());
+    Party nextParty = event.getNextParty();
+
+    if (nextParty instanceof Competitor) {
+      PugTeam team = pugManager.findPugTeam(event.getCompetitor());
+      if (team != null) pugManager.write(PugCommand.joinTeam(event.getPlayer().getBukkit(), team));
+    } else if (nextParty != null) {
+      pugManager.write(PugCommand.joinObs(event.getPlayer().getBukkit()));
     }
   }
 
