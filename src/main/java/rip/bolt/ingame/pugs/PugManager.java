@@ -83,6 +83,7 @@ public class PugManager extends GameManager {
 
   @Override
   public void setup(BoltMatch match) {
+    super.setup(match);
     if (this.pugLobby != null) teamManager.setupTeams(match);
   }
 

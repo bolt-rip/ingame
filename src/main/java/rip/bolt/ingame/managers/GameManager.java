@@ -8,6 +8,7 @@ import org.bukkit.event.Listener;
 import org.jetbrains.annotations.Nullable;
 import rip.bolt.ingame.Ingame;
 import rip.bolt.ingame.api.definitions.BoltMatch;
+import rip.bolt.ingame.api.definitions.Series;
 import rip.bolt.ingame.pugs.PugManager;
 import rip.bolt.ingame.ranked.RankedManager;
 
@@ -50,7 +51,11 @@ public abstract class GameManager implements Listener {
     Bukkit.getPluginManager().registerEvents(this, Ingame.get());
   }
 
-  public abstract void setup(BoltMatch match);
+  public void setup(@Nullable BoltMatch match) {
+    boolean allowSpectators =
+        (match != null && match.getSeries().getService() != Series.Service.TM);
+    EventsPlugin.get().getConfig().set("allow-spectators", allowSpectators);
+  }
 
   /** Called when the game manager is removed. */
   public void disable() {
@@ -67,6 +72,7 @@ public abstract class GameManager implements Listener {
 
     @Override
     public void setup(BoltMatch match) {
+      super.setup(match);
       EventsPlugin.get().getTeamManager().clear();
       EventsPlugin.get().getTournamentManager().deleteTournament();
     }
