@@ -134,7 +134,7 @@ public class PugListener implements Listener {
     Party nextParty = event.getNextParty();
 
     if (nextParty instanceof Competitor) {
-      PugTeam team = pugManager.findPugTeam(event.getCompetitor());
+      PugTeam team = pugManager.findPugTeam(nextParty);
       if (team != null) pugManager.write(PugCommand.joinTeam(event.getPlayer().getBukkit(), team));
     } else if (nextParty != null) {
       pugManager.write(PugCommand.joinObs(event.getPlayer().getBukkit()));

@@ -47,6 +47,7 @@ public class RankedManager extends GameManager {
 
   @Override
   public void setup(BoltMatch match) {
+    super.setup(match);
     EventsPlugin.get().getTeamManager().clear();
     for (TournamentTeam team : match.getTeams()) EventsPlugin.get().getTeamManager().addTeam(team);
     playerWatcher.addPlayers(
