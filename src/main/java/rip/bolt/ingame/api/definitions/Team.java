@@ -31,6 +31,12 @@ public class Team implements TournamentTeam {
     this.participations = new ArrayList<>();
   }
 
+  public Team(int id, String name) {
+    this.id = id;
+    this.name = name;
+    this.participations = new ArrayList<>();
+  }
+
   public Integer getId() {
     return id;
   }

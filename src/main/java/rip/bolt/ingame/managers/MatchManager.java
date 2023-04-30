@@ -283,7 +283,7 @@ public class MatchManager implements Listener {
               .map(t -> t instanceof ManagedTeam ? ((ManagedTeam) t).getBoltTeam() : t)
               .filter(t -> t instanceof Team)
               .map(t -> (Team) t)
-              .ifPresent(winner -> boltMatch.setWinner(new Team(winner.getId())));
+              .ifPresent(winner -> boltMatch.setWinner(new Team(winner.getId(), winner.getName())));
         }
         break;
       case CANCELLED:

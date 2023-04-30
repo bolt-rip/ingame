@@ -15,6 +15,8 @@ public class BoltMatch {
   private String lobbyId;
   private Series series;
 
+  public Integer seriesId;
+
   private BoltPGMMap map;
   private List<Team> teams;
 
@@ -35,6 +37,7 @@ public class BoltMatch {
     this.id = pugMatch.getId();
     this.lobbyId = lobbyId;
     this.series = series;
+    this.seriesId = series.getId();
     this.map = pugMatch.getMap();
     this.teams = pugMatch.getTeamIds().stream().map(Team::new).collect(Collectors.toList());
     this.status = pugMatch.getStatus();
@@ -62,6 +65,14 @@ public class BoltMatch {
 
   public void setSeries(Series series) {
     this.series = series;
+  }
+
+  public Integer getSeriesId() {
+    return seriesId;
+  }
+
+  public void setSeriesId(Integer seriesId) {
+    this.seriesId = seriesId;
   }
 
   public BoltPGMMap getMap() {
