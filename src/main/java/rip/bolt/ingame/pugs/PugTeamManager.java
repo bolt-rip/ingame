@@ -161,10 +161,7 @@ public class PugTeamManager implements Listener {
         .findFirst()
         .orElseGet(
             () ->
-                new Participation(
-                    new User(player.getUUID(), player.getUsername()),
-                    player.getUUID(),
-                    team.getId()));
+                new Participation(new User(player.getUUID(), player.getUsername()), team.getId()));
   }
 
   @EventHandler(priority = EventPriority.NORMAL)

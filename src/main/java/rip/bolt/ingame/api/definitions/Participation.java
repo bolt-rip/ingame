@@ -15,9 +15,9 @@ public class Participation {
 
   public Participation() {}
 
-  public Participation(User user, UUID userUuid, Integer teamId) {
+  public Participation(User user, Integer teamId) {
     this.user = user;
-    this.userUuid = userUuid;
+    this.userUuid = user.getUUID();
     this.teamId = teamId;
   }
 
