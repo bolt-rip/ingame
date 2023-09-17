@@ -30,8 +30,12 @@
             <url>https://repo.pgm.fyi/snapshots</url>
         </repository>
         <repository>
-        <id>ashcon-repo</id>
-        <url>https://repo.ashcon.app/content/repositories/snapshots</url>
+          <id>jitpack.io</id>
+          <url>https://jitpack.io</url>
+        </repository>
+        <repository>
+          <id>ashcon-repo</id>
+          <url>https://repo.ashcon.app/content/repositories/snapshots</url>
         </repository>
     </repositories>
 
@@ -49,10 +53,10 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>dev.pgm</groupId>
+            <groupId>com.github.PGMDev</groupId>
             <artifactId>Events</artifactId>
-            <version>1.0.0-SNAPSHOT</version>
-            <scope>provided</scope>
+            <version>master-9671be2b43-1</version>
+          <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>tc.oc.occ</groupId>
