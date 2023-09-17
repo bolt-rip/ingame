@@ -92,9 +92,9 @@ public class RankManager implements Listener {
             .filter(RankUpdate::isValid)
             .collect(Collectors.toList());
 
-    Bukkit.getServer().getPluginManager().callEvent(new MatchStatsEvent(match, true, true));
+    match.callEvent(new MatchStatsEvent(match, true, true));
 
-    if (AppData.Web.getMatch() != null) {
+    if (AppData.Web.getMatchLink() != null) {
       match.sendMessage(Messages.matchLink(newMatch));
       match.sendMessage(empty());
     }

@@ -42,14 +42,14 @@ public class Messages {
   }
 
   public static Component matchLink(BoltMatch match) {
-    String url = AppData.Web.getMatch().replace("{matchId}", match.getId());
+    String url = AppData.Web.getMatchLink().replace("{matchId}", match.getId());
 
     return text("Match link: ", NamedTextColor.WHITE)
         .append(link(Style.style(NamedTextColor.BLUE, TextDecoration.UNDERLINED), url));
   }
 
   public static Component profileLink(MatchPlayer player) {
-    String url = AppData.Web.getProfile().replace("{name}", player.getNameLegacy());
+    String url = AppData.Web.getProfileLink().replace("{name}", player.getNameLegacy());
 
     return text("Profile link: ", NamedTextColor.WHITE)
         .append(link(Style.style(NamedTextColor.BLUE, TextDecoration.UNDERLINED), url));

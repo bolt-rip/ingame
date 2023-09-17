@@ -26,11 +26,11 @@ public class AppData {
 
   public static class Web {
 
-    public static String getMatch() {
+    public static String getMatchLink() {
       return Ingame.get().getConfig().getString("web.match", null);
     }
 
-    public static String getProfile() {
+    public static String getProfileLink() {
       return Ingame.get().getConfig().getString("web.profile", null);
     }
   }

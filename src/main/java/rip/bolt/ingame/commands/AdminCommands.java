@@ -80,7 +80,7 @@ public class AdminCommands {
 
     Audience audience = Audience.get(sender);
     audience.sendMessage(text(boltMatch.toString(), NamedTextColor.GRAY));
-    if (AppData.Web.getMatch() != null) audience.sendMessage(Messages.matchLink(boltMatch));
+    if (AppData.Web.getMatchLink() != null) audience.sendMessage(Messages.matchLink(boltMatch));
   }
 
   @CommandMethod("status")

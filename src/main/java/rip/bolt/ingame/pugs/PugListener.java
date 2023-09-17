@@ -1,5 +1,7 @@
 package rip.bolt.ingame.pugs;
 
+import static net.kyori.adventure.text.Component.empty;
+
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
@@ -15,11 +17,17 @@ import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import rip.bolt.ingame.api.definitions.BoltMatch;
+import rip.bolt.ingame.api.definitions.MatchStatus;
 import rip.bolt.ingame.api.definitions.pug.PugCommand;
 import rip.bolt.ingame.api.definitions.pug.PugTeam;
 import rip.bolt.ingame.commands.PugCommands;
+import rip.bolt.ingame.config.AppData;
+import rip.bolt.ingame.events.BoltMatchResponseEvent;
 import rip.bolt.ingame.events.BoltMatchStatusChangeEvent;
+import rip.bolt.ingame.utils.Messages;
+import tc.oc.pgm.api.match.Match;
 import tc.oc.pgm.api.match.event.MatchLoadEvent;
+import tc.oc.pgm.api.match.event.MatchStatsEvent;
 import tc.oc.pgm.api.party.Competitor;
 import tc.oc.pgm.api.party.Party;
 import tc.oc.pgm.api.party.event.PartyRenameEvent;
@@ -88,6 +96,20 @@ public class PugListener implements Listener {
     System.out.println("[Ingame] <- Match Status: " + match.getStatus());
 
     pugManager.write(PugCommand.setMatchStatus(match));
+  }
+
+  @EventHandler(priority = EventPriority.NORMAL)
+  public void onBoltMatchResponse(BoltMatchResponseEvent event) {
+    BoltMatch newMatch = event.getResponseMatch();
+    if (!event.hasMatchFinished() || newMatch.getStatus() != MatchStatus.ENDED) return;
+
+    Match match = event.getPgmMatch();
+    match.callEvent(new MatchStatsEvent(match, true, true));
+
+    if (AppData.Web.getMatchLink() != null) {
+      match.sendMessage(Messages.matchLink(newMatch));
+      match.sendMessage(empty());
+    }
   }
 
   @EventHandler
