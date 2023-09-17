@@ -30,8 +30,8 @@
             <url>https://repo.pgm.fyi/snapshots</url>
         </repository>
         <repository>
-        <id>ashcon-repo</id>
-        <url>https://repo.ashcon.app/content/repositories/snapshots</url>
+          <id>ashcon-repo</id>
+          <url>https://repo.ashcon.app/content/repositories/snapshots</url>
         </repository>
     </repositories>
 
