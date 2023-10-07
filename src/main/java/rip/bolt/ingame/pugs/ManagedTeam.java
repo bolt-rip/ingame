@@ -1,12 +1,12 @@
 package rip.bolt.ingame.pugs;
 
-import dev.pgm.events.team.TournamentTeam;
 import java.util.List;
+import rip.bolt.ingame.api.definitions.BoltTournamentTeam;
 import rip.bolt.ingame.api.definitions.Team;
 import rip.bolt.ingame.api.definitions.pug.PugPlayer;
 import rip.bolt.ingame.api.definitions.pug.PugTeam;
 
-public class ManagedTeam implements TournamentTeam {
+public class ManagedTeam implements BoltTournamentTeam {
   private final String pugTeamId;
 
   private PugTeam pugTeam;
@@ -59,5 +59,10 @@ public class ManagedTeam implements TournamentTeam {
   @Override
   public List<PugPlayer> getPlayers() {
     return pugTeam.getPlayers();
+  }
+
+  @Override
+  public Integer getTeamId() {
+    return boltTeam.getTeamId();
   }
 }

@@ -274,6 +274,7 @@ public class MatchManager implements Listener {
         break;
       case ENDED:
         statsManager.handleMatchUpdate(boltMatch, match);
+        PGMMapUtils.setTeamColors(boltMatch);
         boltMatch.setEndedAt(transitionAt);
         Collection<Competitor> winners = match.getWinners();
         if (winners.size() == 1) {

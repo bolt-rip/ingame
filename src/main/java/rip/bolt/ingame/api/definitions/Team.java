@@ -3,7 +3,6 @@ package rip.bolt.ingame.api.definitions;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import dev.pgm.events.team.TournamentPlayer;
-import dev.pgm.events.team.TournamentTeam;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -14,11 +13,12 @@ import org.bukkit.entity.Player;
 
 /** A team for a bolt match, has the id & name, as well as the involved participants */
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class Team implements TournamentTeam {
+public class Team implements BoltTournamentTeam {
 
   private Integer id;
   private String name;
   private String mmr;
+  private String color;
 
   private Double score;
 
@@ -54,6 +54,14 @@ public class Team implements TournamentTeam {
 
   public void setMmr(String mmr) {
     this.mmr = mmr;
+  }
+
+  public String getColor() {
+    return color;
+  }
+
+  public void setColor(String color) {
+    this.color = color;
   }
 
   public Double getScore() {
@@ -97,6 +105,12 @@ public class Team implements TournamentTeam {
             .map(Participation::getUser)
             .map(User::toString)
             .collect(Collectors.joining(", "));
+  }
+
+  @Override
+  @JsonIgnore
+  public Integer getTeamId() {
+    return id;
   }
 
   @Override
