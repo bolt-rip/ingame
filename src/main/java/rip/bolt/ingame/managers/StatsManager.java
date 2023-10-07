@@ -55,6 +55,12 @@ public class StatsManager {
             stats.getBowDamageTaken(),
             stats.getShotsHit(),
             stats.getShotsTaken(),
+            stats.getWoolsCaptured(),
+            stats.getWoolsTouched(),
+            stats.getMonumentsDestroyed(),
+            stats.getCoresLeaked(),
+            stats.getFlagsCaptured(),
+            stats.getFlagPickups(),
             scoreModule != null ? scoreModule.getContribution(uuid) : 0));
   }
 }

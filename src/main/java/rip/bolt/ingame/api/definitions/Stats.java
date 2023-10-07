@@ -15,6 +15,12 @@ public class Stats {
   private double damageReceivedBow;
   private int arrowsHit;
   private int arrowsShot;
+  private int wools;
+  private int woolsTouched;
+  private int monuments;
+  private int cores;
+  private int flags;
+  private int flagsPicked;
   private double score;
 
   public Stats() {}
@@ -29,6 +35,12 @@ public class Stats {
       double damageReceivedBow,
       int arrowsHit,
       int arrowsShot,
+      int wools,
+      int woolsTouched,
+      int monuments,
+      int cores,
+      int flags,
+      int flagsPicked,
       double score) {
     this.kills = kills;
     this.deaths = deaths;
@@ -39,6 +51,12 @@ public class Stats {
     this.damageReceivedBow = damageReceivedBow;
     this.arrowsHit = arrowsHit;
     this.arrowsShot = arrowsShot;
+    this.wools = wools;
+    this.woolsTouched = woolsTouched;
+    this.monuments = monuments;
+    this.cores = cores;
+    this.flags = flags;
+    this.flagsPicked = flagsPicked;
     this.score = score;
   }
 
@@ -112,6 +130,30 @@ public class Stats {
 
   public void setArrowsShot(int arrowsShot) {
     this.arrowsShot = arrowsShot;
+  }
+
+  public int getWools() {
+    return wools;
+  }
+
+  public int getWoolsTouched() {
+    return woolsTouched;
+  }
+
+  public int getMonuments() {
+    return monuments;
+  }
+
+  public int getCores() {
+    return cores;
+  }
+
+  public int getFlags() {
+    return flags;
+  }
+
+  public int getFlagsPicked() {
+    return flagsPicked;
   }
 
   public double getScore() {
