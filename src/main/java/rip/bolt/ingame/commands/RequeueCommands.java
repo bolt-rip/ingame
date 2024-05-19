@@ -10,12 +10,12 @@ import rip.bolt.ingame.ranked.RankedManager;
 import tc.oc.pgm.api.match.Match;
 import tc.oc.pgm.api.match.MatchPhase;
 import tc.oc.pgm.api.player.MatchPlayer;
-import tc.oc.pgm.lib.cloud.commandframework.annotations.CommandDescription;
-import tc.oc.pgm.lib.cloud.commandframework.annotations.CommandMethod;
+import tc.oc.pgm.lib.org.incendo.cloud.annotations.Command;
+import tc.oc.pgm.lib.org.incendo.cloud.annotations.CommandDescription;
 
 public class RequeueCommands {
 
-  @CommandMethod("requeue")
+  @Command("requeue")
   @CommandDescription("Requeue for another ranked match")
   public void requeue(MatchManager matchManager, MatchPlayer sender, Match match)
       throws CommandException {

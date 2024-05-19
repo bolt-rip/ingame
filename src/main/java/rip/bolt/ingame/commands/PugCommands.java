@@ -8,6 +8,7 @@ import java.util.Collections;
 import java.util.stream.Collectors;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.Nullable;
 import rip.bolt.ingame.api.definitions.pug.PugCommand;
 import rip.bolt.ingame.api.definitions.pug.PugTeam;
 import rip.bolt.ingame.managers.GameManager;
@@ -19,18 +20,16 @@ import tc.oc.pgm.api.party.Competitor;
 import tc.oc.pgm.api.party.Party;
 import tc.oc.pgm.api.player.MatchPlayer;
 import tc.oc.pgm.join.JoinRequest;
-import tc.oc.pgm.lib.cloud.commandframework.CommandTree;
-import tc.oc.pgm.lib.cloud.commandframework.annotations.Argument;
-import tc.oc.pgm.lib.cloud.commandframework.annotations.CommandDescription;
-import tc.oc.pgm.lib.cloud.commandframework.annotations.CommandMethod;
-import tc.oc.pgm.lib.cloud.commandframework.annotations.specifier.FlagYielding;
-import tc.oc.pgm.lib.cloud.commandframework.annotations.specifier.Greedy;
-import tc.oc.pgm.lib.cloud.commandframework.arguments.CommandArgument;
-import tc.oc.pgm.lib.cloud.commandframework.arguments.StaticArgument;
+import tc.oc.pgm.lib.org.incendo.cloud.annotation.specifier.FlagYielding;
+import tc.oc.pgm.lib.org.incendo.cloud.annotation.specifier.Greedy;
+import tc.oc.pgm.lib.org.incendo.cloud.annotations.Argument;
+import tc.oc.pgm.lib.org.incendo.cloud.annotations.Command;
+import tc.oc.pgm.lib.org.incendo.cloud.annotations.CommandDescription;
+import tc.oc.pgm.lib.org.incendo.cloud.internal.CommandNode;
 import tc.oc.pgm.teams.Team;
 import tc.oc.pgm.teams.TeamMatchModule;
 
-@CommandMethod("pug")
+@Command("pug")
 public class PugCommands {
 
   private final MatchManager matchManager;
@@ -48,17 +47,15 @@ public class PugCommands {
     return commandList;
   }
 
-  public static void setupSubCommands(CommandTree.Node<CommandArgument<CommandSender, ?>> pugNode) {
+  public static void setupSubCommands(@Nullable CommandNode<CommandSender> pugNode) {
     if (pugNode == null) {
       commandList = Collections.emptyList();
       return;
     }
 
     commandList =
-        pugNode.getChildren().stream()
-            .map(CommandTree.Node::getValue)
-            .filter(v -> v instanceof StaticArgument)
-            .flatMap(value -> ((StaticArgument<?>) value).getAliases().stream())
+        pugNode.children().stream()
+            .flatMap(n -> n.component().aliases().stream())
             .collect(Collectors.toList());
   }
 
@@ -69,13 +66,13 @@ public class PugCommands {
     return (PugManager) gm;
   }
 
-  @CommandMethod("leave|obs|spectator|spec")
+  @Command("leave|obs|spectator|spec")
   @CommandDescription("Leave the match")
   public void leave(Player sender) {
     needPugManager().write(PugCommand.joinObs(sender));
   }
 
-  @CommandMethod("join|play [team]")
+  @Command("join|play [team]")
   @CommandDescription("Join the match")
   public void join(MatchPlayer player, Match match, @Argument("team") @FlagYielding Party team) {
     PugManager pm = needPugManager();
@@ -97,20 +94,20 @@ public class PugCommands {
     else throw exception("command.teamNotFound");
   }
 
-  @CommandMethod("start|begin [duration]")
+  @Command("start|begin [duration]")
   @CommandDescription("Start the match")
   public void start(MatchPlayer sender, @Argument("duration") Duration duration) {
     needPugManager().write(PugCommand.startMatch(sender.getBukkit(), duration));
   }
 
-  @CommandMethod("setnext|sn [map]")
+  @Command("setnext|sn [map]")
   @CommandDescription("Change the next map")
   public void setNext(MatchPlayer sender, @Argument("map") @FlagYielding MapInfo map) {
     if (map == null) throw exception("Map not found!");
     needPugManager().write(PugCommand.setMap(sender.getBukkit(), map));
   }
 
-  @CommandMethod("cycle [duration] [map]")
+  @Command("cycle [duration] [map]")
   @CommandDescription("Cycle to the next match")
   public void cycle(
       MatchPlayer sender,
@@ -121,7 +118,7 @@ public class PugCommands {
     else pm.write(PugCommand.cycleMatch(sender.getBukkit()));
   }
 
-  @CommandMethod("recycle|rematch [duration]")
+  @Command("recycle|rematch [duration]")
   @CommandDescription("Reload (cycle to) the current map")
   public void recycle(
       MatchManager matchManager, MatchPlayer sender, @Argument("duration") Duration duration) {
@@ -133,10 +130,10 @@ public class PugCommands {
     pm.write(PugCommand.cycleMatch(sender.getBukkit(), matchManager.getMatch().getMap()));
   }
 
-  @CommandMethod("pug team")
+  @Command("pug team")
   public class TeamCommands {
 
-    @CommandMethod("force <player> [team]")
+    @Command("force <player> [team]")
     @CommandDescription("Force a player onto a team")
     public void force(
         MatchPlayer sender, @Argument("player") MatchPlayer player, @Argument("team") Party team) {
@@ -153,25 +150,25 @@ public class PugCommands {
       pm.write(PugCommand.movePlayer(sender.getBukkit(), player.getBukkit(), pugTeam));
     }
 
-    @CommandMethod("balance")
+    @Command("balance")
     @CommandDescription("Balance teams according to MMR")
     public void balance(Player sender) {
       needPugManager().write(PugCommand.balance(sender));
     }
 
-    @CommandMethod("shuffle")
+    @Command("shuffle")
     @CommandDescription("Shuffle players among the teams")
     public void shuffle(Player sender) {
       needPugManager().write(PugCommand.shuffle(sender));
     }
 
-    @CommandMethod("clear")
+    @Command("clear")
     @CommandDescription("Clear all teams")
     public void clear(Player sender) {
       needPugManager().write(PugCommand.clear(sender));
     }
 
-    @CommandMethod("alias <team> <name>")
+    @Command("alias <team> <name>")
     @CommandDescription("Rename a team")
     public void alias(
         MatchPlayer sender,
@@ -188,7 +185,7 @@ public class PugCommands {
       pm.write(PugCommand.setTeamName(sender.getBukkit(), pugTeam, newName));
     }
 
-    @CommandMethod("size <team> <max-players>")
+    @Command("size <team> <max-players>")
     @CommandDescription("Set the max players on a team")
     public void size(
         Player sender, @Argument("team") String ignore, @Argument("max-players") Integer max) {
