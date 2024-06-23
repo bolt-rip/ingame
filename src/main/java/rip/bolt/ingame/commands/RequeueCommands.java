@@ -1,6 +1,6 @@
 package rip.bolt.ingame.commands;
 
-import net.md_5.bungee.api.ChatColor;
+import org.bukkit.ChatColor;
 import rip.bolt.ingame.Ingame;
 import rip.bolt.ingame.api.definitions.MatchStatus;
 import rip.bolt.ingame.config.AppData;

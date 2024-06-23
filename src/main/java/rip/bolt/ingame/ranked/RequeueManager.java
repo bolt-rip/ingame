@@ -4,8 +4,7 @@ import static net.kyori.adventure.text.Component.text;
 
 import java.util.Map;
 import net.kyori.adventure.text.format.NamedTextColor;
-import net.md_5.bungee.api.ChatColor;
-import org.bukkit.Material;
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -18,6 +17,7 @@ import rip.bolt.ingame.utils.Messages;
 import tc.oc.pgm.api.player.MatchPlayer;
 import tc.oc.pgm.api.player.event.ObserverInteractEvent;
 import tc.oc.pgm.util.bukkit.OnlinePlayerMapAdapter;
+import tc.oc.pgm.util.material.Materials;
 
 public class RequeueManager implements Listener {
 
@@ -27,7 +27,7 @@ public class RequeueManager implements Listener {
   private final Map<Player, Long> lastRequeues = new OnlinePlayerMapAdapter<>(Ingame.get());
 
   private static ItemStack createRequeueItem(int data) {
-    ItemStack item = new ItemStack(Material.INK_SACK, 1, (short) data);
+    ItemStack item = new ItemStack(Materials.DYE, 1, (short) data);
     ItemMeta meta = item.getItemMeta();
     meta.setDisplayName(ChatColor.GOLD + "" + ChatColor.BOLD + "Click to requeue");
     item.setItemMeta(meta);

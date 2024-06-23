@@ -2,7 +2,7 @@ package rip.bolt.ingame.commands;
 
 import static net.kyori.adventure.text.Component.text;
 
-import net.md_5.bungee.api.ChatColor;
+import org.bukkit.ChatColor;
 import rip.bolt.ingame.config.AppData;
 import rip.bolt.ingame.managers.GameManager;
 import rip.bolt.ingame.managers.MatchManager;

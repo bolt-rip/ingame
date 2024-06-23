@@ -10,7 +10,6 @@ import java.net.URI;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
-import org.bukkit.craftbukkit.libs.joptsimple.internal.Strings;
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.framing.CloseFrame;
 import org.java_websocket.handshake.ServerHandshake;
@@ -86,7 +85,7 @@ public class BoltWebSocket extends WebSocketClient {
                 ? PlayerComponent.player(null, chat.getPlayer().getUsername(), NameStyle.VERBOSE)
                 : CONSOLE_NAME;
 
-    Component body = text(Strings.join(chat.getMessage(), ", "));
+    Component body = text(String.join(", ", chat.getMessage()));
 
     switch (chat.getType()) {
       case PLAYER_INGAME:
