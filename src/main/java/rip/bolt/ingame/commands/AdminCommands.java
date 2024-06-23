@@ -5,8 +5,8 @@ import static net.kyori.adventure.text.Component.text;
 
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
-import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import rip.bolt.ingame.Ingame;
 import rip.bolt.ingame.api.definitions.BoltMatch;
@@ -21,20 +21,20 @@ import rip.bolt.ingame.utils.Messages;
 import tc.oc.pgm.api.match.Match;
 import tc.oc.pgm.api.match.MatchPhase;
 import tc.oc.pgm.api.player.MatchPlayer;
-import tc.oc.pgm.lib.cloud.commandframework.annotations.Argument;
-import tc.oc.pgm.lib.cloud.commandframework.annotations.CommandDescription;
-import tc.oc.pgm.lib.cloud.commandframework.annotations.CommandMethod;
-import tc.oc.pgm.lib.cloud.commandframework.annotations.CommandPermission;
-import tc.oc.pgm.lib.cloud.commandframework.annotations.Flag;
-import tc.oc.pgm.lib.cloud.commandframework.annotations.specifier.Greedy;
+import tc.oc.pgm.lib.org.incendo.cloud.annotation.specifier.Greedy;
+import tc.oc.pgm.lib.org.incendo.cloud.annotations.Argument;
+import tc.oc.pgm.lib.org.incendo.cloud.annotations.Command;
+import tc.oc.pgm.lib.org.incendo.cloud.annotations.CommandDescription;
+import tc.oc.pgm.lib.org.incendo.cloud.annotations.Flag;
+import tc.oc.pgm.lib.org.incendo.cloud.annotations.Permission;
 import tc.oc.pgm.util.Audience;
 
-@CommandMethod("ingame")
+@Command("ingame")
 public class AdminCommands {
 
-  @CommandMethod("poll")
+  @Command("poll")
   @CommandDescription("Poll the API once for a new Bolt match")
-  @CommandPermission("ingame.staff.poll")
+  @Permission("ingame.staff.poll")
   public void poll(
       MatchManager matchManager,
       CommandSender sender,
@@ -52,9 +52,9 @@ public class AdminCommands {
             text("Manual poll has been triggered, checking API for match.", NamedTextColor.GRAY));
   }
 
-  @CommandMethod("clear|reset")
+  @Command("clear|reset")
   @CommandDescription("Clear the currently stored Bolt match")
-  @CommandPermission("ingame.staff.clear")
+  @Permission("ingame.staff.clear")
   public void clear(MatchManager matchManager, CommandSender sender) throws CommandException {
     BoltMatch match = matchManager.getMatch();
     if (match == null)
@@ -70,9 +70,9 @@ public class AdminCommands {
                 NamedTextColor.GRAY));
   }
 
-  @CommandMethod("match")
+  @Command("match")
   @CommandDescription("View info about the current Bolt match")
-  @CommandPermission("ingame.staff.match")
+  @Permission("ingame.staff.match")
   public void match(MatchManager matchManager, CommandSender sender) throws CommandException {
     BoltMatch boltMatch = matchManager.getMatch();
     if (boltMatch == null)
@@ -83,9 +83,9 @@ public class AdminCommands {
     if (AppData.Web.getMatchLink() != null) audience.sendMessage(Messages.matchLink(boltMatch));
   }
 
-  @CommandMethod("status")
+  @Command("status")
   @CommandDescription("View the status of the API polling")
-  @CommandPermission("ingame.staff.status")
+  @Permission("ingame.staff.status")
   public void status(MatchManager matchManager, CommandSender sender) throws CommandException {
     GameManager gameTypeManager = matchManager.getGameManager();
     String gameManager = gameTypeManager.getClass().getSimpleName();
@@ -119,9 +119,9 @@ public class AdminCommands {
                 newline().append(apiPolling.append(newline().append(websocketConnected)))));
   }
 
-  @CommandMethod("cancel")
+  @Command("cancel")
   @CommandDescription("Report the current Bolt match as cancelled")
-  @CommandPermission("ingame.staff.cancel")
+  @Permission("ingame.staff.cancel")
   public void cancel(MatchManager matchManager, CommandSender sender, Match match)
       throws CommandException {
     BoltMatch boltMatch = matchManager.getMatch();
@@ -142,9 +142,9 @@ public class AdminCommands {
     match.sendMessage(text("Match has been cancelled by an admin.", NamedTextColor.RED));
   }
 
-  @CommandMethod("ban <player> [reason]")
+  @Command("ban <player> [reason]")
   @CommandDescription("Manually queue bans a player")
-  @CommandPermission("ingame.staff.ban")
+  @Permission("ingame.staff.ban")
   public void ban(
       CommandSender sender,
       @Argument("player") MatchPlayer target,
@@ -159,9 +159,9 @@ public class AdminCommands {
             Ingame.get(), () -> Ingame.get().getApiManager().postPlayerPunishment(punishment));
   }
 
-  @CommandMethod("reconnect")
+  @Command("reconnect")
   @CommandDescription("Reconnect to the matches websocket")
-  @CommandPermission("ingame.staff.reconnect")
+  @Permission("ingame.staff.reconnect")
   public void reconnect(MatchManager matchManager, CommandSender sender) throws CommandException {
     GameManager gameManager = matchManager.getGameManager();
     if (!(gameManager instanceof PugManager))
@@ -173,9 +173,9 @@ public class AdminCommands {
     ((PugManager) gameManager).connect(matchManager.getMatch());
   }
 
-  @CommandMethod("disconnect")
+  @Command("disconnect")
   @CommandDescription("Disconnect from the matches websocket")
-  @CommandPermission("ingame.staff.reconnect")
+  @Permission("ingame.staff.reconnect")
   public void disconnect(MatchManager matchManager, CommandSender sender) throws CommandException {
     GameManager gameManager = matchManager.getGameManager();
     if (!(gameManager instanceof PugManager))

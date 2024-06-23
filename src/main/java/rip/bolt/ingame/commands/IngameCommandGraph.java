@@ -13,6 +13,7 @@ import tc.oc.pgm.api.map.MapOrder;
 import tc.oc.pgm.api.match.Match;
 import tc.oc.pgm.api.party.Party;
 import tc.oc.pgm.api.player.MatchPlayer;
+import tc.oc.pgm.command.injectors.AudienceProvider;
 import tc.oc.pgm.command.injectors.MatchPlayerProvider;
 import tc.oc.pgm.command.injectors.MatchProvider;
 import tc.oc.pgm.command.injectors.PlayerProvider;
@@ -25,9 +26,8 @@ import tc.oc.pgm.command.parsers.PlayerParser;
 import tc.oc.pgm.command.parsers.TeamParser;
 import tc.oc.pgm.command.parsers.TeamsParser;
 import tc.oc.pgm.command.util.CommandGraph;
-import tc.oc.pgm.lib.cloud.commandframework.extra.confirmation.CommandConfirmationManager;
-import tc.oc.pgm.lib.cloud.commandframework.minecraft.extras.MinecraftHelp;
 import tc.oc.pgm.lib.io.leangen.geantyref.TypeFactory;
+import tc.oc.pgm.lib.org.incendo.cloud.minecraft.extras.MinecraftHelp;
 import tc.oc.pgm.teams.Team;
 import tc.oc.pgm.teams.TeamMatchModule;
 import tc.oc.pgm.util.Audience;
@@ -40,12 +40,7 @@ public class IngameCommandGraph extends CommandGraph<Ingame> {
 
   @Override
   protected MinecraftHelp<CommandSender> createHelp() {
-    return new MinecraftHelp<>("/ingame help", Audience::get, manager);
-  }
-
-  @Override
-  protected CommandConfirmationManager<CommandSender> createConfirmationManager() {
-    return null;
+    return MinecraftHelp.create("/ingame help", manager, Audience::get);
   }
 
   @Override
@@ -56,7 +51,7 @@ public class IngameCommandGraph extends CommandGraph<Ingame> {
     registerInjector(MapOrder.class, () -> PGM.get().getMapOrder());
     registerInjector(MatchManager.class, () -> Ingame.get().getMatchManager());
 
-    registerInjector(Audience.class, (c, s) -> Audience.get(c.getSender()));
+    registerInjector(Audience.class, new AudienceProvider());
     registerInjector(Match.class, new MatchProvider());
     registerInjector(MatchPlayer.class, new MatchPlayerProvider());
     registerInjector(Player.class, new PlayerProvider());

@@ -13,8 +13,8 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.Collection;
 import java.util.Objects;
-import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -43,12 +43,13 @@ import tc.oc.pgm.events.CountdownCancelEvent;
 import tc.oc.pgm.events.CountdownStartEvent;
 import tc.oc.pgm.restart.RestartCountdown;
 import tc.oc.pgm.result.TieVictoryCondition;
+import tc.oc.pgm.util.platform.Platform;
+import tc.oc.pgm.util.platform.Supports;
 
 public class MatchManager implements Listener {
 
   private final StatsManager statsManager;
   private final TabManager tabManager;
-  private final KnockbackManager knockbackManager;
   private final BattlepassManager battlepassManager;
 
   private final MatchSearch poll;
@@ -70,11 +71,12 @@ public class MatchManager implements Listener {
     gameManager = new GameManager.NoopManager(this);
     statsManager = new StatsManager();
     tabManager = new TabManager(plugin);
-    knockbackManager = new KnockbackManager();
     battlepassManager = BattlepassUtils.createManager();
 
     Bukkit.getPluginManager().registerEvents(this, plugin);
-    Bukkit.getPluginManager().registerEvents(knockbackManager, plugin);
+    if (Platform.VARIANT == Supports.Variant.SPORTPAPER) {
+      Bukkit.getPluginManager().registerEvents(new KnockbackManager(), plugin);
+    }
 
     MatchPreloader.create();
 
