@@ -1,5 +1,6 @@
 name: Ingame
-main: rip.bolt.ingame.Ingame
-version: ${project.version} (git-${git.commit.id.abbrev})
+main: ${mainClass}
+version: ${version} (git-${commitHash})
+website: ${url}
 depend: [PGM, Events]
 softdepend: [Dispense]

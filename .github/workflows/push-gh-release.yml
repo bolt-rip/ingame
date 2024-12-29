@@ -12,11 +12,14 @@ jobs:
         with:
           java-version: 21
           distribution: temurin
-          cache: maven
-      - name: Build jar
-        run: mvn --batch-mode --update-snapshots verify
-      - name: Move generated jar file
-        run: mv target/ingame-*.jar ingame.jar
+      # Configures gradle with caching
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+      # Run "gradlew publish" for origin/master and "gradlew build" for PRs or elsewhere
+      - name: Execute Gradle ${{ (github.repository == 'bolt-rip/ingame' && github.ref == 'refs/heads/master') && 'Publish' || 'Build' }}
+        run: ./gradlew ${{ (github.repository == 'bolt-rip/ingame' && github.ref == 'refs/heads/master') && 'publish' || 'build' }}
+        env:
+          GITHUB_TOKEN: ${{ (github.repository == 'bolt-rip/ingame' && github.ref == 'refs/heads/master') && secrets.GITHUB_TOKEN || '' }}
       - name: Create Release
         id: create_release
         if: github.event_name != 'pull_request' && (github.ref == 'refs/heads/master')
@@ -36,12 +39,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }} 
-          asset_path: ./ingame.jar
+          asset_path: ./build/libs/ingame.jar
           asset_name: ingame.jar
           asset_content_type: application/java-archive
-      - name: trigger docker image building
-        run: |
-            curl -H "Authorization: token "${{ secrets.PERSONAL_ACCESS_TOKEN }}"" \
-              --request POST \
-              --data '{"event_type": "build"}' \
-              https://api.github.com/repos/bolt-rip/config-pgm/dispatches

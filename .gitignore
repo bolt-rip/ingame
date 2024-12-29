@@ -2,7 +2,6 @@
 *.class
 
 # Package Files #
-*.jar
 *.war
 *.ear
 
@@ -102,7 +101,6 @@ application.macosx
 ### Some others ###
 
 MANIFEST.MF
-dependency-reduced-pom.xml
 
 Thumbs.db
 src/main/resources/rebel.xml
