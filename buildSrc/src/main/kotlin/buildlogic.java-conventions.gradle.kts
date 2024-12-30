@@ -13,11 +13,9 @@ java {
 repositories {
     mavenLocal()
     mavenCentral()
-    maven("https://www.jitpack.io")
     maven("https://oss.sonatype.org/content/repositories/snapshots/") // Snapshots
     maven("https://repo.pgm.fyi/snapshots/") // PGM-specific depdencies
     maven("https://repo.papermc.io/repository/maven-public/") // Needed for bungeecord-chat
-    maven("https://repo.ashcon.app/content/repositories/snapshots/")
     maven("https://repo.aikar.co/content/groups/aikar/")
 }
 
@@ -34,7 +32,7 @@ dependencies {
 
     compileOnly("app.ashcon:sportpaper:1.8.8-R0.1-SNAPSHOT")
     compileOnly("tc.oc.pgm:core:0.16-SNAPSHOT")
-    compileOnly("dev.pgm:Events:1.0.0-SNAPSHOT")
+    compileOnly("dev.pgm:events:1.0.0-SNAPSHOT")
 }
 
 group = "rip.bolt"
