@@ -9,7 +9,6 @@ plugins {
 tasks.named<ShadowJar>("shadowJar") {
     archiveFileName = "Ingame.jar"
     archiveClassifier.set("")
-    destinationDirectory = rootProject.projectDir.resolve("build/libs")
 
     minimize()
 
