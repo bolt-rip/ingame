@@ -27,12 +27,11 @@ dependencies {
     api("co.aikar:taskchain-bukkit:3.7.2")
     api("org.java-websocket:Java-WebSocket:1.5.1")
 
-    implementation("org.incendo:cloud-annotations:2.0.0")
-    implementation("org.jetbrains:annotations:22.0.0")
-
     compileOnly("app.ashcon:sportpaper:1.8.8-R0.1-SNAPSHOT")
     compileOnly("tc.oc.pgm:core:0.16-SNAPSHOT")
     compileOnly("dev.pgm:events:1.0.0-SNAPSHOT")
+    compileOnly("org.incendo:cloud-annotations:2.0.0")
+    compileOnly("org.jetbrains:annotations:22.0.0")
 }
 
 group = "rip.bolt"
