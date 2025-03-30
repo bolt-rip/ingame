@@ -27,7 +27,6 @@ import rip.bolt.ingame.config.AppData;
 import rip.bolt.ingame.events.BoltMatchResponseEvent;
 import rip.bolt.ingame.events.BoltMatchStatusChangeEvent;
 import rip.bolt.ingame.pugs.ManagedTeam;
-import rip.bolt.ingame.setup.MatchPreloader;
 import rip.bolt.ingame.setup.MatchSearch;
 import rip.bolt.ingame.utils.BattlepassUtils;
 import rip.bolt.ingame.utils.CancelReason;
@@ -78,8 +77,6 @@ public class MatchManager implements Listener {
       Bukkit.getPluginManager().registerEvents(new KnockbackManager(), plugin);
     }
 
-    MatchPreloader.create();
-
     poll = new MatchSearch(this::setupMatch);
     poll.startIn(Duration.ofSeconds(5));
   }
@@ -97,29 +94,27 @@ public class MatchManager implements Listener {
     poll.stop();
 
     gameManager = GameManager.of(this, match);
-    format =
-        new TournamentFormatImpl(
-            EventsPlugin.get().getTeamManager(),
-            new TournamentRoundOptions(
-                false,
-                false,
-                false,
-                Duration.ofMinutes(30),
-                Duration.ofSeconds(30),
-                Duration.ofSeconds(40),
-                new BestOfCalculation<>(1)),
-            new RoundReferenceHolder());
-    SingleRound ranked =
-        new SingleRound(
-            format,
-            new SingleRoundOptions(
-                "ranked",
-                cycleTime,
-                AppData.matchStartDuration(),
-                match.getMap().getName(),
-                1,
-                true,
-                true));
+    format = new TournamentFormatImpl(
+        EventsPlugin.get().getTeamManager(),
+        new TournamentRoundOptions(
+            false,
+            false,
+            false,
+            Duration.ofMinutes(30),
+            Duration.ofSeconds(30),
+            Duration.ofSeconds(40),
+            new BestOfCalculation<>(1)),
+        new RoundReferenceHolder());
+    SingleRound ranked = new SingleRound(
+        format,
+        new SingleRoundOptions(
+            "ranked",
+            cycleTime,
+            AppData.matchStartDuration(),
+            match.getMap().getName(),
+            1,
+            true,
+            true));
     format.addRound(ranked);
     this.cycleTime = Duration.ofSeconds(5);
 
