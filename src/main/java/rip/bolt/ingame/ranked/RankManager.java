@@ -6,8 +6,6 @@ import static net.kyori.adventure.text.event.HoverEvent.showText;
 
 import java.util.*;
 import java.util.stream.Collectors;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.JoinConfiguration;
 import net.kyori.adventure.text.TextComponent;
@@ -22,6 +20,8 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.permissions.PermissionAttachment;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import rip.bolt.ingame.Ingame;
 import rip.bolt.ingame.api.definitions.BoltMatch;
 import rip.bolt.ingame.api.definitions.MatchResult;
@@ -75,22 +75,19 @@ public class RankManager implements Listener {
   }
 
   public void handleMatchUpdate(
-      @Nonnull BoltMatch oldMatch, @Nonnull BoltMatch newMatch, Match match) {
+      @NotNull BoltMatch oldMatch, @NotNull BoltMatch newMatch, Match match) {
     tc.oc.pgm.api.match.MatchManager matchManager = PGM.get().getMatchManager();
 
-    List<RankUpdate> updates =
-        newMatch.getTeams().stream()
-            .map(Team::getParticipations)
-            .flatMap(Collection::stream)
-            .filter(Objects::nonNull)
-            .map(
-                participation ->
-                    new RankUpdate(
-                        oldMatch.getUser(participation.getUser().getUuid()),
-                        participation,
-                        matchManager.getPlayer(participation.getUser().getUuid())))
-            .filter(RankUpdate::isValid)
-            .collect(Collectors.toList());
+    List<RankUpdate> updates = newMatch.getTeams().stream()
+        .map(Team::getParticipations)
+        .flatMap(Collection::stream)
+        .filter(Objects::nonNull)
+        .map(participation -> new RankUpdate(
+            oldMatch.getUser(participation.getUser().getUuid()),
+            participation,
+            matchManager.getPlayer(participation.getUser().getUuid())))
+        .filter(RankUpdate::isValid)
+        .collect(Collectors.toList());
 
     match.callEvent(new MatchStatsEvent(match, true, true));
 
@@ -103,7 +100,7 @@ public class RankManager implements Listener {
   }
 
   public void notifyUpdate(
-      @Nonnull User old, @Nonnull Participation participation, @Nonnull MatchPlayer player) {
+      @NotNull User old, @NotNull Participation participation, @NotNull MatchPlayer player) {
     updatePlayer(player, player.getParty());
     User user = participation.getUser();
 
@@ -126,7 +123,7 @@ public class RankManager implements Listener {
     }
   }
 
-  public void updatePlayer(@Nonnull MatchPlayer mp, @Nullable Party party) {
+  public void updatePlayer(@NotNull MatchPlayer mp, @Nullable Party party) {
     Player player = mp.getBukkit();
     PermissionAttachment perm = PERMISSIONS.remove(player);
     BoltMatch match = manager.getMatch();
@@ -216,13 +213,9 @@ public class RankManager implements Listener {
     text.append(mmr(user)).append(text(") "));
 
     if (deafenPenalty != 0) {
-      text.append(
-          text("-" + deafenPenalty + " deafen penalty", NamedTextColor.RED)
-              .hoverEvent(
-                  showText(
-                      text(
-                          "Significant amount of time deafened in voice chat",
-                          NamedTextColor.GRAY))));
+      text.append(text("-" + deafenPenalty + " deafen penalty", NamedTextColor.RED)
+          .hoverEvent(showText(
+              text("Significant amount of time deafened in voice chat", NamedTextColor.GRAY))));
     }
 
     return text.build();

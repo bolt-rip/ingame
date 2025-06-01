@@ -1,7 +1,7 @@
 package rip.bolt.ingame.events;
 
-import javax.annotation.Nullable;
 import org.bukkit.event.HandlerList;
+import org.jetbrains.annotations.Nullable;
 import rip.bolt.ingame.api.definitions.BoltMatch;
 import rip.bolt.ingame.api.definitions.MatchStatus;
 import tc.oc.pgm.api.match.Match;
@@ -12,7 +12,9 @@ public class BoltMatchResponseEvent extends BoltMatchEvent {
 
   private final Match pgmMatch;
   private final BoltMatch responseMatch;
-  @Nullable private final MatchStatus oldStatus;
+
+  @Nullable
+  private final MatchStatus oldStatus;
 
   public BoltMatchResponseEvent(
       Match pgmMatch,
@@ -39,7 +41,9 @@ public class BoltMatchResponseEvent extends BoltMatchEvent {
   }
 
   public boolean hasMatchFinished() {
-    return oldStatus != null && !oldStatus.isFinished() && responseMatch.getStatus().isFinished();
+    return oldStatus != null
+        && !oldStatus.isFinished()
+        && responseMatch.getStatus().isFinished();
   }
 
   @Override

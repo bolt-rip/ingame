@@ -2,9 +2,9 @@ package rip.bolt.ingame.api.definitions;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import java.util.UUID;
-import javax.annotation.Nullable;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.Nullable;
 
 /** A player punishment sent to the API. */
 @JsonIgnoreProperties(ignoreUnknown = true)
