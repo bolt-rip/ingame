@@ -21,18 +21,18 @@ public class Components {
     command = builder.toString();
 
     return Component.text(command, style)
-        .clickEvent(ClickEvent.clickEvent(ClickEvent.Action.RUN_COMMAND, command))
-        .hoverEvent(
-            Component.text("Click to run ", NamedTextColor.GREEN)
-                .append(Component.text(command, style)));
+        .clickEvent(ClickEvent.clickEvent(
+            ClickEvent.Action.RUN_COMMAND, ClickEvent.Payload.string(command)))
+        .hoverEvent(Component.text("Click to run ", NamedTextColor.GREEN)
+            .append(Component.text(command, style)));
   }
 
   public static Component link(Style style, String url) {
     return Component.text(url, style)
-        .clickEvent(ClickEvent.clickEvent(ClickEvent.Action.OPEN_URL, url))
-        .hoverEvent(
-            Component.text("Click to visit ", NamedTextColor.YELLOW)
-                .append(Component.text(url, style)));
+        .clickEvent(
+            ClickEvent.clickEvent(ClickEvent.Action.OPEN_URL, ClickEvent.Payload.string(url)))
+        .hoverEvent(Component.text("Click to visit ", NamedTextColor.YELLOW)
+            .append(Component.text(url, style)));
   }
 
   static String toArgument(String input) {

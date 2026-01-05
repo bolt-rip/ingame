@@ -45,12 +45,14 @@ tasks {
     processResources {
         filesMatching(listOf("plugin.yml")) {
             expand(
-                "name" to project.name,
-                "description" to project.description,
-                "mainClass" to "rip.bolt.ingame.Ingame",
-                "version" to project.version,
-                "commitHash" to project.latestCommitHash(),
-                "url" to "https://github.com/bolt-rip/"
+                mapOf(
+                    "name" to project.name,
+                    "description" to project.description,
+                    "mainClass" to "rip.bolt.ingame.Ingame",
+                    "version" to project.version,
+                    "commitHash" to project.latestCommitHash(),
+                    "url" to "https://github.com/bolt-rip/"
+                )
             )
         }
     }

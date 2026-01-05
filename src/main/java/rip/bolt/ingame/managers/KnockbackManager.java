@@ -1,10 +1,11 @@
 package rip.bolt.ingame.managers;
 
+import static rip.bolt.ingame.utils.ReflectionUtils.setConfigValue;
+
 import java.util.Objects;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.github.paperspigot.PaperSpigotConfig;
 import org.jetbrains.annotations.Nullable;
 import rip.bolt.ingame.api.definitions.BoltKnockback;
 import rip.bolt.ingame.api.definitions.MatchStatus;
@@ -23,11 +24,11 @@ public class KnockbackManager implements Listener {
   public void setupKnockback(@Nullable BoltKnockback knockback) {
     if (knockback == null) knockback = BoltKnockback.defaults();
 
-    PaperSpigotConfig.knockbackFriction = knockback.getFriction();
-    PaperSpigotConfig.knockbackHorizontal = knockback.getHorizontal();
-    PaperSpigotConfig.knockbackVertical = knockback.getVertical();
-    PaperSpigotConfig.knockbackVerticalLimit = knockback.getVerticalLimit();
-    PaperSpigotConfig.knockbackExtraHorizontal = knockback.getExtraHorizontal();
-    PaperSpigotConfig.knockbackExtraVertical = knockback.getExtraVertical();
+    setConfigValue("knockbackFriction", knockback.getFriction());
+    setConfigValue("knockbackHorizontal", knockback.getHorizontal());
+    setConfigValue("knockbackVertical", knockback.getVertical());
+    setConfigValue("knockbackVerticalLimit", knockback.getVerticalLimit());
+    setConfigValue("knockbackExtraHorizontal", knockback.getExtraHorizontal());
+    setConfigValue("knockbackExtraVertical", knockback.getExtraVertical());
   }
 }
