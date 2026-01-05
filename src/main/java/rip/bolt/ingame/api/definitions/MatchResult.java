@@ -5,7 +5,7 @@ import static rip.bolt.ingame.utils.Components.matchResult;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.ComponentLike;
 import net.kyori.adventure.text.format.NamedTextColor;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 public enum MatchResult implements ComponentLike {
   WIN(matchResult(NamedTextColor.GREEN)),
@@ -19,7 +19,7 @@ public enum MatchResult implements ComponentLike {
     this.component = component;
   }
 
-  @NotNull
+  @NonNull
   public Component asComponent() {
     return component;
   }

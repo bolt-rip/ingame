@@ -164,8 +164,7 @@ public class PugListener implements Listener {
   }
 
   private boolean isMessage(Component component, String msg) {
-    if (!(component instanceof TextComponent)) return false;
-    TextComponent textComponent = (TextComponent) component;
+    if (!(component instanceof TextComponent textComponent)) return false;
     return textComponent.content().equals(msg);
   }
 

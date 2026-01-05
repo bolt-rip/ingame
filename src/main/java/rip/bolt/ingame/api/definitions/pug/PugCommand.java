@@ -5,7 +5,7 @@ import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
 import org.bukkit.entity.Player;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 import rip.bolt.ingame.api.definitions.BoltMatch;
 import rip.bolt.ingame.api.definitions.BoltPGMMap;
 import rip.bolt.ingame.config.AppData;
@@ -75,12 +75,18 @@ public class PugCommand {
   }
 
   public static PugCommand setTeamName(Player player, PugTeam team, String name) {
-    return new Builder(SET_TEAM_NAME, player).set("id", team.getId()).set("name", name).build();
+    return new Builder(SET_TEAM_NAME, player)
+        .set("id", team.getId())
+        .set("name", name)
+        .build();
   }
 
   public static PugCommand movePlayer(Player sender, Player player, @Nullable PugTeam team) {
     String id = team == null ? null : team.getId();
-    return new Builder(MOVE_PLAYER, sender).set("uuid", player.getUniqueId()).set("id", id).build();
+    return new Builder(MOVE_PLAYER, sender)
+        .set("uuid", player.getUniqueId())
+        .set("id", id)
+        .build();
   }
 
   public static PugCommand startMatch(Player sender, Duration time) {

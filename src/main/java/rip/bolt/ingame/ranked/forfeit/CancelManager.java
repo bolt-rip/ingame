@@ -12,7 +12,7 @@ import java.util.UUID;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import net.kyori.adventure.text.format.NamedTextColor;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 import rip.bolt.ingame.config.AppData;
 import rip.bolt.ingame.utils.CancelReason;
 import rip.bolt.ingame.utils.Messages;

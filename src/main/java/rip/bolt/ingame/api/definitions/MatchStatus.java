@@ -8,19 +8,12 @@ public enum MatchStatus {
   ENDED;
 
   public boolean canTransitionTo(MatchStatus next) {
-    switch (this) {
-      case CREATED:
-        return next == LOADED || next == CANCELLED;
-      case LOADED:
-        return next == STARTED || next == CANCELLED;
-      case STARTED:
-        return next == ENDED || next == CANCELLED;
-      case ENDED:
-      case CANCELLED:
-        return false;
-      default:
-        throw new IllegalStateException("Unknown transition state for " + next);
-    }
+    return switch (this) {
+      case CREATED -> next == LOADED || next == CANCELLED;
+      case LOADED -> next == STARTED || next == CANCELLED;
+      case STARTED -> next == ENDED || next == CANCELLED;
+      case ENDED, CANCELLED -> false;
+    };
   }
 
   public boolean isPreGame() {

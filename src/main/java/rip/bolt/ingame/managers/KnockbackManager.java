@@ -6,7 +6,7 @@ import java.util.Objects;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 import rip.bolt.ingame.api.definitions.BoltKnockback;
 import rip.bolt.ingame.api.definitions.MatchStatus;
 import rip.bolt.ingame.events.BoltMatchStatusChangeEvent;

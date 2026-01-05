@@ -6,7 +6,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 public class ReflectionUtils {
   public static final Logger LOGGER = Logger.getLogger(ReflectionUtils.class.getName());

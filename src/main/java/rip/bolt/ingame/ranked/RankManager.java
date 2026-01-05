@@ -4,8 +4,11 @@ import static net.kyori.adventure.text.Component.empty;
 import static net.kyori.adventure.text.Component.text;
 import static net.kyori.adventure.text.event.HoverEvent.showText;
 
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.JoinConfiguration;
 import net.kyori.adventure.text.TextComponent;
@@ -20,8 +23,8 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.permissions.PermissionAttachment;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import rip.bolt.ingame.Ingame;
 import rip.bolt.ingame.api.definitions.BoltMatch;
 import rip.bolt.ingame.api.definitions.MatchResult;
@@ -75,7 +78,7 @@ public class RankManager implements Listener {
   }
 
   public void handleMatchUpdate(
-      @NotNull BoltMatch oldMatch, @NotNull BoltMatch newMatch, Match match) {
+      @NonNull BoltMatch oldMatch, @NonNull BoltMatch newMatch, Match match) {
     tc.oc.pgm.api.match.MatchManager matchManager = PGM.get().getMatchManager();
 
     List<RankUpdate> updates = newMatch.getTeams().stream()
@@ -87,7 +90,7 @@ public class RankManager implements Listener {
             participation,
             matchManager.getPlayer(participation.getUser().getUuid())))
         .filter(RankUpdate::isValid)
-        .collect(Collectors.toList());
+        .toList();
 
     match.callEvent(new MatchStatsEvent(match, true, true));
 
@@ -100,7 +103,7 @@ public class RankManager implements Listener {
   }
 
   public void notifyUpdate(
-      @NotNull User old, @NotNull Participation participation, @NotNull MatchPlayer player) {
+      @NonNull User old, @NonNull Participation participation, @NonNull MatchPlayer player) {
     updatePlayer(player, player.getParty());
     User user = participation.getUser();
 
@@ -123,7 +126,7 @@ public class RankManager implements Listener {
     }
   }
 
-  public void updatePlayer(@NotNull MatchPlayer mp, @Nullable Party party) {
+  public void updatePlayer(@NonNull MatchPlayer mp, @Nullable Party party) {
     Player player = mp.getBukkit();
     PermissionAttachment perm = PERMISSIONS.remove(player);
     BoltMatch match = manager.getMatch();

@@ -43,14 +43,19 @@ publishing {
 
 tasks {
     processResources {
+        val name = project.name
+        val description = project.description
+        val version = project.version.toString()
+        val commitHash = project.latestCommitHash()
+
         filesMatching(listOf("plugin.yml")) {
             expand(
                 mapOf(
-                    "name" to project.name,
-                    "description" to project.description,
+                    "name" to name,
+                    "description" to description,
                     "mainClass" to "rip.bolt.ingame.Ingame",
-                    "version" to project.version,
-                    "commitHash" to project.latestCommitHash(),
+                    "version" to version,
+                    "commitHash" to commitHash,
                     "url" to "https://github.com/bolt-rip/"
                 )
             )

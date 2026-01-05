@@ -24,12 +24,13 @@ dependencies {
     api("com.squareup.retrofit2:converter-gson:2.9.0")
     api("co.aikar:taskchain-bukkit:3.7.2")
     api("org.java-websocket:Java-WebSocket:1.5.1")
+    api("org.jspecify:jspecify:1.0.0")
 
-    compileOnly("dev.pgm.paper:paper-api:1.8_1.21.11-SNAPSHOT")
+    compileOnly("dev.pgm.paper:paper-api:1.8_1.21.10-SNAPSHOT")
     compileOnly("tc.oc.pgm:core:0.16-SNAPSHOT")
     compileOnly("dev.pgm:events:1.0.0-SNAPSHOT")
     compileOnly("org.incendo:cloud-annotations:2.0.0")
-    compileOnly("org.jetbrains:annotations:26.0.2")
+    compileOnly("org.jetbrains:annotations:26.0.2-1")
     compileOnly("com.google.guava:guava:17.0")
 }
 
@@ -49,7 +50,7 @@ spotless {
     ratchetFrom = "origin/master"
     java {
         removeUnusedImports()
-        palantirJavaFormat("2.83.0").style("GOOGLE").formatJavadoc(true)
+        palantirJavaFormat("2.85.0").style("GOOGLE").formatJavadoc(true)
     }
 }
 

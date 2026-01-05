@@ -25,10 +25,8 @@ public class RequeueCommands {
     }
 
     GameManager gameManager = matchManager.getGameManager();
-    if (!(gameManager instanceof RankedManager))
+    if (!(gameManager instanceof RankedManager manager))
       throw new CommandException(ChatColor.RED + "The current match type does not support that.");
-
-    RankedManager manager = (RankedManager) gameManager;
 
     boolean finished = match.getPhase() == MatchPhase.FINISHED;
     boolean cancelled =

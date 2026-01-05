@@ -1,7 +1,7 @@
 package rip.bolt.ingame.events;
 
 import org.bukkit.event.HandlerList;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 import rip.bolt.ingame.api.definitions.BoltMatch;
 import rip.bolt.ingame.api.definitions.MatchStatus;
 import tc.oc.pgm.api.match.Match;

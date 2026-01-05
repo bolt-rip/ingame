@@ -174,17 +174,13 @@ public class PlayerWatcher implements Listener {
       players.forEach(player -> playerAbandoned(player, seriesId));
     }
 
-    return players.size() > 0;
+    return !players.isEmpty();
   }
 
   private void playerAbandoned(UUID player, Integer seriesId) {
-    Bukkit.getScheduler()
-        .runTaskAsynchronously(
-            Ingame.get(),
-            () ->
-                Ingame.get()
-                    .getApiManager()
-                    .postPlayerPunishment(new Punishment(player, seriesId)));
+    Bukkit.getScheduler().runTaskAsynchronously(Ingame.get(), () -> Ingame.get()
+        .getApiManager()
+        .postPlayerPunishment(new Punishment(player, seriesId)));
   }
 
   public boolean isPlaying(UUID uuid) {
