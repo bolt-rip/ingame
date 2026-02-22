@@ -1,6 +1,7 @@
 name: Ingame
 main: ${mainClass}
 version: ${version} (git-${commitHash})
+api-version: ${apiVersion}
 website: ${url}
 depend: [PGM, Events]
 softdepend: [Dispense]

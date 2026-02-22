@@ -26,7 +26,7 @@ dependencies {
     api("org.java-websocket:Java-WebSocket:1.5.1")
     api("org.jspecify:jspecify:1.0.0")
 
-    compileOnly("dev.pgm.paper:paper-api:1.8_1.21.10-SNAPSHOT")
+    compileOnly("app.ashcon:sportpaper:1.8.8-R0.1-SNAPSHOT")
     compileOnly("tc.oc.pgm:core:0.16-SNAPSHOT")
     compileOnly("dev.pgm:events:1.0.0-SNAPSHOT")
     compileOnly("org.incendo:cloud-annotations:2.0.0")
@@ -50,14 +50,14 @@ spotless {
     ratchetFrom = "origin/master"
     java {
         removeUnusedImports()
-        palantirJavaFormat("2.85.0").style("GOOGLE").formatJavadoc(true)
+        palantirJavaFormat("2.87.0").style("GOOGLE").formatJavadoc(true)
     }
 }
 
 
 restrictImports {
     group {
-        reason = "Use org.jetbrains.annotations to add annotations"
+        reason = "Use org.jspecify.annotations to add annotations, or org.jetbrains.annotations if needed"
         bannedImports = listOf("javax.annotation.**")
     }
     group {

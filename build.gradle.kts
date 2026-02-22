@@ -7,6 +7,9 @@ plugins {
 }
 
 tasks.named<ShadowJar>("shadowJar") {
+    manifest {
+        attributes["paperweight-mappings-namespace"] = "mojang"
+    }
     archiveFileName = "Ingame.jar"
     archiveClassifier.set("")
 
@@ -53,6 +56,7 @@ tasks {
                 mapOf(
                     "name" to name,
                     "description" to description,
+                    "apiVersion" to "1.21.11",
                     "mainClass" to "rip.bolt.ingame.Ingame",
                     "version" to version,
                     "commitHash" to commitHash,

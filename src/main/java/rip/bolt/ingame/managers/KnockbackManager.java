@@ -1,7 +1,6 @@
 package rip.bolt.ingame.managers;
 
-import static rip.bolt.ingame.utils.ReflectionUtils.setConfigValue;
-
+import com.destroystokyo.paper.PaperConfig;
 import java.util.Objects;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -24,11 +23,11 @@ public class KnockbackManager implements Listener {
   public void setupKnockback(@Nullable BoltKnockback knockback) {
     if (knockback == null) knockback = BoltKnockback.defaults();
 
-    setConfigValue("knockbackFriction", knockback.getFriction());
-    setConfigValue("knockbackHorizontal", knockback.getHorizontal());
-    setConfigValue("knockbackVertical", knockback.getVertical());
-    setConfigValue("knockbackVerticalLimit", knockback.getVerticalLimit());
-    setConfigValue("knockbackExtraHorizontal", knockback.getExtraHorizontal());
-    setConfigValue("knockbackExtraVertical", knockback.getExtraVertical());
+    PaperConfig.knockbackFriction = knockback.getFriction();
+    PaperConfig.knockbackHorizontal = knockback.getHorizontal();
+    PaperConfig.knockbackVertical = knockback.getVertical();
+    PaperConfig.knockbackVerticalLimit = knockback.getVerticalLimit();
+    PaperConfig.knockbackExtraHorizontal = knockback.getExtraHorizontal();
+    PaperConfig.knockbackExtraVertical = knockback.getExtraVertical();
   }
 }
