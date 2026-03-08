@@ -27,20 +27,18 @@ public class ForfeitCommands {
           ChatColor.RED + "The forfeit command is not enabled on this server.");
 
     GameManager gameManager = matchManager.getGameManager();
-    if (!(gameManager instanceof RankedManager))
+    if (!(gameManager instanceof RankedManager rankedManager))
       throw new CommandException(ChatColor.RED + "The current match type does not support that.");
 
-    RankedManager rankedManager = (RankedManager) gameManager;
     ForfeitManager forfeits = rankedManager.getPlayerWatcher().getForfeitManager();
 
     if (match.getPhase() != MatchPhase.RUNNING)
       throw new CommandException(ChatColor.RED + "You may only run this command during a match.");
 
-    if (!(sender.getParty() instanceof Competitor))
+    if (!(sender.getParty() instanceof Competitor team))
       throw new CommandException(
           ChatColor.RED + "Only match players are able to run this command.");
 
-    Competitor team = (Competitor) sender.getParty();
     if (!forfeits.mayForfeit(team))
       throw new CommandException(
           ChatColor.YELLOW + "It's too early to forfeit this match, you can still win!");

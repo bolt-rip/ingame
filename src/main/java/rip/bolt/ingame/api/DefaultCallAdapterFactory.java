@@ -5,6 +5,8 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.util.Objects;
 import okhttp3.ResponseBody;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.NullUnmarked;
 import retrofit2.Call;
 import retrofit2.CallAdapter;
 import retrofit2.Retrofit;
@@ -13,7 +15,9 @@ public final class DefaultCallAdapterFactory<T> extends CallAdapter.Factory {
 
   @Override
   public CallAdapter<T, ?> get(
-      final Type returnType, final Annotation[] annotations, final Retrofit retrofit) {
+      final Type returnType,
+      final Annotation @NonNull [] annotations,
+      final @NonNull Retrofit retrofit) {
     if (returnType.getTypeName().startsWith(Call.class.getName())) {
       return null;
     }
@@ -42,12 +46,12 @@ public final class DefaultCallAdapterFactory<T> extends CallAdapter.Factory {
     }
 
     @Override
-    public Type responseType() {
+    public @NonNull Type responseType() {
       return returnType;
     }
 
     @Override
-    public Object adapt(final Call<T> call) {
+    public @NullUnmarked Object adapt(final @NonNull Call<T> call) {
       final retrofit2.Response<T> response;
       try {
         response = call.execute();

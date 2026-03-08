@@ -19,7 +19,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 import org.java_websocket.exceptions.WebsocketNotConnectedException;
 import org.java_websocket.framing.CloseFrame;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 import rip.bolt.ingame.Ingame;
 import rip.bolt.ingame.api.definitions.BoltMatch;
 import rip.bolt.ingame.api.definitions.MatchStatus;
@@ -63,8 +63,7 @@ public class PugManager extends GameManager {
   }
 
   public static PugManager of(MatchManager matchManager) {
-    if (matchManager.getGameManager() instanceof PugManager) {
-      PugManager existing = (PugManager) matchManager.getGameManager();
+    if (matchManager.getGameManager() instanceof PugManager existing) {
       if (existing.pugLobby.getId().equals(matchManager.getMatch().getLobbyId())) return existing;
     }
     return new PugManager(matchManager);
@@ -171,7 +170,8 @@ public class PugManager extends GameManager {
 
     // Avoid updating status if there is no match
     if (pugMatch == null || this.pugLobby.getState() == PugState.FINISHED) {
-      if (matchManager.getMatch() != null && !matchManager.getMatch().getStatus().isFinished())
+      if (matchManager.getMatch() != null
+          && !matchManager.getMatch().getStatus().isFinished())
         matchManager.cancel(matchManager.getPGMMatch(), CancelReason.MANUAL_CANCEL);
 
       this.boltWebSocket.close(CloseFrame.NORMAL, "Pug is in finished status");
@@ -187,9 +187,8 @@ public class PugManager extends GameManager {
         matchManager.cancel(matchManager.getPGMMatch(), CancelReason.MANUAL_CANCEL);
 
       // Setup the new match and cycle to it
-      this.matchManager.setupMatch(
-          new BoltMatch(
-              matchManager.getMatch().getLobbyId(), matchManager.getMatch().getSeries(), pugMatch));
+      this.matchManager.setupMatch(new BoltMatch(
+          matchManager.getMatch().getLobbyId(), matchManager.getMatch().getSeries(), pugMatch));
 
       return;
     }
@@ -244,12 +243,11 @@ public class PugManager extends GameManager {
   private void syncOnline() {
     List<PugPlayer> lobbyPlayers = this.pugLobby.getPlayers();
 
-    Set<UUID> onlinePlayers =
-        Bukkit.getServer().getOnlinePlayers().stream()
-            .map(p -> syncPlayerStatus(p, true))
-            .filter(Objects::nonNull)
-            .map(PugPlayer::getUuid)
-            .collect(Collectors.toSet());
+    Set<UUID> onlinePlayers = Bukkit.getServer().getOnlinePlayers().stream()
+        .map(p -> syncPlayerStatus(p, true))
+        .filter(Objects::nonNull)
+        .map(PugPlayer::getUuid)
+        .collect(Collectors.toSet());
 
     lobbyPlayers.stream()
         .filter(pugPlayer -> !onlinePlayers.contains(pugPlayer.getUuid()))
@@ -276,15 +274,14 @@ public class PugManager extends GameManager {
 
     if (boltWebSocket.isOpen()) return;
 
-    new Thread(
-            () -> {
-              try {
-                Thread.sleep(5000L);
-              } catch (InterruptedException ignore) {
-              }
+    new Thread(() -> {
+          try {
+            Thread.sleep(5000L);
+          } catch (InterruptedException ignore) {
+          }
 
-              boltWebSocket.reconnect();
-            })
+          boltWebSocket.reconnect();
+        })
         .start();
   }
 }

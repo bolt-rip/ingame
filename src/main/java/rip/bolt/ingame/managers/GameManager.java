@@ -5,7 +5,7 @@ import java.util.function.Function;
 import org.bukkit.Bukkit;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 import rip.bolt.ingame.Ingame;
 import rip.bolt.ingame.api.definitions.BoltMatch;
 import rip.bolt.ingame.api.definitions.Series;
@@ -35,15 +35,10 @@ public abstract class GameManager implements Listener {
   private static Function<MatchManager, GameManager> of(@Nullable BoltMatch match) {
     if (match == null) return NoopManager::new;
 
-    switch (match.getSeries().getService()) {
-      case PUG:
-      case TM:
-      case DRAFT:
-        return PugManager::of;
-      case RANKED:
-      default:
-        return RankedManager::new;
-    }
+    return switch (match.getSeries().getService()) {
+      case PUG, TM, DRAFT -> PugManager::of;
+      default -> RankedManager::new;
+    };
   }
 
   /** Called when the game manager is created. */

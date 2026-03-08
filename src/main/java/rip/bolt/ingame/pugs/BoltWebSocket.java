@@ -25,9 +25,9 @@ import tc.oc.pgm.util.player.PlayerComponent;
 
 public class BoltWebSocket extends WebSocketClient {
 
-  public static final Component CONSOLE_NAME =
-      translatable("misc.console", NamedTextColor.DARK_AQUA)
-          .decoration(TextDecoration.ITALIC, true);
+  public static final Component CONSOLE_NAME = translatable(
+          "misc.console", NamedTextColor.DARK_AQUA)
+      .decoration(TextDecoration.ITALIC, true);
 
   private final ObjectMapper objectMapper;
   private final PugManager manager;
@@ -78,12 +78,11 @@ public class BoltWebSocket extends WebSocketClient {
 
     MatchPlayer sender =
         chat.getPlayer() != null ? pgmMatch.getPlayer(chat.getPlayer().getUuid()) : null;
-    Component senderName =
-        sender != null
-            ? sender.getName(NameStyle.VERBOSE)
-            : chat.getPlayer() != null && chat.getPlayer().getUsername() != null
-                ? PlayerComponent.player(null, chat.getPlayer().getUsername(), NameStyle.VERBOSE)
-                : CONSOLE_NAME;
+    Component senderName = sender != null
+        ? sender.getName(NameStyle.VERBOSE)
+        : chat.getPlayer() != null && chat.getPlayer().getUsername() != null
+            ? PlayerComponent.player(null, chat.getPlayer().getUsername(), NameStyle.VERBOSE)
+            : CONSOLE_NAME;
 
     Component body = text(String.join(", ", chat.getMessage()));
 
@@ -91,13 +90,12 @@ public class BoltWebSocket extends WebSocketClient {
       case PLAYER_INGAME:
         return; // No-op, message was already sent by pgm
       case PLAYER_WEB:
-        pgmMatch.sendMessage(
-            text()
-                .append(text("<", NamedTextColor.WHITE))
-                .append(senderName)
-                .append(text(">: ", NamedTextColor.WHITE))
-                .append(body)
-                .build());
+        pgmMatch.sendMessage(text()
+            .append(text("<", NamedTextColor.WHITE))
+            .append(senderName)
+            .append(text(">: ", NamedTextColor.WHITE))
+            .append(body)
+            .build());
         break;
       case SYSTEM_KO:
         // If it is not specific to a player, it will fall-thru to the bottom case
@@ -106,15 +104,14 @@ public class BoltWebSocket extends WebSocketClient {
           break;
         }
       case SYSTEM:
-        Component message =
-            text()
-                .append(text("[", NamedTextColor.WHITE))
-                .append(text("PUG", NamedTextColor.GOLD))
-                .append(text("] ", NamedTextColor.WHITE))
-                .append(senderName)
-                .append(text(" » ", NamedTextColor.GRAY))
-                .append(body)
-                .build();
+        Component message = text()
+            .append(text("[", NamedTextColor.WHITE))
+            .append(text("PUG", NamedTextColor.GOLD))
+            .append(text("] ", NamedTextColor.WHITE))
+            .append(senderName)
+            .append(text(" » ", NamedTextColor.GRAY))
+            .append(body)
+            .build();
 
         if (AppData.publiclyLogPugs() && chat.getType() == PugMessage.Type.SYSTEM) {
           pgmMatch.sendMessage(message);
@@ -132,7 +129,7 @@ public class BoltWebSocket extends WebSocketClient {
 
   @Override
   public void onClose(int i, String s, boolean b) {
-    System.out.println("[Ingame] Closed socket " + i + " - " + b + " " + s + "");
+    System.out.println("[Ingame] Closed socket " + i + " - " + b + " " + s);
 
     // Try to reconnect if failed.
     if (i == CloseFrame.NEVER_CONNECTED || i == CloseFrame.ABNORMAL_CLOSE) {

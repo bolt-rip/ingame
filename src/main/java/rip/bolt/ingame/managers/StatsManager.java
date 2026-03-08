@@ -28,14 +28,10 @@ public class StatsManager {
         .forEach(participation -> populatePlayerStats(participation, statsModule, scoreModule));
 
     if (scoreModule == null) return;
-    boltMatch
-        .getTeams()
-        .forEach(
-            team ->
-                EventsPlugin.get()
-                    .getTeamManager()
-                    .fromTournamentTeam(team)
-                    .ifPresent(t -> team.setScore(scoreModule.getScore(t))));
+    boltMatch.getTeams().forEach(team -> EventsPlugin.get()
+        .getTeamManager()
+        .fromTournamentTeam(team)
+        .ifPresent(t -> team.setScore(scoreModule.getScore(t))));
   }
 
   public void populatePlayerStats(
@@ -43,24 +39,23 @@ public class StatsManager {
     UUID uuid = participation.getUser().getUuid();
     if (statsModule.hasNoStats(uuid)) return;
 
-    PlayerStats stats = statsModule.getPlayerStat(uuid);
-    participation.setStats(
-        new Stats(
-            stats.getKills(),
-            stats.getDeaths(),
-            stats.getMaxKillstreak(),
-            stats.getDamageDone(),
-            stats.getBowDamage(),
-            stats.getDamageTaken(),
-            stats.getBowDamageTaken(),
-            stats.getShotsHit(),
-            stats.getShotsTaken(),
-            stats.getWoolsCaptured(),
-            stats.getWoolsTouched(),
-            stats.getMonumentsDestroyed(),
-            stats.getCoresLeaked(),
-            stats.getFlagsCaptured(),
-            stats.getFlagPickups(),
-            scoreModule != null ? scoreModule.getContribution(uuid) : 0));
+    PlayerStats stats = statsModule.getGlobalPlayerStat(uuid);
+    participation.setStats(new Stats(
+        stats.getKills(),
+        stats.getDeaths(),
+        stats.getMaxKillstreak(),
+        stats.getDamageDone(),
+        stats.getBowDamage(),
+        stats.getDamageTaken(),
+        stats.getBowDamageTaken(),
+        stats.getShotsHit(),
+        stats.getShotsTaken(),
+        stats.getWoolsCaptured(),
+        stats.getWoolsTouched(),
+        stats.getMonumentsDestroyed(),
+        stats.getCoresLeaked(),
+        stats.getFlagsCaptured(),
+        stats.getFlagPickups(),
+        scoreModule != null ? scoreModule.getContribution(uuid) : 0));
   }
 }

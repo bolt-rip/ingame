@@ -1,11 +1,11 @@
 package rip.bolt.ingame.managers;
 
+import com.destroystokyo.paper.PaperConfig;
 import java.util.Objects;
-import javax.annotation.Nullable;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.github.paperspigot.PaperSpigotConfig;
+import org.jspecify.annotations.Nullable;
 import rip.bolt.ingame.api.definitions.BoltKnockback;
 import rip.bolt.ingame.api.definitions.MatchStatus;
 import rip.bolt.ingame.events.BoltMatchStatusChangeEvent;
@@ -23,11 +23,11 @@ public class KnockbackManager implements Listener {
   public void setupKnockback(@Nullable BoltKnockback knockback) {
     if (knockback == null) knockback = BoltKnockback.defaults();
 
-    PaperSpigotConfig.knockbackFriction = knockback.getFriction();
-    PaperSpigotConfig.knockbackHorizontal = knockback.getHorizontal();
-    PaperSpigotConfig.knockbackVertical = knockback.getVertical();
-    PaperSpigotConfig.knockbackVerticalLimit = knockback.getVerticalLimit();
-    PaperSpigotConfig.knockbackExtraHorizontal = knockback.getExtraHorizontal();
-    PaperSpigotConfig.knockbackExtraVertical = knockback.getExtraVertical();
+    PaperConfig.knockbackFriction = knockback.getFriction();
+    PaperConfig.knockbackHorizontal = knockback.getHorizontal();
+    PaperConfig.knockbackVertical = knockback.getVertical();
+    PaperConfig.knockbackVerticalLimit = knockback.getVerticalLimit();
+    PaperConfig.knockbackExtraHorizontal = knockback.getExtraHorizontal();
+    PaperConfig.knockbackExtraVertical = knockback.getExtraVertical();
   }
 }

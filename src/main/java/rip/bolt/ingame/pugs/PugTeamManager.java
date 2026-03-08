@@ -7,11 +7,10 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.stream.Collectors;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 import rip.bolt.ingame.api.definitions.BoltMatch;
 import rip.bolt.ingame.api.definitions.Participation;
 import rip.bolt.ingame.api.definitions.Team;
@@ -145,10 +144,9 @@ public class PugTeamManager implements Listener {
     }
 
     // Loop players and get current participation or create new
-    List<Participation> participations =
-        mt.getPlayers().stream()
-            .map(player -> getOrCreate(mt.getBoltTeam(), player))
-            .collect(Collectors.toList());
+    List<Participation> participations = mt.getPlayers().stream()
+        .map(player -> getOrCreate(mt.getBoltTeam(), player))
+        .toList();
 
     // Clear team participation list and populate with new
     mt.getBoltTeam().getParticipations().clear();
@@ -164,14 +162,10 @@ public class PugTeamManager implements Listener {
 
   @EventHandler(priority = EventPriority.NORMAL)
   public void onBoltMatchResponse(BoltMatchResponseEvent event) {
-    event
-        .getResponseMatch()
-        .getTeams()
-        .forEach(
-            team -> {
-              ManagedTeam mt = getTeam(team.getId());
-              if (mt != null) mt.setBoltTeam(team);
-            });
+    event.getResponseMatch().getTeams().forEach(team -> {
+      ManagedTeam mt = getTeam(team.getId());
+      if (mt != null) mt.setBoltTeam(team);
+    });
 
     syncMatchTeams();
   }

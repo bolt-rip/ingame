@@ -1,7 +1,7 @@
 package rip.bolt.ingame.api.definitions;
 
+import com.destroystokyo.paper.PaperConfig;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import org.github.paperspigot.PaperSpigotConfig;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class BoltKnockback {
@@ -96,15 +96,12 @@ public class BoltKnockback {
   }
 
   public static BoltKnockback defaults() {
-    double friction = PaperSpigotConfig.config.getDouble("paper.knockback.friction", 2.0D);
-    double horizontal = PaperSpigotConfig.config.getDouble("paper.knockback.horizontal", 0.4D);
-    double vertical = PaperSpigotConfig.config.getDouble("paper.knockback.vertical", 0.4D);
-    double verticalLimit =
-        PaperSpigotConfig.config.getDouble("paper.knockback.vertical-limit", 0.4D);
-    double extraHorizontal =
-        PaperSpigotConfig.config.getDouble("paper.knockback.extra-horizontal", 0.5D);
-    double extraVertical =
-        PaperSpigotConfig.config.getDouble("paper.knockback.extra-vertical", 0.1D);
+    double friction = PaperConfig.config.getDouble("paper.knockback.friction", 2.0D);
+    double horizontal = PaperConfig.config.getDouble("paper.knockback.horizontal", 0.4D);
+    double vertical = PaperConfig.config.getDouble("paper.knockback.vertical", 0.4D);
+    double verticalLimit = PaperConfig.config.getDouble("paper.knockback.vertical-limit", 0.4D);
+    double extraHorizontal = PaperConfig.config.getDouble("paper.knockback.extra-horizontal", 0.5D);
+    double extraVertical = PaperConfig.config.getDouble("paper.knockback.extra-vertical", 0.1D);
 
     return new BoltKnockback(
         friction, horizontal, vertical, verticalLimit, extraHorizontal, extraVertical);

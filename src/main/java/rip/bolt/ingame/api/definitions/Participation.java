@@ -1,7 +1,7 @@
 package rip.bolt.ingame.api.definitions;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 /** The participation of a user in a team */
 @JsonIgnoreProperties(ignoreUnknown = true)

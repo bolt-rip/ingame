@@ -8,7 +8,7 @@ import java.util.Collections;
 import java.util.stream.Collectors;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 import rip.bolt.ingame.api.definitions.pug.PugCommand;
 import rip.bolt.ingame.api.definitions.pug.PugTeam;
 import rip.bolt.ingame.managers.GameManager;
@@ -53,10 +53,9 @@ public class PugCommands {
       return;
     }
 
-    commandList =
-        pugNode.children().stream()
-            .flatMap(n -> n.component().aliases().stream())
-            .collect(Collectors.toList());
+    commandList = pugNode.children().stream()
+        .flatMap(n -> n.component().aliases().stream())
+        .collect(Collectors.toList());
   }
 
   private PugManager needPugManager() {
@@ -85,7 +84,8 @@ public class PugCommands {
     if (team == null) {
       final TeamMatchModule tmm = match.getModule(TeamMatchModule.class);
       if (tmm != null)
-        team = tmm.getEmptiestJoinableTeam(null, JoinRequest.fromPlayer(player, null)).getTeam();
+        team = tmm.getEmptiestJoinableTeam(null, JoinRequest.fromPlayer(player, null))
+            .getTeam();
     }
 
     PugTeam pugTeam = pm.findPugTeam(team);

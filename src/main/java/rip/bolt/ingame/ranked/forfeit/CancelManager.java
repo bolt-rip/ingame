@@ -11,8 +11,8 @@ import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
-import javax.annotation.Nullable;
 import net.kyori.adventure.text.format.NamedTextColor;
+import org.jspecify.annotations.Nullable;
 import rip.bolt.ingame.config.AppData;
 import rip.bolt.ingame.utils.CancelReason;
 import rip.bolt.ingame.utils.Messages;
@@ -57,9 +57,8 @@ public class CancelManager {
   public void startCountdown(Match match, List<UUID> players, @Nullable Duration duration) {
     clearCountdown();
 
-    countdown =
-        new LeaverCountdown(
-            this, match, players, duration == null ? CANCEL_ABSENCE_LENGTH : duration);
+    countdown = new LeaverCountdown(
+        this, match, players, duration == null ? CANCEL_ABSENCE_LENGTH : duration);
   }
 
   private void startCountdownIfRequired(Match match) {
@@ -69,19 +68,16 @@ public class CancelManager {
     // Check if countdown required for any participants
     PlayerWatcher.MatchParticipation participation =
         playerWatcher.getParticipations().values().stream()
-            .filter(
-                matchParticipation ->
-                    match.getPlayer(matchParticipation.getUUID()) == null
-                        && matchParticipation.hasJoined())
+            .filter(matchParticipation -> match.getPlayer(matchParticipation.getUUID()) == null
+                && matchParticipation.hasJoined())
             .max(Comparator.comparing(PlayerWatcher.MatchParticipation::currentAbsentDuration))
             .orElse(null);
 
     if (participation == null || (countdown != null && countdown.contains(participation.getUUID())))
       return;
 
-    Duration duration =
-        Ordering.natural()
-            .max(CANCEL_ABSENCE_LENGTH.minus(participation.absentDuration()), Duration.ZERO);
+    Duration duration = Ordering.natural()
+        .max(CANCEL_ABSENCE_LENGTH.minus(participation.absentDuration()), Duration.ZERO);
 
     // Start countdown with single player
     startCountdown(
@@ -112,17 +108,15 @@ public class CancelManager {
       this.players = players;
       this.duration = (duration.toMillis() + 999) / 1000;
 
-      scheduledFuture =
-          match
-              .getExecutor(MatchScope.RUNNING)
-              .scheduleAtFixedRate(this::tick, 0, 1, TimeUnit.SECONDS);
+      scheduledFuture = match
+          .getExecutor(MatchScope.RUNNING)
+          .scheduleAtFixedRate(this::tick, 0, 1, TimeUnit.SECONDS);
     }
 
     private void broadcast() {
-      match.sendWarning(
-          text("Cancelling match in ")
-              .append(text(duration, NamedTextColor.YELLOW))
-              .append(text((duration == 1) ? " second" : " seconds")));
+      match.sendWarning(text("Cancelling match in ")
+          .append(text(duration, NamedTextColor.YELLOW))
+          .append(text((duration == 1) ? " second" : " seconds")));
     }
 
     private void tick() {
