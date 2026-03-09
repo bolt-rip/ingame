@@ -26,6 +26,7 @@ dependencies {
     api("org.java-websocket:Java-WebSocket:1.5.1")
     api("org.jspecify:jspecify:1.0.0")
 
+    compileOnly("net.kyori:adventure-api:4.26.1")
     compileOnly("app.ashcon:sportpaper:1.8.8-R0.1-SNAPSHOT")
     compileOnly("tc.oc.pgm:core:0.16-SNAPSHOT")
     compileOnly("dev.pgm:events:1.0.0-SNAPSHOT")
