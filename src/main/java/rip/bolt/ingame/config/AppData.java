@@ -36,8 +36,13 @@ public class AppData {
   }
 
   public static class Socket {
+
     public static String getUrl() {
       return Ingame.get().getConfig().getString("socket.url");
+    }
+
+    public static String getKey() {
+      return Ingame.get().getConfig().getString("socket.key");
     }
   }
 

@@ -119,7 +119,7 @@ public class PugManager extends GameManager {
     if (boltMatch.getLobbyId() == null) return;
 
     boltWebSocket = new BoltWebSocket(URI.create(wsUrl + "/pugs/" + boltMatch.getLobbyId()), this);
-    boltWebSocket.addHeader("Authorization", "Bearer " + AppData.API.getKey());
+    boltWebSocket.addHeader("Authorization", "Bearer " + AppData.Socket.getKey());
     boltWebSocket.connect();
 
     System.out.println("[Ingame] Connected to " + boltMatch.getLobbyId());

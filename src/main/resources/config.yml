@@ -46,3 +46,4 @@ api:
 # web socket connection details
 socket:
   url: "ws://localhost:3000"
+  key: authorisation-key
