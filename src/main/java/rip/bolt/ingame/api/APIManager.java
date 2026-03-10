@@ -37,11 +37,12 @@ public class APIManager {
     httpClient.addInterceptor(chain -> chain.proceed(chain
         .request()
         .newBuilder()
-        .header("Authorization", "Bearer " + AppData.API.getKey())
+        .header("Authorization", "Bearer " + key)
+        .addHeader("x-api-key", key)
         .build()));
 
     Retrofit retrofit = new Retrofit.Builder()
-        .baseUrl(AppData.API.getURL())
+        .baseUrl(url)
         .addConverterFactory(JacksonConverterFactory.create(objectMapper))
         .addCallAdapterFactory(new DefaultCallAdapterFactory<>())
         .client(httpClient.build())
