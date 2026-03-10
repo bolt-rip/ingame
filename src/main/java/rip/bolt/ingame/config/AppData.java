@@ -7,6 +7,12 @@ import rip.bolt.ingame.Ingame;
 
 public class AppData {
 
+  public static String getServerName() {
+    return Ingame.get()
+        .getConfig()
+        .getString("server-name", String.valueOf(System.getenv("SERVER_NAME")));
+  }
+
   public static class API {
 
     public static String getURL() {
@@ -16,11 +22,20 @@ public class AppData {
     public static String getKey() {
       return Ingame.get().getConfig().getString("api.key");
     }
+  }
 
-    public static String getServerName() {
-      return Ingame.get()
-          .getConfig()
-          .getString("server-name", String.valueOf(System.getenv("SERVER_NAME")));
+  public static class QueueAPI {
+
+    public static boolean isEnabled() {
+      return Ingame.get().getConfig().getBoolean("queue.enabled", false);
+    }
+
+    public static String getURL() {
+      return Ingame.get().getConfig().getString("queue.url");
+    }
+
+    public static String getKey() {
+      return Ingame.get().getConfig().getString("queue.key");
     }
   }
 

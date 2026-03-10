@@ -16,36 +16,40 @@ public class APIManager {
 
   private final String serverId;
 
-  public final APIService apiService;
   public final ObjectMapper objectMapper;
 
+  public final APIService apiService;
+  public final QueueAPIService queueAPIService;
+
   public APIManager() {
-    serverId = AppData.API.getServerName();
+    serverId = AppData.getServerName();
     objectMapper = new ObjectMapper().registerModule(new DateModule());
 
     ObjectMapper objectMapper = new ObjectMapper().registerModule(new DateModule());
     objectMapper.enable(MapperFeature.ACCEPT_CASE_INSENSITIVE_ENUMS);
     objectMapper.enable(DeserializationFeature.READ_UNKNOWN_ENUM_VALUES_USING_DEFAULT_VALUE);
 
+    apiService = createService(APIService.class, AppData.API.getURL(), AppData.API.getKey());
+    queueAPIService =
+        createService(QueueAPIService.class, AppData.QueueAPI.getURL(), AppData.QueueAPI.getKey());
+  }
+
+  private <T> T createService(Class<T> clazz, String url, String key) {
     OkHttpClient.Builder httpClient = new OkHttpClient.Builder();
-    httpClient.addInterceptor(
-        chain ->
-            chain.proceed(
-                chain
-                    .request()
-                    .newBuilder()
-                    .header("Authorization", "Bearer " + AppData.API.getKey())
-                    .build()));
+    httpClient.addInterceptor(chain -> chain.proceed(chain
+        .request()
+        .newBuilder()
+        .header("Authorization", "Bearer " + AppData.API.getKey())
+        .build()));
 
-    Retrofit retrofit =
-        new Retrofit.Builder()
-            .baseUrl(AppData.API.getURL())
-            .addConverterFactory(JacksonConverterFactory.create(objectMapper))
-            .addCallAdapterFactory(new DefaultCallAdapterFactory<>())
-            .client(httpClient.build())
-            .build();
+    Retrofit retrofit = new Retrofit.Builder()
+        .baseUrl(AppData.API.getURL())
+        .addConverterFactory(JacksonConverterFactory.create(objectMapper))
+        .addCallAdapterFactory(new DefaultCallAdapterFactory<>())
+        .client(httpClient.build())
+        .build();
 
-    apiService = retrofit.create(APIService.class);
+    return retrofit.create(clazz);
   }
 
   public BoltMatch fetchMatchData() {
@@ -57,6 +61,10 @@ public class APIManager {
   }
 
   public BoltResponse postPlayerRequeue(UUID uuid) {
+    if (AppData.QueueAPI.isEnabled()) {
+      return queueAPIService.postPlayerRequeue(uuid.toString());
+    }
+
     return apiService.postPlayerRequeue(uuid.toString());
   }
 
@@ -76,14 +84,13 @@ public class APIManager {
       }
 
       i += 1;
-      System.out.println(
-          "[Ingame] Failed to report match end, retrying in "
-              + (i * 5)
-              + "s ("
-              + i
-              + "/"
-              + retries
-              + ")");
+      System.out.println("[Ingame] Failed to report match end, retrying in "
+          + (i * 5)
+          + "s ("
+          + i
+          + "/"
+          + retries
+          + ")");
       try {
         Thread.sleep(i * 5000L);
       } catch (InterruptedException ignore) {

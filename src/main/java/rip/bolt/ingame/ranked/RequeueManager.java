@@ -65,6 +65,6 @@ public class RequeueManager implements Listener {
       return;
     }
 
-    player.sendMessage(text(response.getMessage(), NamedTextColor.RED));
+    player.sendMessage(text(response.getReason(), NamedTextColor.RED));
   }
 }

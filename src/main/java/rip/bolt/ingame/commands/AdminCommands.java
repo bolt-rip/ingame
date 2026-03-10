@@ -64,10 +64,9 @@ public class AdminCommands {
     matchManager.manualReset();
 
     Audience.get(sender)
-        .sendMessage(
-            text(
-                "Currently stored Bolt match " + match.getId() + " has been removed.",
-                NamedTextColor.GRAY));
+        .sendMessage(text(
+            "Currently stored Bolt match " + match.getId() + " has been removed.",
+            NamedTextColor.GRAY));
   }
 
   @Command("match")
@@ -89,34 +88,28 @@ public class AdminCommands {
   public void status(MatchManager matchManager, CommandSender sender) throws CommandException {
     GameManager gameTypeManager = matchManager.getGameManager();
     String gameManager = gameTypeManager.getClass().getSimpleName();
-    TextComponent managerType =
-        text("Game manager is ", NamedTextColor.GRAY)
-            .append(text(gameManager, NamedTextColor.AQUA));
+    TextComponent managerType = text("Game manager is ", NamedTextColor.GRAY)
+        .append(text(gameManager, NamedTextColor.AQUA));
 
     boolean polling = matchManager.getPoll().isSyncTaskRunning();
-    TextComponent apiPolling =
-        text("API polling is ", NamedTextColor.GRAY)
-            .append(
-                text(
-                    polling ? "running" : "not running",
-                    polling ? NamedTextColor.GREEN : NamedTextColor.RED));
+    TextComponent apiPolling = text("API polling is ", NamedTextColor.GRAY)
+        .append(text(
+            polling ? "running" : "not running",
+            polling ? NamedTextColor.GREEN : NamedTextColor.RED));
 
     boolean websocket = false;
     if (gameTypeManager instanceof PugManager) {
       websocket = ((PugManager) gameTypeManager).getBoltWebSocket().isOpen();
     }
 
-    TextComponent websocketConnected =
-        text("Websocket is ", NamedTextColor.GRAY)
-            .append(
-                text(
-                    websocket ? "connected" : "not connected",
-                    websocket ? NamedTextColor.GREEN : NamedTextColor.RED));
+    TextComponent websocketConnected = text("Websocket is ", NamedTextColor.GRAY)
+        .append(text(
+            websocket ? "connected" : "not connected",
+            websocket ? NamedTextColor.GREEN : NamedTextColor.RED));
 
     Audience.get(sender)
-        .sendMessage(
-            managerType.append(
-                newline().append(apiPolling.append(newline().append(websocketConnected)))));
+        .sendMessage(managerType.append(
+            newline().append(apiPolling.append(newline().append(websocketConnected)))));
   }
 
   @Command("cancel")
@@ -135,10 +128,9 @@ public class AdminCommands {
     matchManager.cancel(match, CancelReason.MANUAL_CANCEL);
 
     Audience.get(sender)
-        .sendMessage(
-            text(
-                "Match " + boltMatch.getId() + " has been reported as cancelled.",
-                NamedTextColor.GRAY));
+        .sendMessage(text(
+            "Match " + boltMatch.getId() + " has been reported as cancelled.",
+            NamedTextColor.GRAY));
     match.sendMessage(text("Match has been cancelled by an admin.", NamedTextColor.RED));
   }
 

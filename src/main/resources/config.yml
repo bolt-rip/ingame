@@ -47,3 +47,9 @@ api:
 socket:
   url: "ws://localhost:3000"
   key: authorisation-key
+
+# queue api connection details
+queue:
+  enabled: false
+  url: https://localhost:3000/v1/queue
+  key: authorisation-key

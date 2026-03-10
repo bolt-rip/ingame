@@ -157,7 +157,7 @@ public class PugCommand {
   public static PugCommand setMatchStatus(BoltMatch match) {
     return new Builder(SET_MATCH_STATUS)
         .set("match_id", match.getId())
-        .set("server", AppData.API.getServerName())
+        .set("server", AppData.getServerName())
         .set("status", match.getStatus().name())
         .build();
   }

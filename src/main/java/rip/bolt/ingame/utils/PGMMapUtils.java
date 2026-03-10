@@ -22,21 +22,16 @@ public class PGMMapUtils {
   }
 
   public static void setTeamColors(BoltMatch boltMatch) {
-    Map<Integer, Team> pgmTeams =
-        EventsPlugin.get().getTeamManager().teams().stream()
-            .map(tournamentTeam -> (BoltTournamentTeam) tournamentTeam)
-            .collect(
-                Collectors.toMap(BoltTournamentTeam::getTeamId, BoltTournamentTeam::getPgmTeam));
+    Map<Integer, Team> pgmTeams = EventsPlugin.get().getTeamManager().teams().stream()
+        .map(tournamentTeam -> (BoltTournamentTeam) tournamentTeam)
+        .collect(Collectors.toMap(BoltTournamentTeam::getTeamId, BoltTournamentTeam::getPgmTeam));
 
-    boltMatch
-        .getTeams()
-        .forEach(
-            team -> {
-              Team pgmTeam = pgmTeams.get(team.getTeamId());
-              if (pgmTeam != null) {
-                team.setColor(
-                    "#" + String.format("%06X", 0xFFFFFF & pgmTeam.getFullColor().asRGB()));
-              }
-            });
+    boltMatch.getTeams().forEach(team -> {
+      Team pgmTeam = pgmTeams.get(team.getTeamId());
+      if (pgmTeam != null) {
+        team.setColor(
+            "#" + String.format("%06X", 0xFFFFFF & pgmTeam.getFullColor().asRGB()));
+      }
+    });
   }
 }

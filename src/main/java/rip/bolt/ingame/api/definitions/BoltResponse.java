@@ -1,5 +1,6 @@
 package rip.bolt.ingame.api.definitions;
 
+import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 /** A response sent by the API used in commands with feedback. */
@@ -7,13 +8,15 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 public class BoltResponse {
 
   private boolean success;
-  private String message;
+
+  @JsonAlias({"reason", "message"})
+  private String reason;
 
   public boolean getSuccess() {
     return success;
   }
 
-  public String getMessage() {
-    return message;
+  public String getReason() {
+    return reason;
   }
 }
