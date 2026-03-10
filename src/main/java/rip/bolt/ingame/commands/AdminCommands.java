@@ -142,7 +142,7 @@ public class AdminCommands {
       @Argument("player") MatchPlayer target,
       @Argument("reason") @Greedy String reason) {
     Audience.get(sender)
-        .sendMessage(text(target.getName() + " has been queue banned.", NamedTextColor.GRAY));
+        .sendMessage(text(target.getNameLegacy() + " has been queue banned.", NamedTextColor.GRAY));
 
     Punishment punishment = new Punishment(target.getBukkit().getUniqueId(), sender, reason);
 

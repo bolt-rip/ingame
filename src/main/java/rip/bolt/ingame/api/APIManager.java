@@ -24,8 +24,6 @@ public class APIManager {
   public APIManager() {
     serverId = AppData.getServerName();
     objectMapper = new ObjectMapper().registerModule(new DateModule());
-
-    ObjectMapper objectMapper = new ObjectMapper().registerModule(new DateModule());
     objectMapper.enable(MapperFeature.ACCEPT_CASE_INSENSITIVE_ENUMS);
     objectMapper.enable(DeserializationFeature.READ_UNKNOWN_ENUM_VALUES_USING_DEFAULT_VALUE);
 
