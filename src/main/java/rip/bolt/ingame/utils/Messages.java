@@ -15,6 +15,11 @@ import tc.oc.pgm.api.player.MatchPlayer;
 
 public class Messages {
 
+  public static Component rankedJoin() {
+    return text(" ⚠ ", NamedTextColor.YELLOW)
+        .append(text("You must queue to join a Ranked match!", NamedTextColor.RED));
+  }
+
   public static Component requeue() {
     return text("You can queue for another match using ", NamedTextColor.GREEN)
         .append(command(Style.style(NamedTextColor.YELLOW, TextDecoration.UNDERLINED), "requeue"));
@@ -23,11 +28,9 @@ public class Messages {
   public static Component forfeit() {
     return text("A teammate left the match for too long.", NamedTextColor.GRAY)
         .append(newline())
-        .append(
-            text("You can vote to give up using ", NamedTextColor.GREEN)
-                .append(
-                    command(
-                        Style.style(NamedTextColor.YELLOW, TextDecoration.UNDERLINED), "forfeit")));
+        .append(text("You can vote to give up using ", NamedTextColor.GREEN)
+            .append(
+                command(Style.style(NamedTextColor.YELLOW, TextDecoration.UNDERLINED), "forfeit")));
   }
 
   public static Component matchStartCancelled() {
