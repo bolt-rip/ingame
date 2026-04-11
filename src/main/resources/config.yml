@@ -51,5 +51,5 @@ socket:
 # queue api connection details
 queue:
   enabled: false
-  url: https://localhost:3000/v1/queue
+  url: https://localhost:3000/v1/queue/
   key: authorisation-key
