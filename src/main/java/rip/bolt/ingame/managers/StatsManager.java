@@ -40,6 +40,9 @@ public class StatsManager {
     if (statsModule.hasNoStats(uuid)) return;
 
     PlayerStats stats = statsModule.getGlobalPlayerStat(uuid);
+
+    participation.setDuration(stats.getTimePlayed().toMillis());
+
     participation.setStats(new Stats(
         stats.getKills(),
         stats.getDeaths(),
