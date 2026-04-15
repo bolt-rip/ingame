@@ -10,6 +10,7 @@ public class Participation {
   private User user;
   private Stats stats;
   private Integer deafenPenalty;
+  private Long duration;
 
   public Participation() {}
 
@@ -39,5 +40,13 @@ public class Participation {
 
   public void setDeafenPenalty(Integer deafenPenalty) {
     this.deafenPenalty = deafenPenalty;
+  }
+
+  public @Nullable Long getDuration() {
+    return duration;
+  }
+
+  public void setDuration(Long duration) {
+    this.duration = duration;
   }
 }
