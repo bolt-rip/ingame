@@ -22,6 +22,7 @@ import org.bukkit.plugin.Plugin;
 import rip.bolt.ingame.Ingame;
 import rip.bolt.ingame.api.definitions.BoltMatch;
 import rip.bolt.ingame.api.definitions.MatchStatus;
+import rip.bolt.ingame.api.definitions.Series;
 import rip.bolt.ingame.api.definitions.Team;
 import rip.bolt.ingame.config.AppData;
 import rip.bolt.ingame.events.BoltMatchResponseEvent;
@@ -30,6 +31,7 @@ import rip.bolt.ingame.pugs.ManagedTeam;
 import rip.bolt.ingame.setup.MatchSearch;
 import rip.bolt.ingame.utils.BattlepassUtils;
 import rip.bolt.ingame.utils.CancelReason;
+import rip.bolt.ingame.utils.Messages;
 import rip.bolt.ingame.utils.PGMMapUtils;
 import tc.oc.pgm.api.PGM;
 import tc.oc.pgm.api.match.Match;
@@ -38,8 +40,10 @@ import tc.oc.pgm.api.match.event.MatchFinishEvent;
 import tc.oc.pgm.api.match.event.MatchLoadEvent;
 import tc.oc.pgm.api.match.event.MatchStartEvent;
 import tc.oc.pgm.api.party.Competitor;
+import tc.oc.pgm.api.player.MatchPlayer;
 import tc.oc.pgm.events.CountdownCancelEvent;
 import tc.oc.pgm.events.CountdownStartEvent;
+import tc.oc.pgm.events.PlayerJoinResultEvent;
 import tc.oc.pgm.restart.RestartCountdown;
 import tc.oc.pgm.result.TieVictoryCondition;
 import tc.oc.pgm.util.platform.Platform;
@@ -313,5 +317,17 @@ public class MatchManager implements Listener {
       setupMatch(deferredMatch);
       deferredMatch = null;
     }
+  }
+
+  @EventHandler
+  public void onJoin(PlayerJoinResultEvent event) {
+    BoltMatch match = this.getMatch();
+    if (match != null && match.getSeries().getService() != Series.Service.RANKED) return;
+
+    event.setCancelled(true);
+
+    MatchPlayer player = event.getPlayer();
+    player.sendMessage(Messages.rankedJoin());
+    player.getBukkit().performCommand("queues");
   }
 }
