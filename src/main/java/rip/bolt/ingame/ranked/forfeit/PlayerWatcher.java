@@ -112,7 +112,7 @@ public class PlayerWatcher implements Listener {
     if (matchManager.getCancelReason() != null) return;
 
     // Duration less than max absent period no bans to check
-    if (event.getMatch().getDuration().compareTo(ABSENT_MAX) > 0) return;
+    if (event.getMatch().getDuration().compareTo(ABSENT_MAX) < 0) return;
 
     if (playersAbandoned(getParticipationsBelowDuration(ABSENT_MAX))) {
       event.getMatch().sendMessage(Messages.participationBan());
