@@ -15,7 +15,7 @@ import tc.oc.pgm.lib.org.incendo.cloud.annotations.CommandDescription;
 
 public class RequeueCommands {
 
-  @Command("requeue")
+  @Command("requeue|rq")
   @CommandDescription("Requeue for another ranked match")
   public void requeue(MatchManager matchManager, MatchPlayer sender, Match match)
       throws CommandException {
