@@ -50,6 +50,7 @@ public class RankManager implements Listener {
 
   private static final Component RANK_PREFIX = text("Bolt rank: ");
   private static final Component PLACEMENT_MATCHES = text("Placement matches: ");
+  private static final Component RECENT_MATCHES = text("Recent matches: ");
   private static final Component ARROW = text("➔ ", NamedTextColor.WHITE);
   private static final JoinConfiguration MATCH_SEPARATOR =
       JoinConfiguration.separator(text("-", NamedTextColor.DARK_GRAY));
@@ -120,7 +121,8 @@ public class RankManager implements Listener {
 
       while ((results.size() % 15) != 0) results.add(MatchResult.UNKNOWN);
 
-      player.sendMessage(PLACEMENT_MATCHES);
+      // If the player has no old rating, show placement matches instead of recent matches
+      player.sendMessage(old.getRanking().getRating() == null ? PLACEMENT_MATCHES : RECENT_MATCHES);
       for (int i = 0; i < results.size(); )
         player.sendMessage(Component.join(MATCH_SEPARATOR, results.subList(i, i += 15)));
     }
