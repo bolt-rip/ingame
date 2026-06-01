@@ -77,6 +77,8 @@ public class MatchManager implements Listener {
     battlepassManager = BattlepassUtils.createManager();
 
     Bukkit.getPluginManager().registerEvents(this, plugin);
+    Bukkit.getPluginManager().registerEvents(new KickMessageManager(this), plugin);
+
     if (Platform.VARIANT == Supports.Variant.SPORTPAPER) {
       Bukkit.getPluginManager().registerEvents(new KnockbackManager(), plugin);
     }
