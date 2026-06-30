@@ -57,6 +57,21 @@ public class Messages {
         .append(link(Style.style(NamedTextColor.BLUE, TextDecoration.UNDERLINED), url));
   }
 
+  public static Component separatorLine() {
+    return text(
+        "                                                                           ",
+        Style.style(NamedTextColor.GRAY, TextDecoration.STRIKETHROUGH));
+  }
+
+  public static Component withSeparators(Component content) {
+    return text("")
+        .append(separatorLine())
+        .append(newline())
+        .append(content)
+        .append(newline())
+        .append(separatorLine());
+  }
+
   public static Component profileLink(MatchPlayer player) {
     String url = AppData.Web.getProfileLink().replace("{name}", player.getNameLegacy());
 

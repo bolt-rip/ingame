@@ -13,6 +13,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import rip.bolt.ingame.Ingame;
 import rip.bolt.ingame.ranked.forfeit.PlayerWatcher;
+import rip.bolt.ingame.utils.Messages;
 import tc.oc.pgm.api.event.NameDecorationChangeEvent;
 import tc.oc.pgm.api.integration.Integration;
 import tc.oc.pgm.api.match.MatchScope;
@@ -47,8 +48,8 @@ public class NickManager implements Listener {
         .getMatch()
         .getExecutor(MatchScope.LOADED)
         .schedule(
-            () -> player.sendMessage(text(
-                "Your nick was removed as you are playing in this match.", NamedTextColor.RED)),
+            () -> player.sendMessage(Messages.withSeparators(text(
+                "Your nick was removed as you are playing in this match.", NamedTextColor.RED))),
             2,
             TimeUnit.SECONDS);
   }

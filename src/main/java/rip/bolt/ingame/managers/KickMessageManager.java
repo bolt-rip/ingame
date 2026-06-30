@@ -27,6 +27,7 @@ public class KickMessageManager implements Listener {
     if (match == null || match.getStatus().isFinished() || match.getTeams() == null) return;
     if (match.getParticipation(event.getPlayer().getUniqueId()) == null) return;
 
-    Audience.get(event.getPlayer()).sendMessage(Messages.rejoinServer(AppData.getServerName()));
+    Audience.get(event.getPlayer())
+        .sendMessage(Messages.withSeparators(Messages.rejoinServer(AppData.getServerName())));
   }
 }
