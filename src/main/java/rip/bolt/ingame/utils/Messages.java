@@ -72,6 +72,11 @@ public class Messages {
         .append(separatorLine());
   }
 
+  public static Component nickRemoved() {
+    return withSeparators(
+        text("Your nick was removed as you are playing in this match.", NamedTextColor.RED));
+  }
+
   public static Component profileLink(MatchPlayer player) {
     String url = AppData.Web.getProfileLink().replace("{name}", player.getNameLegacy());
 

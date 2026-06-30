@@ -5,6 +5,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerKickEvent;
+import org.bukkit.plugin.Plugin;
 import rip.bolt.ingame.api.definitions.BoltMatch;
 import rip.bolt.ingame.config.AppData;
 import rip.bolt.ingame.utils.Messages;
@@ -17,8 +18,9 @@ public class KickMessageManager implements Listener {
 
   private final MatchManager matchManager;
 
-  public KickMessageManager(MatchManager matchManager) {
+  public KickMessageManager(MatchManager matchManager, Plugin plugin) {
     this.matchManager = matchManager;
+    plugin.getServer().getPluginManager().registerEvents(this, plugin);
   }
 
   @EventHandler(priority = EventPriority.NORMAL)
