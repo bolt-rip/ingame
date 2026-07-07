@@ -32,6 +32,7 @@ import rip.bolt.ingame.setup.MatchSearch;
 import rip.bolt.ingame.utils.BattlepassUtils;
 import rip.bolt.ingame.utils.CancelReason;
 import rip.bolt.ingame.utils.Messages;
+import rip.bolt.ingame.utils.NickUtils;
 import rip.bolt.ingame.utils.PGMMapUtils;
 import tc.oc.pgm.api.PGM;
 import tc.oc.pgm.api.match.Match;
@@ -52,8 +53,6 @@ import tc.oc.pgm.util.platform.Supports;
 public class MatchManager implements Listener {
 
   private final StatsManager statsManager;
-  private final TabManager tabManager;
-  private final BattlepassManager battlepassManager;
 
   private final MatchSearch poll;
 
@@ -73,10 +72,14 @@ public class MatchManager implements Listener {
   public MatchManager(Plugin plugin) {
     gameManager = new GameManager.NoopManager(this);
     statsManager = new StatsManager();
-    tabManager = new TabManager(plugin);
-    battlepassManager = BattlepassUtils.createManager();
+    new TabManager(plugin);
+    BattlepassUtils.createManager();
+
+    NickUtils.createManager(plugin);
+    new KickMessageManager(this, plugin);
 
     Bukkit.getPluginManager().registerEvents(this, plugin);
+
     if (Platform.VARIANT == Supports.Variant.SPORTPAPER) {
       Bukkit.getPluginManager().registerEvents(new KnockbackManager(), plugin);
     }

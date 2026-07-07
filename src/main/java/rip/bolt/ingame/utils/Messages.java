@@ -33,6 +33,12 @@ public class Messages {
                 command(Style.style(NamedTextColor.YELLOW, TextDecoration.UNDERLINED), "forfeit")));
   }
 
+  public static Component rejoinServer(String serverName) {
+    return text("You can rejoin the match by running ", NamedTextColor.GREEN)
+        .append(command(
+            Style.style(NamedTextColor.YELLOW, TextDecoration.UNDERLINED), "server", serverName));
+  }
+
   public static Component matchStartCancelled() {
     return text("Match could not be started due to lack of players.", NamedTextColor.RED)
         .append(newline())
@@ -49,6 +55,26 @@ public class Messages {
 
     return text("Match link: ", NamedTextColor.WHITE)
         .append(link(Style.style(NamedTextColor.BLUE, TextDecoration.UNDERLINED), url));
+  }
+
+  public static Component separatorLine() {
+    return text(
+        "                                                                           ",
+        Style.style(NamedTextColor.GRAY, TextDecoration.STRIKETHROUGH));
+  }
+
+  public static Component withSeparators(Component content) {
+    return text("")
+        .append(separatorLine())
+        .append(newline())
+        .append(content)
+        .append(newline())
+        .append(separatorLine());
+  }
+
+  public static Component nickRemoved() {
+    return withSeparators(
+        text("Your nick was removed as you are playing in this match.", NamedTextColor.RED));
   }
 
   public static Component profileLink(MatchPlayer player) {

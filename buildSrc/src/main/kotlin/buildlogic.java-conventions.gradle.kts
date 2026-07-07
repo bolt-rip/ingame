@@ -33,6 +33,7 @@ dependencies {
     compileOnly("org.incendo:cloud-annotations:2.0.0")
     compileOnly("org.jetbrains:annotations:26.0.2-1")
     compileOnly("com.google.guava:guava:17.0")
+    compileOnly("dev.pgm.community:core:0.2-SNAPSHOT")
 }
 
 group = "rip.bolt"

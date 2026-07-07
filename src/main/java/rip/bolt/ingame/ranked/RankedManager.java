@@ -52,12 +52,14 @@ public class RankedManager extends GameManager {
   public void setup(BoltMatch match) {
     super.setup(match);
     EventsPlugin.get().getTeamManager().clear();
-    for (TournamentTeam team : match.getTeams()) EventsPlugin.get().getTeamManager().addTeam(team);
-    playerWatcher.addPlayers(
-        match.getTeams().stream()
-            .flatMap(team -> team.getPlayers().stream())
-            .map(TournamentPlayer::getUUID)
-            .collect(Collectors.toList()));
+    for (TournamentTeam team : match.getTeams()) {
+      EventsPlugin.get().getTeamManager().addTeam(team);
+    }
+
+    playerWatcher.addPlayers(match.getTeams().stream()
+        .flatMap(team -> team.getPlayers().stream())
+        .map(TournamentPlayer::getUUID)
+        .collect(Collectors.toList()));
   }
 
   @Override
@@ -96,15 +98,9 @@ public class RankedManager extends GameManager {
     if (event.getOldStatus() == MatchStatus.CREATED
         && event.getNewStatus().equals(MatchStatus.LOADED)) {
       TournamentTeamManager teamManager = EventsPlugin.get().getTeamManager();
-      event
-          .getBoltMatch()
-          .getTeams()
-          .forEach(
-              boltTeam ->
-                  teamManager
-                      .fromTournamentTeam(boltTeam)
-                      .ifPresent(
-                          team -> team.setMaxSize(boltTeam.getParticipations().size(), null)));
+      event.getBoltMatch().getTeams().forEach(boltTeam -> teamManager
+          .fromTournamentTeam(boltTeam)
+          .ifPresent(team -> team.setMaxSize(boltTeam.getParticipations().size(), null)));
     }
   }
 

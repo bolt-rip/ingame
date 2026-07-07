@@ -4,4 +4,4 @@ version: ${version} (git-${commitHash})
 api-version: ${apiVersion}
 website: ${url}
 depend: [PGM, Events]
-softdepend: [Dispense]
+softdepend: [Dispense, Community]
