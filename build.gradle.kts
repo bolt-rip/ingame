@@ -7,9 +7,6 @@ plugins {
 }
 
 tasks.named<ShadowJar>("shadowJar") {
-    manifest {
-        attributes["paperweight-mappings-namespace"] = "mojang"
-    }
     archiveFileName = "Ingame.jar"
     archiveClassifier.set("")
 
@@ -51,15 +48,17 @@ tasks {
         val version = project.version.toString()
         val commitHash = project.latestCommitHash()
 
+        inputs.property("commitHash", commitHash)
+
         filesMatching(listOf("plugin.yml")) {
             expand(
                 mapOf(
                     "name" to name,
                     "description" to description,
-                    "apiVersion" to "1.21.11",
+                    "apiVersion" to "26.2",
                     "mainClass" to "rip.bolt.ingame.Ingame",
                     "version" to version,
-                    "commitHash" to commitHash,
+                    "commitHash" to commitHash.get(),
                     "url" to "https://github.com/bolt-rip/"
                 )
             )

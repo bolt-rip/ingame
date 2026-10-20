@@ -11,6 +11,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.jspecify.annotations.Nullable;
+import rip.bolt.ingame.Ingame;
 import rip.bolt.ingame.api.definitions.BoltMatch;
 import rip.bolt.ingame.api.definitions.Participation;
 import rip.bolt.ingame.api.definitions.Team;
@@ -79,7 +80,7 @@ public class PugTeamManager implements Listener {
     Iterator<Team> boltTeamsIt = match.getTeams().iterator();
     for (PugTeam team : getTeams()) {
       if (!boltTeamsIt.hasNext()) {
-        System.out.println("[Ingame] No more teams are available to assign");
+        Ingame.get().getLogger().warning("No more teams are available to assign");
         break;
       }
 
@@ -90,7 +91,7 @@ public class PugTeamManager implements Listener {
       teamManager.addTeam(mt);
     }
     if (boltTeamsIt.hasNext()) {
-      System.out.println("[Ingame] Leftover match teams were not assigned");
+      Ingame.get().getLogger().warning("Leftover match teams were not assigned");
     }
   }
 

@@ -5,12 +5,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import java.util.stream.Collectors;
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerLoginEvent;
+import org.jetbrains.annotations.Unmodifiable;
+import org.jspecify.annotations.NonNull;
 import rip.bolt.ingame.Ingame;
 import rip.bolt.ingame.api.definitions.Punishment;
 import rip.bolt.ingame.config.AppData;
@@ -152,20 +153,21 @@ public class PlayerWatcher implements Listener {
     return players.values().stream()
         .filter(participation -> !participation.joined)
         .map(matchParticipation -> matchParticipation.uuid)
-        .collect(Collectors.toList());
+        .toList();
   }
 
   public List<UUID> getOfflinePlayers(Match match) {
     return players.keySet().stream()
         .filter(absence -> match.getPlayer(absence) == null)
-        .collect(Collectors.toList());
+        .toList();
   }
 
-  private List<UUID> getParticipationsBelowDuration(Duration minimumDuration) {
+  private @NonNull @Unmodifiable List<UUID> getParticipationsBelowDuration(
+      Duration minimumDuration) {
     return players.values().stream()
         .filter(participation -> participation.absentDuration().compareTo(minimumDuration) >= 0)
         .map(MatchParticipation::getUUID)
-        .collect(Collectors.toList());
+        .toList();
   }
 
   public boolean playersAbandoned(List<UUID> players) {
@@ -178,9 +180,12 @@ public class PlayerWatcher implements Listener {
   }
 
   private void playerAbandoned(UUID player, Integer seriesId) {
-    Bukkit.getScheduler().runTaskAsynchronously(Ingame.get(), () -> Ingame.get()
-        .getApiManager()
-        .postPlayerPunishment(new Punishment(player, seriesId)));
+    Bukkit.getScheduler()
+        .runTaskAsynchronously(
+            Ingame.get(),
+            () -> Ingame.get()
+                .getApiManager()
+                .postPlayerPunishment(new Punishment(player, seriesId)));
   }
 
   public boolean isPlaying(UUID uuid) {

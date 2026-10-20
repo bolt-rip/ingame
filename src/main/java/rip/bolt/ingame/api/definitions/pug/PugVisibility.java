@@ -1,6 +1,6 @@
 package rip.bolt.ingame.api.definitions.pug;
 
-enum PugVisibility {
+public enum PugVisibility {
   PUBLIC,
   UNLISTED,
   PRIVATE

@@ -16,6 +16,7 @@ import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import rip.bolt.ingame.Ingame;
 import rip.bolt.ingame.api.definitions.BoltMatch;
 import rip.bolt.ingame.api.definitions.MatchStatus;
 import rip.bolt.ingame.api.definitions.pug.PugCommand;
@@ -92,8 +93,9 @@ public class PugListener implements Listener {
   @EventHandler
   public void onBoltMatchStateChange(BoltMatchStatusChangeEvent event) {
     BoltMatch match = event.getBoltMatch();
-    System.out.println("[Ingame] <- Match ID " + match.getId());
-    System.out.println("[Ingame] <- Match Status: " + match.getStatus());
+    Ingame.get()
+        .getLogger()
+        .info("<- Match ID " + match.getId() + ", status: " + match.getStatus());
 
     pugManager.write(PugCommand.setMatchStatus(match));
   }

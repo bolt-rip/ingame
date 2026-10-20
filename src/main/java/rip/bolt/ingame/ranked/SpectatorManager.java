@@ -67,7 +67,7 @@ public class SpectatorManager implements Listener {
 
   private void vanish(Player player) {
     permissions.computeIfAbsent(
-        player.getUniqueId(), uuid -> player.addAttachment(Ingame.get(), SPECTATE_VANISH, true));
+        player.getUniqueId(), _ -> player.addAttachment(Ingame.get(), SPECTATE_VANISH, true));
 
     // Set vanish if not already
     if (Integration.isVanished(player)) return;

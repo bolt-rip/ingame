@@ -83,7 +83,7 @@ public class Team implements BoltTournamentTeam {
   @Override
   @JsonIgnore
   public List<? extends TournamentPlayer> getPlayers() {
-    return getParticipations().stream().map(Participation::getUser).collect(Collectors.toList());
+    return getParticipations().stream().map(Participation::getUser).toList();
   }
 
   @Override

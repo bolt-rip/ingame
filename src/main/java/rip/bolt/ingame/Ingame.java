@@ -19,9 +19,12 @@ public class Ingame extends JavaPlugin {
 
   private static Ingame plugin;
 
+  public Ingame() {
+    plugin = this;
+  }
+
   @Override
   public void onEnable() {
-    plugin = this;
     saveDefaultConfig();
 
     taskChainFactory = BukkitTaskChainFactory.create(this);
@@ -35,7 +38,7 @@ public class Ingame extends JavaPlugin {
       throw new RuntimeException(e);
     }
 
-    System.out.println("[Ingame] Ingame is now enabled!");
+    getLogger().info("Ingame is now enabled!");
   }
 
   public static <T> TaskChain<T> newChain() {
@@ -48,8 +51,7 @@ public class Ingame extends JavaPlugin {
 
   @Override
   public void onDisable() {
-    plugin = null;
-    System.out.println("[Ingame] Ingame is now disabled!");
+    getLogger().info("Ingame is now disabled!");
   }
 
   public APIManager getApiManager() {

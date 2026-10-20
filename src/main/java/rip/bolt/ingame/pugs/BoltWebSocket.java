@@ -7,6 +7,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.net.URI;
+import java.util.logging.Level;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
@@ -59,7 +60,7 @@ public class BoltWebSocket extends WebSocketClient {
           .execute();
 
     } catch (JsonProcessingException e) {
-      e.printStackTrace();
+      Ingame.get().getLogger().log(Level.WARNING, "Failed to parse pug socket message", e);
     }
   }
 
@@ -67,7 +68,7 @@ public class BoltWebSocket extends WebSocketClient {
     try {
       manager.syncPugLobby(pugResponse.getLobby());
     } catch (IOException e) {
-      e.printStackTrace();
+      Ingame.get().getLogger().log(Level.WARNING, "Failed to sync pug lobby", e);
     }
 
     PugMessage chat = pugResponse.getChat();
@@ -129,7 +130,7 @@ public class BoltWebSocket extends WebSocketClient {
 
   @Override
   public void onClose(int i, String s, boolean b) {
-    System.out.println("[Ingame] Closed socket " + i + " - " + b + " " + s);
+    Ingame.get().getLogger().info("Closed socket " + i + " - " + b + " " + s);
 
     // Try to reconnect if failed.
     if (i == CloseFrame.NEVER_CONNECTED || i == CloseFrame.ABNORMAL_CLOSE) {
@@ -139,6 +140,8 @@ public class BoltWebSocket extends WebSocketClient {
 
   @Override
   public void onError(Exception e) {
-    System.out.println(e.getMessage());
+    if (e instanceof IOException)
+      Ingame.get().getLogger().warning("Pug socket error: " + e.getMessage());
+    else Ingame.get().getLogger().log(Level.WARNING, "Pug socket error", e);
   }
 }

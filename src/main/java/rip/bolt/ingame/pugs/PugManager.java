@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
+import java.util.logging.Level;
 import java.util.stream.Collectors;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -122,7 +123,7 @@ public class PugManager extends GameManager {
     boltWebSocket.addHeader("Authorization", "Bearer " + AppData.Socket.getKey());
     boltWebSocket.connect();
 
-    System.out.println("[Ingame] Connected to " + boltMatch.getLobbyId());
+    Ingame.get().getLogger().info("Connected to " + boltMatch.getLobbyId());
   }
 
   public void reset() {
@@ -133,14 +134,14 @@ public class PugManager extends GameManager {
     try {
       this.boltWebSocket.send(objectMapper.writeValueAsString(command));
     } catch (JsonProcessingException | WebsocketNotConnectedException e) {
-      e.printStackTrace();
+      Ingame.get().getLogger().log(Level.WARNING, "Failed to send pug command", e);
     }
   }
 
   public void disconnect() {
     if (boltWebSocket == null) return;
 
-    System.out.println("[Ingame] Disconnected from " + getLobbyId());
+    Ingame.get().getLogger().info("Disconnected from " + getLobbyId());
 
     boltWebSocket.close();
   }

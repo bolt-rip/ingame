@@ -4,12 +4,14 @@ import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.util.Objects;
+import java.util.logging.Level;
 import okhttp3.ResponseBody;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.NullUnmarked;
 import retrofit2.Call;
 import retrofit2.CallAdapter;
 import retrofit2.Retrofit;
+import rip.bolt.ingame.Ingame;
 
 public final class DefaultCallAdapterFactory<T> extends CallAdapter.Factory {
 
@@ -29,7 +31,7 @@ public final class DefaultCallAdapterFactory<T> extends CallAdapter.Factory {
     try (ResponseBody errorBody = response.errorBody()) {
       return Objects.isNull(errorBody) ? response.message() : errorBody.string();
     } catch (IOException e) {
-      e.printStackTrace();
+      Ingame.get().getLogger().log(Level.WARNING, "Failed to read API error body", e);
       return "Failed to read error message";
     }
   }

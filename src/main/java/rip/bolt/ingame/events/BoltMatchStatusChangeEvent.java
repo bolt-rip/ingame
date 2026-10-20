@@ -1,13 +1,15 @@
 package rip.bolt.ingame.events;
 
 import org.bukkit.event.HandlerList;
+import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 import rip.bolt.ingame.api.definitions.BoltMatch;
 import rip.bolt.ingame.api.definitions.MatchStatus;
 
+@NullMarked
 public class BoltMatchStatusChangeEvent extends BoltMatchEvent {
 
-  private static final HandlerList handlers = new HandlerList();
+  private static final HandlerList HANDLER_LIST = new HandlerList();
 
   @Nullable
   private final MatchStatus oldStatus;
@@ -31,10 +33,10 @@ public class BoltMatchStatusChangeEvent extends BoltMatchEvent {
 
   @Override
   public HandlerList getHandlers() {
-    return handlers;
+    return HANDLER_LIST;
   }
 
   public static HandlerList getHandlerList() {
-    return handlers;
+    return HANDLER_LIST;
   }
 }

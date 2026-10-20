@@ -5,7 +5,6 @@ import dev.pgm.events.team.TournamentPlayer;
 import dev.pgm.events.team.TournamentTeam;
 import dev.pgm.events.team.TournamentTeamManager;
 import java.util.Collection;
-import java.util.stream.Collectors;
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -59,7 +58,7 @@ public class RankedManager extends GameManager {
     playerWatcher.addPlayers(match.getTeams().stream()
         .flatMap(team -> team.getPlayers().stream())
         .map(TournamentPlayer::getUUID)
-        .collect(Collectors.toList()));
+        .toList());
   }
 
   @Override
@@ -98,9 +97,12 @@ public class RankedManager extends GameManager {
     if (event.getOldStatus() == MatchStatus.CREATED
         && event.getNewStatus().equals(MatchStatus.LOADED)) {
       TournamentTeamManager teamManager = EventsPlugin.get().getTeamManager();
-      event.getBoltMatch().getTeams().forEach(boltTeam -> teamManager
-          .fromTournamentTeam(boltTeam)
-          .ifPresent(team -> team.setMaxSize(boltTeam.getParticipations().size(), null)));
+      event
+          .getBoltMatch()
+          .getTeams()
+          .forEach(boltTeam -> teamManager
+              .fromTournamentTeam(boltTeam)
+              .ifPresent(team -> team.setMaxSize(boltTeam.getParticipations().size(), null)));
     }
   }
 
