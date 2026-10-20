@@ -1,14 +1,16 @@
 package rip.bolt.ingame.events;
 
 import org.bukkit.event.HandlerList;
+import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 import rip.bolt.ingame.api.definitions.BoltMatch;
 import rip.bolt.ingame.api.definitions.MatchStatus;
 import tc.oc.pgm.api.match.Match;
 
+@NullMarked
 public class BoltMatchResponseEvent extends BoltMatchEvent {
 
-  private static final HandlerList handlers = new HandlerList();
+  private static final HandlerList HANDLER_LIST = new HandlerList();
 
   private final Match pgmMatch;
   private final BoltMatch responseMatch;
@@ -48,10 +50,10 @@ public class BoltMatchResponseEvent extends BoltMatchEvent {
 
   @Override
   public HandlerList getHandlers() {
-    return handlers;
+    return HANDLER_LIST;
   }
 
   public static HandlerList getHandlerList() {
-    return handlers;
+    return HANDLER_LIST;
   }
 }

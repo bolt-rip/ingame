@@ -4,9 +4,11 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.UUID;
+import java.util.logging.Level;
 import okhttp3.OkHttpClient;
 import retrofit2.Retrofit;
 import retrofit2.converter.jackson.JacksonConverterFactory;
+import rip.bolt.ingame.Ingame;
 import rip.bolt.ingame.api.definitions.BoltMatch;
 import rip.bolt.ingame.api.definitions.BoltResponse;
 import rip.bolt.ingame.api.definitions.Punishment;
@@ -72,29 +74,50 @@ public class APIManager {
 
     final int PRECONDITION_FAILED = 412;
 
-    for (int i = 0; i < retries; ) {
-      try {
-        return apiService.postMatch(match.getId(), match);
-      } catch (APIException ex) {
-        ex.printStackTrace();
-        if (ex.getCode() == PRECONDITION_FAILED && i > 2) return match;
-      } catch (Exception ex) {
-        ex.printStackTrace();
+    boolean interrupted = false;
+    Exception lastError = null;
+    try {
+      for (int attempt = 1; attempt <= retries; attempt++) {
+        try {
+          return apiService.postMatch(match.getId(), match);
+        } catch (Exception ex) {
+          if (ex instanceof APIException apiEx
+              && apiEx.getCode() == PRECONDITION_FAILED
+              && attempt > 3) {
+            Ingame.get()
+                .getLogger()
+                .info("Match " + match.getId() + " was already updated on the API (412) when"
+                    + " reporting " + match.getStatus() + ", keeping local state");
+            return match;
+          }
+          if (Thread.interrupted()) interrupted = true;
+          lastError = ex;
+        }
+
+        if (attempt == retries) break;
+
+        String message = "Failed to report " + match.getStatus() + " for match " + match.getId()
+            + ", retrying in " + (attempt * 5) + "s (" + attempt + "/" + retries + ")";
+        if (attempt == 1) Ingame.get().getLogger().log(Level.WARNING, message, lastError);
+        else Ingame.get().getLogger().warning(message + ": " + lastError);
+
+        try {
+          Thread.sleep(attempt * 5000L);
+        } catch (InterruptedException e) {
+          interrupted = true;
+        }
       }
 
-      i += 1;
-      System.out.println("[Ingame] Failed to report match end, retrying in "
-          + (i * 5)
-          + "s ("
-          + i
-          + "/"
-          + retries
-          + ")");
-      try {
-        Thread.sleep(i * 5000L);
-      } catch (InterruptedException ignore) {
-      }
+      Ingame.get()
+          .getLogger()
+          .log(
+              Level.SEVERE,
+              "Failed to report " + match.getStatus() + " for match " + match.getId() + " after "
+                  + retries + " attempts, giving up",
+              lastError);
+      return null;
+    } finally {
+      if (interrupted) Thread.currentThread().interrupt();
     }
-    return null;
   }
 }

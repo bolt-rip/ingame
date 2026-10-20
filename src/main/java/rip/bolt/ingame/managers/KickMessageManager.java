@@ -1,6 +1,5 @@
 package rip.bolt.ingame.managers;
 
-import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -12,9 +11,6 @@ import rip.bolt.ingame.utils.Messages;
 import tc.oc.pgm.util.Audience;
 
 public class KickMessageManager implements Listener {
-
-  private static final LegacyComponentSerializer SERIALIZER =
-      LegacyComponentSerializer.legacySection();
 
   private final MatchManager matchManager;
 

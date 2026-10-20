@@ -5,7 +5,6 @@ import static net.kyori.adventure.text.Component.text;
 import com.google.common.collect.Ordering;
 import java.time.Duration;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
@@ -80,8 +79,7 @@ public class CancelManager {
         .max(CANCEL_ABSENCE_LENGTH.minus(participation.absentDuration()), Duration.ZERO);
 
     // Start countdown with single player
-    startCountdown(
-        match, new ArrayList<>(Collections.singletonList(participation.getUUID())), duration);
+    startCountdown(match, List.of(participation.getUUID()), duration);
   }
 
   public void playerLeft(MatchPlayer player) {
@@ -105,7 +103,7 @@ public class CancelManager {
         CancelManager cancelManager, Match match, List<UUID> players, Duration duration) {
       this.manager = cancelManager;
       this.match = match;
-      this.players = players;
+      this.players = new ArrayList<>(players);
       this.duration = (duration.toMillis() + 999) / 1000;
 
       scheduledFuture = match

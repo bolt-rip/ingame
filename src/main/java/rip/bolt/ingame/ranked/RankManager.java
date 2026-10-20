@@ -142,17 +142,7 @@ public class RankManager implements Listener {
     Bukkit.getPluginManager().callEvent(new NameDecorationChangeEvent(mp.getId()));
   }
 
-  private static class RankUpdate {
-    private final User old;
-    private final Participation updated;
-    private final MatchPlayer player;
-
-    public RankUpdate(User old, Participation updated, MatchPlayer player) {
-      this.old = old;
-      this.updated = updated;
-      this.player = player;
-    }
-
+  private record RankUpdate(User old, Participation updated, MatchPlayer player) {
     public boolean isValid() {
       return old != null && updated != null && player != null;
     }

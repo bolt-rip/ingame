@@ -4,8 +4,7 @@ import static tc.oc.pgm.util.text.TextException.exception;
 
 import java.time.Duration;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.stream.Collectors;
+import java.util.List;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jspecify.annotations.Nullable;
@@ -49,13 +48,13 @@ public class PugCommands {
 
   public static void setupSubCommands(@Nullable CommandNode<CommandSender> pugNode) {
     if (pugNode == null) {
-      commandList = Collections.emptyList();
+      commandList = List.of();
       return;
     }
 
     commandList = pugNode.children().stream()
         .flatMap(n -> n.component().aliases().stream())
-        .collect(Collectors.toList());
+        .toList();
   }
 
   private PugManager needPugManager() {

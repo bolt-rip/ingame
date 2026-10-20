@@ -3,7 +3,6 @@ package rip.bolt.ingame.api.definitions.pug;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import java.util.List;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import rip.bolt.ingame.api.definitions.BoltPGMMap;
 
@@ -82,7 +81,7 @@ public class PugLobby {
   @JsonIgnore
   public List<PugPlayer> getPlayers() {
     return Stream.concat(teams.stream().flatMap(t -> t.getPlayers().stream()), observers.stream())
-        .collect(Collectors.toList());
+        .toList();
   }
 
   public List<PugTeam> getTeams() {

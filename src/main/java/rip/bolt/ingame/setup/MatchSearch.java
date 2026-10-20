@@ -31,7 +31,7 @@ public class MatchSearch {
 
   public void trigger(boolean force) {
     Ingame.newSharedChain("match")
-        .abortIf(o -> !force && !isSyncTaskRunning())
+        .abortIf(_ -> !force && !isSyncTaskRunning())
         .asyncFirst(() -> Ingame.get().getApiManager().fetchMatchData())
         .abortIfNull()
         .syncLast(setupMatch::accept)
@@ -44,17 +44,16 @@ public class MatchSearch {
 
   public synchronized void startIn(long delay) {
 
-    System.out.println("[Ingame] Request poll for " + delay);
+    Ingame.get().getLogger().info("Request poll for " + delay);
 
     // Don't poll if already polling
     if (this.isSyncTaskRunning()) return;
 
-    System.out.println("[Ingame] Starting poll for " + delay);
+    Ingame.get().getLogger().info("Starting poll for " + delay);
 
     stop();
 
-    syncTaskId =
-        Bukkit.getScheduler()
-            .scheduleSyncRepeatingTask(Ingame.get(), this::trigger, delay, 15 * 20);
+    syncTaskId = Bukkit.getScheduler()
+        .scheduleSyncRepeatingTask(Ingame.get(), this::trigger, delay, 15 * 20);
   }
 }
